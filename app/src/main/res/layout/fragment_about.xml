@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~     fragment_about.xml Created by Yamin Siahmargooei at 2021/7/6
+  ~     This file is part of Fare.
+  ~
+  ~     Fare is free software: you can redistribute it and/or modify
+  ~     it under the terms of the GNU General Public License as published by
+  ~     the Free Software Foundation, either version 3 of the License, or
+  ~     (at your option) any later version.
+  ~
+  ~     Fare is distributed in the hope that it will be useful,
+  ~     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~     GNU General Public License for more details.
+  ~
+  ~     You should have received a copy of the GNU General Public License
+  ~     along with Fare.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/send_feedback_button"
+        style="@style/ClickableTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/send_feedback"
+        app:drawableRightCompat="@drawable/ic_feedback"
+        tools:layout_editor_absoluteX="8dp"
+        tools:layout_editor_absoluteY="78dp" />
+
+    <TextView
+        android:id="@+id/about_developer_button"
+        style="@style/ClickableTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/about_developer"
+        app:drawableRightCompat="@drawable/ic_developer"
+        tools:layout_editor_absoluteX="176dp"
+        tools:layout_editor_absoluteY="27dp" />
+
+    <TextView
+        android:id="@+id/license_button"
+        style="@style/ClickableTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/app_license"
+        app:drawableRightCompat="@drawable/ic_balance_scale"
+        tools:layout_editor_absoluteX="176dp"
+        tools:layout_editor_absoluteY="8dp" />
+
+    <androidx.constraintlayout.helper.widget.Flow
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:orientation="vertical"
+        app:constraint_referenced_ids="license_button,about_developer_button,send_feedback_button"
+        app:flow_maxElementsWrap="1"
+        app:flow_verticalGap="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~     city_lines_info_modal.xml Created by Yamin Siahmargooei at 2021/7/17
+  ~     This file is part of Fare.
+  ~
+  ~     Fare is free software: you can redistribute it and/or modify
+  ~     it under the terms of the GNU General Public License as published by
+  ~     the Free Software Foundation, either version 3 of the License, or
+  ~     (at your option) any later version.
+  ~
+  ~     Fare is distributed in the hope that it will be useful,
+  ~     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~     GNU General Public License for more details.
+  ~
+  ~     You should have received a copy of the GNU General Public License
+  ~     along with Fare.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.constraintlayout.helper.widget.Flow
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginEnd="32dp"
+            android:layout_marginBottom="32dp"
+            android:orientation="vertical"
+            app:constraint_referenced_ids="price_notice,reference_header,city_lines_reference,city_extra_header,city_lines_more_info"
+            app:flow_verticalGap="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/price_notice"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/price_notice"
+            tools:layout_editor_absoluteX="240dp"
+            tools:layout_editor_absoluteY="32dp" />
+
+        <TextView
+            android:id="@+id/reference_header"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/price_reference_header"
+            tools:layout_editor_absoluteX="171dp"
+            tools:layout_editor_absoluteY="69dp" />
+
+        <TextView
+            android:id="@+id/city_lines_reference"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:linksClickable="true"
+            tools:layout_editor_absoluteX="101dp"
+            tools:layout_editor_absoluteY="69dp"
+            tools:text="@tools:sample/lorem" />
+
+        <TextView
+            android:id="@+id/city_extra_header"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/more_info_header"
+            tools:layout_editor_absoluteX="310dp"
+            tools:layout_editor_absoluteY="69dp" />
+
+        <TextView
+            android:id="@+id/city_lines_more_info"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            tools:layout_editor_absoluteX="32dp"
+            tools:layout_editor_absoluteY="69dp"
+            tools:text="@tools:sample/lorem" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.core.widget.NestedScrollView>

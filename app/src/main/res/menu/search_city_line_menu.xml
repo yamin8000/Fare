@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~     search_city_line_menu.xml Created by Yamin Siahmargooei at 2021/7/17
+  ~     This file is part of Fare.
+  ~
+  ~     Fare is free software: you can redistribute it and/or modify
+  ~     it under the terms of the GNU General Public License as published by
+  ~     the Free Software Foundation, either version 3 of the License, or
+  ~     (at your option) any later version.
+  ~
+  ~     Fare is distributed in the hope that it will be useful,
+  ~     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~     GNU General Public License for more details.
+  ~
+  ~     You should have received a copy of the GNU General Public License
+  ~     along with Fare.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/search_city_line_menu_reference"
+        android:icon="@drawable/ic_info"
+        android:title="@string/data_reference"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/search_city_line_menu_report"
+        android:icon="@drawable/ic_report"
+        android:title="@string/report_bad_data"
+        app:showAsAction="ifRoom" />
+</menu>

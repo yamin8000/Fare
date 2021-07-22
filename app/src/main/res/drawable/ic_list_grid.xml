@@ -1,0 +1,21 @@
+<!--
+  ~ ic_list_grid.xml Created by Yamin Siahmargooei at 2021/5/18
+  -->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:tint="@color/white"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <group
+        android:pivotX="12"
+        android:pivotY="12"
+        android:scaleX="1.25"
+        android:scaleY="1.25">
+        <path
+            android:fillColor="#000000"
+            android:pathData="m17.835,5v6.5L12.495,11.5L12.495,5ZM17.835,19L17.835,12.5L12.495,12.5L12.495,19ZM11.495,12.5L6.165,12.5L6.165,19h5.33zM11.495,11.5L11.495,5L6.165,5v6.5z" />
+    </group>
+</vector>

@@ -1,0 +1,68 @@
+<!--
+  ~     strings.xml Created by Yamin Siahmargooei at 2021/7/1
+  ~     This file is part of Fare.
+  ~
+  ~     Fare is free software: you can redistribute it and/or modify
+  ~     it under the terms of the GNU General Public License as published by
+  ~     the Free Software Foundation, either version 3 of the License, or
+  ~     (at your option) any later version.
+  ~
+  ~     Fare is distributed in the hope that it will be useful,
+  ~     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~     GNU General Public License for more details.
+  ~
+  ~     You should have received a copy of the GNU General Public License
+  ~     along with Fare.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<resources>
+    <string name="app_name">کرایه</string>
+    <string name="data_empty">متاسفانه داده ای یافت نشد</string>
+    <string name="search">جستجو</string>
+    <string name="map">نقشه</string>
+    <string name="my_city">شهر من</string>
+    <string name="settings">تنظیمات</string>
+    <string name="exit">خروج</string>
+    <string name="about">درباره</string>
+    <string name="net_error">به نظر میاد دستگاه شما به اینترنت وصل نیست.</string>
+    <string name="app_license">پروانه برنامه</string>
+    <string name="about_developer">درباره توسعه دهنده</string>
+    <string name="send_feedback">ارسال انتقاد، نظر و پیشنهاد</string>
+    <string name="yes">بله</string>
+    <string name="feedback_text">در صورت داشتن هرگونه نظر، انتقاد یا پیشنهاد با تکمیل فرم زیر با ما در ارتباط باشید، وارد کردن راه ارتباطی با شما اختیاری است. راه ارتباطی شامل شماره تماس یا ایمیل شما است.</string>
+    <string name="send">ارسال</string>
+    <string name="your_feedback">بازخورد شما</string>
+    <string name="user_contact">راه ارتباطی</string>
+    <string name="feedback_created_success">بازخورد شما ثبت شد</string>
+    <string name="no_feedback_text_entered">متنی برای بازخورد نوشته نشده</string>
+    <string name="search_city">جستجوی شهر</string>
+    <string name="select_state">انتخاب استان</string>
+    <string name="app_crashed">مشکلی در برنامه پیش آمده، برای خروج اینجا را لمس کنید.</string>
+    <string name="exit_prompt">آیا واقعا قصد خروج از برنامه را دارید؟</string>
+    <string name="line_code_template">کد خط: %s</string>
+    <string name="line_origin_template">مبدا: %s</string>
+    <string name="line_destination_template">مقصد: %s</string>
+    <string name="line_price_template">کرایه: %s</string>
+    <string name="line_city_name_template">خطوط تاکسی %s</string>
+    <string name="rial_template">%s ریال</string>
+    <string name="destination">مقصد</string>
+    <string name="origin">مبدا</string>
+    <string name="line_code">کد خط</string>
+    <string name="clear_search_filter">حذف فیلترهای جستجو</string>
+    <string name="line_search_filter_notice">برای محدود کردن جستجو از گزینه های زیر استفاده کنید.</string>
+    <string name="more_info">اطلاعات بیشتر</string>
+    <string name="report_bad_data">گزارش نقص اطلاعات</string>
+    <string name="line_feed_data">%s\n%s</string>
+    <string name="price_notice">توجه شود نرخ مصوب و معیار توسط سازمان تاکسیرانی هر شهر تعیین می‌شود و در داخل تاکسی‌ها نصب شده است و معیار اصلی کاغذ نصب شده در داخل تاکسی و حرف رانندگان تاکسی عزیز است و آمارهای این نرم‌افزار بر اساس جدیدترین اخبار موجود است.</string>
+    <string name="taxi_meter_city_notice">توجه داشته باشید کرایه در این شهر به صورت تاکسی‌متر هم محاسبه می‌شود و معیارهای جستجو مختص به خود را دارد.</string>
+    <string name="data_reference">منبع اطلاعات</string>
+    <string name="more_info_header">اطلاعات بیشتر:</string>
+    <string name="price_reference_header">منبع قیمت:</string>
+    <string name="line_error_feedback_template">اطلاعات شهر %s ناقص است\nتوضیحات بیشتر:\n</string>
+    <string name="please_wait">لطفا منتظر بمانید.</string>
+    <string name="feedback_notice">اگر اطلاعات بیشتری لازم است وارد کنید، سپس بازخورد را ارسال کنید.</string>
+    <string name="feedback_spam_notice">لطفا تا ارسال بازخورد بعدی 2 دقیقه صبر کنید.</string>
+    <string name="list_to_grid">تغییر لیست به جدول</string>
+    <string name="developers">توسعه:\nیمین سیاه‌مرگوئی\nیعقوب سیاه‌مرگوئی\n\nتست و ایده:\nشهریار مداح</string>
+</resources>

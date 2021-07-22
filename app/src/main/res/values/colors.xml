@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~     Fare: find Iran's cities taxi fares
+  ~     colors.xml Created by Yamin Siahmargooei at 2021/7/22
+  ~     This file is part of Fare.
+  ~     Copyright (C) 2021  Yamin Siahmargooei
+  ~
+  ~     Fare is free software: you can redistribute it and/or modify
+  ~     it under the terms of the GNU General Public License as published by
+  ~     the Free Software Foundation, either version 3 of the License, or
+  ~     (at your option) any later version.
+  ~
+  ~     Fare is distributed in the hope that it will be useful,
+  ~     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~     GNU General Public License for more details.
+  ~
+  ~     You should have received a copy of the GNU General Public License
+  ~     along with Fare.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<resources>
+    <color name="primaryColor">#ff8906</color>
+    <color name="primaryLightColor">#ffba47</color>
+    <color name="primaryDarkColor">#c55a00</color>
+    <color name="secondaryColor">#f25f4c</color>
+    <color name="secondaryLightColor">#ff9179</color>
+    <color name="secondaryDarkColor">#b92b23</color>
+    <color name="secondaryLightestColor">#f2d6cf</color>
+    <color name="primaryTextColor">#0f0e17</color>
+    <color name="secondaryTextColor">#0f0e17</color>
+
+    <color name="tertiaryColor">#e53170</color>
+    <color name="themeBackground">#faeee7</color>
+    <color name="paragraphText">#33272a</color>
+
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="lightGrey">#E2E2E2</color>
+    <color name="altGrey">#FF666666</color>
+    <color name="transparent">#00000000</color>
+</resources>
