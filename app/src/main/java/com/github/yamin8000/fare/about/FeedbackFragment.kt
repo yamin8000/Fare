@@ -110,4 +110,9 @@ class FeedbackFragment : BaseFragment<FragmentFeedbackBinding>({ FragmentFeedbac
         val lastFeedbackDate = LocalDateTime.parse(lastDateString)
         return now.minusMinutes(2).isBefore(lastFeedbackDate)
     }
+    
+    override fun onDestroy() {
+        super.onDestroy()
+        noticeSnackbar?.dismiss()
+    }
 }

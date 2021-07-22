@@ -27,6 +27,7 @@ import androidx.navigation.fragment.findNavController
 import com.github.yamin8000.fare.R
 import com.github.yamin8000.fare.databinding.FragmentHomeBinding
 import com.github.yamin8000.fare.ui.fragment.BaseFragment
+import com.github.yamin8000.fare.util.helpers.ErrorHelper.snack
 
 class HomeFragment : BaseFragment<FragmentHomeBinding>({ FragmentHomeBinding.inflate(it) }) {
     
@@ -45,6 +46,10 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>({ FragmentHomeBinding.inf
             findNavController().navigate(R.id.exitNoticeModal)
         }
         
+        binding.myCityButton.setOnClickListener { workInProgress() }
+        binding.mapButton.setOnClickListener { workInProgress() }
+        binding.settingsButton.setOnClickListener { workInProgress() }
+        
         backPressHandler()
     }
     
@@ -55,5 +60,9 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>({ FragmentHomeBinding.inf
             }
         }
         activity?.onBackPressedDispatcher?.addCallback(viewLifecycleOwner, callback)
+    }
+    
+    private fun workInProgress() {
+        snack(getString(R.string.work_in_progress))
     }
 }

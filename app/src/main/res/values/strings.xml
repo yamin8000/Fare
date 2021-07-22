@@ -65,4 +65,6 @@
     <string name="feedback_spam_notice">لطفا تا ارسال بازخورد بعدی 2 دقیقه صبر کنید.</string>
     <string name="list_to_grid">تغییر لیست به جدول</string>
     <string name="developers">توسعه:\nیمین سیاه‌مرگوئی\nیعقوب سیاه‌مرگوئی\n\nتست و ایده:\nشهریار مداح</string>
+    <string name="license_header">این برنامه تحت لایسنس GPLv3 است که توضیحات بیشتر در پایین موجود است.\nلینک سورس برنامه:\nhttps://github.com/yamin8000/Fare</string>
+    <string name="work_in_progress">در دست ساخت...</string>
 </resources>

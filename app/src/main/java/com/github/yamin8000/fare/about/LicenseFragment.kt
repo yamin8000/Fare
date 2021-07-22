@@ -21,7 +21,9 @@
 package com.github.yamin8000.fare.about
 
 import android.os.Bundle
+import android.text.util.Linkify
 import android.view.View
+import androidx.core.text.util.LinkifyCompat
 import com.github.yamin8000.fare.R
 import com.github.yamin8000.fare.databinding.FragmentLicenseBinding
 import com.github.yamin8000.fare.ui.fragment.BaseFragment
@@ -44,6 +46,8 @@ class LicenseFragment : BaseFragment<FragmentLicenseBinding>({ FragmentLicenseBi
         try {
             val safeContext = context
             if (safeContext != null) {
+                LinkifyCompat.addLinks(binding.licenseHeader, Linkify.ALL)
+                
                 val sharedPrefs = SharedPrefs(safeContext, LICENSE_PREFS)
                 var licenseText = sharedPrefs.readString(LICENSE)
                 if (licenseText.isEmpty()) {
