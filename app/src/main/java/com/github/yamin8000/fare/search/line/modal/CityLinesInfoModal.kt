@@ -69,7 +69,7 @@ class CityLinesInfoModal : BottomSheetDialogFragment() {
     }
     
     private fun getCityExtras(cityId : String) {
-        val service = web.getService(Services.CityExtraService::class.java)
+        val service = web.getService<Services.CityExtraService>()
         service.getCityExtra(cityId.eqQuery()).async(this, { list ->
             when {
                 list != null && list.isEmpty() -> {
@@ -86,7 +86,7 @@ class CityLinesInfoModal : BottomSheetDialogFragment() {
     }
     
     private fun getReferences(cityId : String) {
-        val service = web.getService(Services.PriceReferenceService::class.java)
+        val service = web.getService<Services.PriceReferenceService>()
         service.getCityReference(cityId.eqQuery()).async(this, { list ->
             when {
                 list != null && list.isEmpty() -> {

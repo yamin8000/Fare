@@ -26,6 +26,8 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.OnLifecycleEvent
 import com.github.yamin8000.fare.util.SUPABASE.SUPA_BASE_URL
 import com.orhanobut.logger.Logger
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.Types
 import retrofit2.*
 import retrofit2.converter.moshi.MoshiConverterFactory
 
@@ -34,9 +36,10 @@ class WEB(
     converterFactory : Converter.Factory = MoshiConverterFactory.create(),
          ) {
     
-    private var retrofit = Retrofit.Builder().baseUrl(baseUrl).addConverterFactory(converterFactory).build()
+    var retrofit : Retrofit = Retrofit.Builder().baseUrl(baseUrl).addConverterFactory(converterFactory)
+        .build()
     
-    fun <T> getService(clazz : Class<T>) : T = retrofit.create(clazz)
+    inline fun <reified T> getService() : T = retrofit.create(T::class.java)
     
     companion object {
         
@@ -90,6 +93,22 @@ class WEB(
                     else Logger.d("${call.request().url()} is canceled")
                 }
             })
+        }
+        
+        inline fun <reified T> List<T>.toJsonArray() : String {
+            val moshi = Moshi.Builder().build()
+            val type = Types.newParameterizedType(List::class.java, T::class.java)
+            val jsonAdapter = moshi.adapter<List<T>>(type)
+            return jsonAdapter.toJson(this)
+        }
+        
+        inline fun <reified T> String.fromJsonArray() : List<T>? {
+            return if (this.isNotBlank()) {
+                val moshi = Moshi.Builder().build()
+                val type = Types.newParameterizedType(List::class.java, T::class.java)
+                val jsonAdapter = moshi.adapter<List<T>>(type)
+                jsonAdapter.fromJson(this)
+            } else null
         }
         
         fun String.likeQuery() = "like.*$this*"

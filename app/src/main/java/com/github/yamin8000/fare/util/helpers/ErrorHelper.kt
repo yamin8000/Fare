@@ -28,8 +28,12 @@ import com.google.android.material.snackbar.Snackbar
 
 object ErrorHelper {
     
+    fun Fragment.netErrorCache() {
+        snack(getString(R.string.net_error_cache_data), Snackbar.LENGTH_INDEFINITE)
+    }
+    
     fun Fragment.netError() {
-        snack(getString(R.string.net_error))
+        snack(getString(R.string.net_error), Snackbar.LENGTH_INDEFINITE)
     }
     
     fun Fragment.snack(message : String, length : Int = Snackbar.LENGTH_SHORT) : Snackbar? {

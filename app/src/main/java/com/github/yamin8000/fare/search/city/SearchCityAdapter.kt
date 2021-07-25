@@ -18,35 +18,49 @@
  *     along with Fare.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-@file:Suppress("DELEGATED_MEMBER_HIDES_SUPERTYPE_OVERRIDE")
-
-
 package com.github.yamin8000.fare.search.city
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.AsyncListDiffer
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.github.yamin8000.fare.databinding.SearchCityItemBinding
 import com.github.yamin8000.fare.model.CityJoined
-import com.github.yamin8000.fare.ui.recyclerview.other.UniqueItem
-import com.github.yamin8000.fare.ui.recyclerview.other.UniqueItemDelegate
 
-class SearchCityAdapter(
-    private val list : List<CityJoined>,
-    private val clickListener : (Int, CityJoined) -> Unit,
-                       ) : RecyclerView.Adapter<SearchCityViewHolder>(),
-    UniqueItem by UniqueItemDelegate(list.size) {
+
+class SearchCityAdapter(private val clickListener : (Int, CityJoined) -> Unit) :
+    RecyclerView.Adapter<SearchCityViewHolder>() {
+    
+    private val asyncDiffer : AsyncListDiffer<CityJoined> = AsyncListDiffer(this, DiffCallback)
+    
+    private object DiffCallback : DiffUtil.ItemCallback<CityJoined>() {
+        
+        override fun areItemsTheSame(oldItem : CityJoined, newItem : CityJoined) = oldItem.id == newItem.id
+        
+        override fun areContentsTheSame(oldItem : CityJoined, newItem : CityJoined) = oldItem == newItem
+    }
     
     override fun onCreateViewHolder(parent : ViewGroup, viewType : Int) : SearchCityViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = SearchCityItemBinding.inflate(inflater, parent, false)
-        return SearchCityViewHolder(binding, clickListener, list)
+        return SearchCityViewHolder(binding, clickListener, asyncDiffer.currentList)
     }
     
     override fun onBindViewHolder(holder : SearchCityViewHolder, position : Int) {
-        val model = list[position]
+        val model = asyncDiffer.currentList[position]
         holder.setCity(model.name)
         holder.setCounty(model.county.name)
         holder.setState(model.state.name)
+    }
+    
+    override fun getItemCount() = asyncDiffer.currentList.size
+    
+    override fun getItemId(position : Int) = position.toLong()
+    
+    override fun getItemViewType(position : Int) = position
+    
+    fun submitList(newList : List<CityJoined>) {
+        asyncDiffer.submitList(newList)
     }
 }

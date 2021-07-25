@@ -1,6 +1,6 @@
 /*
- *     UniqueItemDelegate.kt Created by Yamin Siahmargooei at 2021/7/1
  *     Fare: find Iran's cities taxi fares
+ *     CitiesCache.kt Created by Yamin Siahmargooei at 2021/7/25
  *     This file is part of Fare.
  *     Copyright (C) 2021  Yamin Siahmargooei
  *
@@ -18,13 +18,13 @@
  *     along with Fare.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.github.yamin8000.fare.ui.recyclerview.other
+package com.github.yamin8000.fare.search.city
 
-class UniqueItemDelegate(private val listSize : Int) : UniqueItem {
-    
-    override fun getItemCount() = listSize
-    
-    override fun getItemId(position : Int) = position.toLong()
-    
-    override fun getItemViewType(position : Int) = position
-}
+import android.content.Context
+import com.github.yamin8000.fare.util.CONSTANTS
+import com.github.yamin8000.fare.web.Cache
+
+class CitiesCache(context : Context) :
+    Cache(context, CONSTANTS.CITY_PREFS, cacheDatePolicy = { current, last ->
+        current.minusDays(7).isAfter(last)
+    })

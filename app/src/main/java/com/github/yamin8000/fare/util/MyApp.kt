@@ -25,11 +25,15 @@ package com.github.yamin8000.fare.util
 import android.app.Application
 import android.util.Log
 import com.github.yamin8000.fare.util.CONSTANTS.APP_PACKAGE
+import com.github.yamin8000.fare.util.CONSTANTS.CITY
+import com.github.yamin8000.fare.util.CONSTANTS.CITY_PREFS
 import com.github.yamin8000.fare.util.CONSTANTS.FEEDBACK
 import com.github.yamin8000.fare.util.CONSTANTS.FEEDBACK_PREFS
 import com.github.yamin8000.fare.util.CONSTANTS.LICENSE
 import com.github.yamin8000.fare.util.CONSTANTS.LICENSE_PREFS
 import com.github.yamin8000.fare.util.CONSTANTS.LOG_TAG
+import com.github.yamin8000.fare.util.CONSTANTS.STATE
+import com.github.yamin8000.fare.util.CONSTANTS.STATE_PREFS
 import com.orhanobut.logger.AndroidLogAdapter
 import com.orhanobut.logger.Logger
 import com.orhanobut.logger.PrettyFormatStrategy
@@ -50,7 +54,8 @@ class MyApp : Application() {
         APP_PACKAGE = packageName
         LICENSE_PREFS = "$packageName.$LICENSE"
         FEEDBACK_PREFS = "$packageName.$FEEDBACK"
-        //STATE_PREFS = "$packageName.$STATE"
+        STATE_PREFS = "$packageName.$STATE"
+        CITY_PREFS = "$packageName.$CITY"
     }
     
     private fun prepareLogger() {

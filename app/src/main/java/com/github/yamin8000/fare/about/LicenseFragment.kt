@@ -51,7 +51,7 @@ class LicenseFragment : BaseFragment<FragmentLicenseBinding>({ FragmentLicenseBi
                 val sharedPrefs = SharedPrefs(safeContext, LICENSE_PREFS)
                 var licenseText = sharedPrefs.readString(LICENSE)
                 if (licenseText.isEmpty()) {
-                    WEB(SUPA_BASE_URL).getService(Services.LicenseService::class.java).getLicense()
+                    WEB(SUPA_BASE_URL).getService<Services.LicenseService>().getLicense()
                         .async(this, { list ->
                             if (list != null && list.isNotEmpty()) {
                                 licenseText = list.first().text

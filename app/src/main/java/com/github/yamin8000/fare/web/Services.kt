@@ -23,6 +23,7 @@ package com.github.yamin8000.fare.web
 import com.github.yamin8000.fare.model.*
 import com.github.yamin8000.fare.util.CONSTANTS.CITY_ID
 import com.github.yamin8000.fare.util.CONSTANTS.DESTINATION
+import com.github.yamin8000.fare.util.CONSTANTS.LIMIT
 import com.github.yamin8000.fare.util.CONSTANTS.LINE_CODE
 import com.github.yamin8000.fare.util.CONSTANTS.ORIGIN
 import com.github.yamin8000.fare.util.CONSTANTS.STATE_ID
@@ -50,6 +51,7 @@ object Services {
     //join
     private const val CITY_JOIN = "id,name,county:County(*),state:State(*)"
     private const val LINE_PRICE_JOIN = "*,price:Price(*)"
+    const val TOP_CITIES_ID = "in.(61,71,88,114,124,173,187,231,283,297,323,366,399,606,679,719,738,761,826,836,922,923,930,1050,1060,1081,1109,1122,1137,1142,1218,1356,1378,1528,1543,1547)"
     
     
     interface FeedbackService {
@@ -96,7 +98,7 @@ object Services {
         @GET(LINE)
         fun getCityLines(@Query(CITY_ID) cityId : String? = null, @Query(ORIGIN) origin : String? = null,
                          @Query(DESTINATION) destination : String? = null,
-                         @Query(LINE_CODE) lineCode : String? = null,
+                         @Query(LINE_CODE) lineCode : String? = null, @Query(LIMIT) limit : String? = null,
                          @Query(SELECT) select : String = LINE_PRICE_JOIN) : Call<List<Line>>
     }
     

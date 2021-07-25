@@ -1,6 +1,6 @@
 /*
- *     UniqueItem.kt Created by Yamin Siahmargooei at 2021/7/1
  *     Fare: find Iran's cities taxi fares
+ *     StatesCache.kt Created by Yamin Siahmargooei at 2021/7/25
  *     This file is part of Fare.
  *     Copyright (C) 2021  Yamin Siahmargooei
  *
@@ -18,21 +18,12 @@
  *     along with Fare.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.github.yamin8000.fare.ui.recyclerview.other
+package com.github.yamin8000.fare.search.city
 
-/*
- * lint check/compiler is complaining that
- * delegated members are hiding supertype members
- * and they should be overridden properly and explicitly
- * but to prevent boilerplate code
- * they are delegated to BaseRecyclerViewAdapter
- * so supertype members are made hidden deliberately
- */
-interface UniqueItem {
-    
-    fun getItemCount() : Int
-    
-    fun getItemId(position : Int) : Long
-    
-    fun getItemViewType(position : Int) : Int
-}
+import android.content.Context
+import com.github.yamin8000.fare.util.CONSTANTS.STATE_PREFS
+import com.github.yamin8000.fare.web.Cache
+
+class StatesCache(context : Context) : Cache(context, STATE_PREFS, cacheDatePolicy = { current, last ->
+    current.minusDays(7).isAfter(last)
+})

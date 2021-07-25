@@ -22,6 +22,7 @@ package com.github.yamin8000.fare.search.line
 
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.os.Parcelable
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.ArrayAdapter
@@ -42,8 +43,10 @@ import com.github.yamin8000.fare.ui.recyclerview.adapters.LoadingAdapter
 import com.github.yamin8000.fare.util.CONSTANTS.CITY_ID
 import com.github.yamin8000.fare.util.CONSTANTS.DESTINATION
 import com.github.yamin8000.fare.util.CONSTANTS.FEEDBACK
+import com.github.yamin8000.fare.util.CONSTANTS.LIMIT
 import com.github.yamin8000.fare.util.CONSTANTS.LINE_CODE
 import com.github.yamin8000.fare.util.CONSTANTS.ORIGIN
+import com.github.yamin8000.fare.util.CONSTANTS.ROW_LIMIT
 import com.github.yamin8000.fare.util.Utility.handleCrash
 import com.github.yamin8000.fare.util.Utility.hideKeyboard
 import com.github.yamin8000.fare.util.helpers.ErrorHelper.netError
@@ -74,6 +77,14 @@ class SearchLineFragment :
     
     private var cityModel : CityJoined? = null
     
+    private val searchLineAdapter = SearchLineAdapter() { _, _ -> }
+    
+    private var rowLimit = ROW_LIMIT
+    
+    private var recyclerViewState : Parcelable? = null
+    
+    private var scrollSnackbar : Snackbar? = null
+    
     override fun onViewCreated(view : View, savedInstanceState : Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         
@@ -82,16 +93,33 @@ class SearchLineFragment :
             if (cityId.isNotEmpty()) {
                 currentCityId = cityId
                 searchParams[CITY_ID] = cityId
+                searchParams[LIMIT] = "$rowLimit"
                 
                 getCityLines()
                 getCityInfo(cityId)
                 searchFilterClearButtonListener()
                 handleMenu(cityId)
                 fabClickListener()
+                listScrollHandler()
             } else netError()
         } catch (exception : Exception) {
             handleCrash(exception)
         }
+    }
+    
+    private fun listScrollHandler() {
+        binding.cityLineList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView : RecyclerView, newState : Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+                if (!recyclerView.canScrollVertically(1) && newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    rowLimit += ROW_LIMIT
+                    searchParams[LIMIT] = "$rowLimit"
+                    recyclerViewState = recyclerView.layoutManager?.onSaveInstanceState()
+                    getCityLines()
+                    scrollSnackbar = snack(getString(R.string.please_wait))
+                }
+            }
+        })
     }
     
     private fun fabClickListener() {
@@ -100,15 +128,19 @@ class SearchLineFragment :
             safeContext?.let {
                 var manager = binding.cityLineList.layoutManager
                 val drawable : Drawable?
+                val firstVisibleItems = intArrayOf(0, 0)
                 if (manager is LinearLayoutManager) {
+                    firstVisibleItems[0] = manager.findFirstVisibleItemPosition()
                     manager = StaggeredGridLayoutManager(2, RecyclerView.VERTICAL)
                     drawable = ContextCompat.getDrawable(it, R.drawable.ic_list_grid)
                 } else {
+                    (manager as StaggeredGridLayoutManager).findFirstVisibleItemPositions(firstVisibleItems)
                     manager = LinearLayoutManager(it)
                     drawable = ContextCompat.getDrawable(it, R.drawable.ic_list)
                 }
                 binding.cityLineList.layoutManager = manager
                 binding.cityLinesFab.setImageDrawable(drawable)
+                binding.cityLineList.scrollToPosition(firstVisibleItems[0])
             }
         }
     }
@@ -152,7 +184,7 @@ class SearchLineFragment :
     }
     
     private fun getCityInfo(cityId : String) {
-        val service = web.getService(Services.CityService::class.java)
+        val service = web.getService<Services.CityService>()
         service.searchCity(cityId = cityId.eqQuery()).async(this, { list ->
             if (list != null && list.isNotEmpty()) {
                 val cityInfo = list.first()
@@ -165,8 +197,8 @@ class SearchLineFragment :
     
     private fun getCityLines() {
         hideKeyboard()
+        if (isFirstTime) binding.cityLineList.adapter = loadingAdapter
         
-        binding.cityLineList.adapter = loadingAdapter
         /**
          * use of **?.** safe call is intentional
          *
@@ -178,30 +210,37 @@ class SearchLineFragment :
         val lineCodeQuery = searchParams[LINE_CODE]?.likeQuery()
         val originQuery = searchParams[ORIGIN]?.likeQuery()
         val destQuery = searchParams[DESTINATION]?.likeQuery()
+        val limitQuery = searchParams[LIMIT]
         
-        val service = web.getService(Services.LineService::class.java)
+        val service = web.getService<Services.LineService>()
         service.getCityLines(cityId = cityIdQuery, lineCode = lineCodeQuery, origin = originQuery,
-                             destination = destQuery).async(this, { list ->
+                             destination = destQuery, limit = limitQuery).async(this, { list ->
             if (list != null && list.isNotEmpty()) populateCityLinesList(list)
             else binding.cityLineList.adapter = emptyAdapter
-        }) { netError() }
+            scrollSnackbar?.dismiss()
+        }) {
+            scrollSnackbar?.dismiss()
+            netError()
+        }
     }
     
     private fun populateCityLinesList(list : List<Line>) {
-        val adapter = SearchLineAdapter(list) { _, _ -> }
-        binding.cityLineList.adapter = adapter
-        adapter.notifyDataSetChanged()
+        searchLineAdapter.submitList(list)
         
-        if (context != null) {
+        if (context != null && recyclerViewState == null) {
             val layoutManager = if (list.size <= 2) LinearLayoutManager(context)
             else StaggeredGridLayoutManager(2, RecyclerView.VERTICAL)
             binding.cityLineList.layoutManager = layoutManager
         }
         
+        binding.cityLineList.layoutManager?.onRestoreInstanceState(recyclerViewState)
+        
         if (isFirstTime) {
             isFirstTime = false
             handleAutoCompletes(list)
             handleCustomProperties(list)
+            
+            binding.cityLineList.adapter = searchLineAdapter
         }
     }
     
@@ -214,10 +253,11 @@ class SearchLineFragment :
         isFirstTime = false
         searchFilterHandler()
         
-        val codes = list.filter { !it.code.isNullOrBlank() }.map { it.code }.toSet().toList()
-        val origins = list.filter { !it.origin.isNullOrBlank() }.map { it.origin }.toSet().toList()
-        val destinations = list.filter { !it.destination.isNullOrBlank() }.map { it.destination }.toSet()
+        val codes = list.filter { !it.code.isNullOrBlank() }.asSequence().map { it.code }.toSet().toList()
+        val origins = list.filter { !it.origin.isNullOrBlank() }.asSequence().map { it.origin }.toSet()
             .toList()
+        val destinations = list.filter { !it.destination.isNullOrBlank() }.asSequence().map { it.destination }
+            .toSet().toList()
         
         populateAutoComplete(codes, binding.lineCodeAuto)
         populateAutoComplete(origins, binding.lineOriginAuto)

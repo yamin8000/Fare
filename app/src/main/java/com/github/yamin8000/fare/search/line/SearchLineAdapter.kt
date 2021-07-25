@@ -18,37 +18,52 @@
  *     along with Fare.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-@file:Suppress("DELEGATED_MEMBER_HIDES_SUPERTYPE_OVERRIDE")
-
 package com.github.yamin8000.fare.search.line
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.AsyncListDiffer
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.github.yamin8000.fare.databinding.SearchLineItemBinding
 import com.github.yamin8000.fare.model.Line
-import com.github.yamin8000.fare.ui.recyclerview.other.UniqueItem
-import com.github.yamin8000.fare.ui.recyclerview.other.UniqueItemDelegate
 
-class SearchLineAdapter(
-    private val list : List<Line>,
-    private val clickListener : (Int, Line) -> Unit,
-                       ) : RecyclerView.Adapter<SearchLineViewHolder>(),
-    UniqueItem by UniqueItemDelegate(list.size) {
+class SearchLineAdapter(private val clickListener : (Int, Line) -> Unit) :
+    RecyclerView.Adapter<SearchLineViewHolder>() {
+    
+    private val asyncDiffer : AsyncListDiffer<Line> = AsyncListDiffer(this, DiffCallback)
+    
+    private object DiffCallback : DiffUtil.ItemCallback<Line>() {
+        
+        override fun areItemsTheSame(oldItem : Line, newItem : Line) = oldItem.id == newItem.id
+        
+        override fun areContentsTheSame(oldItem : Line, newItem : Line) = oldItem == newItem
+    }
     
     override fun onCreateViewHolder(parent : ViewGroup, viewType : Int) : SearchLineViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = SearchLineItemBinding.inflate(inflater, parent, false)
-        return SearchLineViewHolder(binding, clickListener, list, parent.context)
+        return SearchLineViewHolder(binding, clickListener, asyncDiffer.currentList, parent.context)
     }
     
     override fun onBindViewHolder(holder : SearchLineViewHolder, position : Int) {
-        val model = list[position]
+        val model = asyncDiffer.currentList[position]
         holder.setCode(model.code ?: "", position)
         holder.setOrigin(model.origin ?: "", position)
         holder.setDestination(model.destination ?: "", position)
         
         val priceList = model.price
         if (priceList != null && priceList.isNotEmpty()) holder.setPrice(priceList)
+    }
+    
+    
+    override fun getItemCount() = asyncDiffer.currentList.size
+    
+    override fun getItemId(position : Int) = position.toLong()
+    
+    override fun getItemViewType(position : Int) = position
+    
+    fun submitList(newList : List<Line>) {
+        asyncDiffer.submitList(newList)
     }
 }

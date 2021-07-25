@@ -26,6 +26,7 @@
     <string name="exit">خروج</string>
     <string name="about">درباره</string>
     <string name="net_error">به نظر میاد دستگاه شما به اینترنت وصل نیست.</string>
+    <string name="net_error_cache_data">به نظر میاد دستگاه شما به اینترنت وصل نیست. اطلاعات ذخیره‌شده قبلی به شما نمایش داده می‌شود.</string>
     <string name="app_license">پروانه برنامه</string>
     <string name="about_developer">درباره توسعه دهنده</string>
     <string name="send_feedback">ارسال انتقاد، نظر و پیشنهاد</string>
@@ -40,7 +41,7 @@
     <string name="select_state">انتخاب استان</string>
     <string name="app_crashed">مشکلی در برنامه پیش آمده، برای خروج اینجا را لمس کنید.</string>
     <string name="exit_prompt">آیا واقعا قصد خروج از برنامه را دارید؟</string>
-    <string name="line_code_template">کد خط: %s</string>
+    <string name="line_code_template">کد/نوع خط: %s</string>
     <string name="line_origin_template">مبدا: %s</string>
     <string name="line_destination_template">مقصد: %s</string>
     <string name="line_price_template">کرایه: %s</string>
@@ -48,7 +49,7 @@
     <string name="rial_template">%s ریال</string>
     <string name="destination">مقصد</string>
     <string name="origin">مبدا</string>
-    <string name="line_code">کد خط</string>
+    <string name="line_code">کد/نوع خط</string>
     <string name="clear_search_filter">حذف فیلترهای جستجو</string>
     <string name="line_search_filter_notice">برای محدود کردن جستجو از گزینه های زیر استفاده کنید.</string>
     <string name="more_info">اطلاعات بیشتر</string>
@@ -66,5 +67,6 @@
     <string name="list_to_grid">تغییر لیست به جدول</string>
     <string name="developers">توسعه:\nیمین سیاه‌مرگوئی\nیعقوب سیاه‌مرگوئی\n\nتست و ایده:\nشهریار مداح</string>
     <string name="license_header">این برنامه تحت لایسنس GPLv3 است که توضیحات بیشتر در پایین موجود است.\nلینک سورس برنامه:\nhttps://github.com/yamin8000/Fare</string>
-    <string name="work_in_progress">در دست ساخت...</string>
+    <string name="work_in_progress">در دست ساخت…</string>
+    <string name="did_you_mean_this">آیا منظور شما این بود؟</string>
 </resources>

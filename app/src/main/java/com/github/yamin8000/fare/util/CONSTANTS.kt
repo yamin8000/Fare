@@ -25,13 +25,18 @@ object CONSTANTS {
     //general
     const val LOG_TAG = "<--> "
     const val LICENSE = "license"
-    //const val STATE = "state"
+    const val ROW_LIMIT = 20
+    const val CITY = "city"
+    const val STATE = "state"
     const val DATE = "date"
+    const val CACHE = "cache"
     lateinit var APP_PACKAGE : String
+    const val FUZZY_SEARCH_WINDOW = 3
     //shared preferences names
     lateinit var LICENSE_PREFS : String
     lateinit var FEEDBACK_PREFS : String
-    //lateinit var STATE_PREFS : String
+    lateinit var STATE_PREFS : String
+    lateinit var CITY_PREFS : String
     //params
     const val STATE_ID = "state_id"
     const val COUNTY_ID = "county_id"
@@ -40,4 +45,5 @@ object CONSTANTS {
     const val DESTINATION = "destination"
     const val LINE_CODE = "code"
     const val FEEDBACK = "feedback"
+    const val LIMIT = "limit"
 }

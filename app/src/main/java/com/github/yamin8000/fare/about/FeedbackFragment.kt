@@ -82,7 +82,7 @@ class FeedbackFragment : BaseFragment<FragmentFeedbackBinding>({ FragmentFeedbac
     
     private fun sendFeedback(feedbackText : CharSequence, feedbackUser : Editable?) {
         val feedback = Feedback("$feedbackText", "$feedbackUser")
-        val service = WEB(SUPA_BASE_URL).getService(Services.FeedbackService::class.java)
+        val service = WEB(SUPA_BASE_URL).getService<Services.FeedbackService>()
         service.createFeedback(feedback).asyncResponse(this, {
             if (it.code() == 201) {
                 snack(getString(R.string.feedback_created_success))

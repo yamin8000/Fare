@@ -21,6 +21,7 @@
 package com.github.yamin8000.fare.util
 
 import android.content.Context
+import androidx.core.content.edit
 import com.github.yamin8000.fare.util.CONSTANTS.DATE
 import java.time.LocalDateTime
 
@@ -34,9 +35,9 @@ class SharedPrefs(context : Context, name : String) {
     
     private val sharedPrefs = context.getSharedPreferences(name, Context.MODE_PRIVATE)
     
-    fun writeDate() {
-        write(DATE, LocalDateTime.now().toString())
-    }
+    fun readDate() = readString(DATE)
+    
+    fun writeDate() = write(DATE, LocalDateTime.now().toString())
     
     fun <T> write(key : String, value : T) {
         when (value) {
@@ -50,27 +51,12 @@ class SharedPrefs(context : Context, name : String) {
     @JvmOverloads
     fun readString(key : String, defaultValue : String = "") = sharedPrefs.getString(key, defaultValue) ?: ""
     
-    private fun writeString(key : String, value : String) {
-        sharedPrefs.edit().apply {
-            putString(key, value)
-            apply()
-        }
-    }
+    private fun writeString(key : String, value : String) = sharedPrefs.edit { putString(key, value) }
     
     @JvmOverloads
     fun readBoolean(key : String, defaultValue : Boolean = false) = sharedPrefs.getBoolean(key, defaultValue)
     
-    private fun writeBoolean(key : String, value : Boolean) {
-        sharedPrefs.edit().apply {
-            putBoolean(key, value)
-            apply()
-        }
-    }
+    private fun writeBoolean(key : String, value : Boolean) = sharedPrefs.edit { putBoolean(key, value) }
     
-    private fun writeLong(key : String, value : Long) {
-        sharedPrefs.edit().apply {
-            putLong(key, value)
-            apply()
-        }
-    }
+    private fun writeLong(key : String, value : Long) = sharedPrefs.edit { putLong(key, value) }
 }
