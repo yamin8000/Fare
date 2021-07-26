@@ -8,17 +8,17 @@
 
 </div>
 
-| -     | -                               |
-| -----:|:------------------------------- |
-| 📺    | [Preview](#Preview)             |
-| 📱    | [Compatibility](#Compatibility) |
-| 💻    | [Usage](#Usage)                 |
-| 📩    | [Download](#Download)           |
-| 📋    | [Features](#Features)           |
-| 🧾    | [Changelog](#Changelog)         |
-| 🏆    | [Credits](#Credits)             |
-| 👨‍💻 | [Contribution](#Contribution)   |
-| ⚖️    | [License](#License)             |
+---
+
+| -   | -                               |
+| ---:|:------------------------------- |
+| 📺  | [Preview](#Preview)             |
+| 📱  | [Compatibility](#Compatibility) |
+| 💻  | [Usage](#Usage)                 |
+| 📩  | [Download](#Download)           |
+| 📋  | [Features](#Features)           |
+| 🧾  | [Changelog](#Changelog)         |
+| ⚖️  | [License](#License)             |
 
 ---
 
@@ -32,7 +32,7 @@
 
 ## Download
 
-- Github
+- [Github]([Releases · yamin8000/Fare · GitHub](https://github.com/yamin8000/Fare/releases))
 
 - Myket
 
@@ -40,15 +40,31 @@
 
 ## Features
 
+#### Supported Cities:
+
+- Tehran
+
+- Mash'had
+
+- Esfahan
+
+- Shiraz
+
+- Kermanshah
+
+- Kerman
+
+- Yazd
+
+- Ghazvin
+
+- Gorgan
+
+- Sari
+
+- Birjand
+
 ## Changelog
-
-## Credits
-
-  [https://github.com/yaghoob](https://github.com/yaghoob)
-
-## Contribution
-
-Any contribution is welcome, For Persian speakers (:iran: :afghanistan:) creating issues in Persian is also allowed.  
 
 ## License
 
