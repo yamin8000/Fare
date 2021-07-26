@@ -35,7 +35,7 @@
 
 ## Download
 
-- [Github]([Releases · yamin8000/Fare · GitHub](https://github.com/yamin8000/Fare/releases))
+- [Github](https://github.com/yamin8000/Fare/releases)
 
 - Myket
 
