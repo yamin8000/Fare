@@ -51,7 +51,8 @@
     <string name="origin">مبدا</string>
     <string name="line_code">کد/نوع خط</string>
     <string name="clear_search_filter">حذف فیلترهای جستجو</string>
-    <string name="line_search_filter_notice">برای محدود کردن جستجو از گزینه های زیر استفاده کنید.</string>
+    <string name="line_search_filter_notice">توجه:\nبرای محدود کردن جستجو از گزینه های زیر استفاده کنید.\nاگر عبارت مورد نظر در لیست موجود نیست کافیه اینجا بنویسید و بعد جستجو کنید.
+</string>
     <string name="more_info">اطلاعات بیشتر</string>
     <string name="report_bad_data">گزارش نقص اطلاعات</string>
     <string name="line_feed_data">%s\n%s</string>

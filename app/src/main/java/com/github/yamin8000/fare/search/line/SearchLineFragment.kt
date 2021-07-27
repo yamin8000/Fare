@@ -178,6 +178,7 @@ class SearchLineFragment :
             
             searchParams.clear()
             searchParams[CITY_ID] = currentCityId
+            searchParams[LIMIT] = "$rowLimit"
             
             getCityLines()
         }
@@ -237,11 +238,11 @@ class SearchLineFragment :
         
         if (isFirstTime) {
             isFirstTime = false
-            handleAutoCompletes(list)
             handleCustomProperties(list)
             
             binding.cityLineList.adapter = searchLineAdapter
         }
+        handleAutoCompletes(list)
     }
     
     private fun handleCustomProperties(list : List<Line>) {
@@ -250,7 +251,6 @@ class SearchLineFragment :
     }
     
     private fun handleAutoCompletes(list : List<Line>) {
-        isFirstTime = false
         searchFilterHandler()
         
         val codes = list.filter { !it.code.isNullOrBlank() }.asSequence().map { it.code }.toSet().toList()
