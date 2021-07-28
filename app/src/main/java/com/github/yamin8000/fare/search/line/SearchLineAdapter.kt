@@ -52,8 +52,8 @@ class SearchLineAdapter(private val clickListener : (Int, Line) -> Unit) :
         holder.setOrigin(model.origin ?: "", position)
         holder.setDestination(model.destination ?: "", position)
         
-        val priceList = model.price
-        if (priceList != null && priceList.isNotEmpty()) holder.setPrice(priceList)
+        val priceList = model.price ?: mutableListOf()
+        if (priceList.isNotEmpty()) holder.setPrice(priceList)
     }
     
     

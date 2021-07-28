@@ -29,7 +29,7 @@
         <item name="colorOnSecondary">@color/secondaryTextColor</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
-        <item name="android:navigationBarColor">?attr/colorPrimary</item>
+        <item name="android:navigationBarColor">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
         <item name="colorSurface">@color/primaryTextColor</item>
         <!-- Font -->

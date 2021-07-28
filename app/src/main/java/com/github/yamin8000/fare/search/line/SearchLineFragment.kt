@@ -80,7 +80,7 @@ class SearchLineFragment :
     
     private var cityModel : CityJoined? = null
     
-    private val searchLineAdapter = SearchLineAdapter() { _, _ -> }
+    private val searchLineAdapter = SearchLineAdapter { _, _ -> }
     
     private var rowLimit = ROW_LIMIT
     
@@ -102,16 +102,20 @@ class SearchLineFragment :
                 
                 getCityLines()
                 getCityInfo(cityId)
-                searchFilterClearButtonListener()
                 handleMenu(cityId)
-                fabClickListener()
-                listScrollHandler()
             } else netError()
         } catch (exception : Exception) {
             handleCrash(exception)
         }
     }
     
+    /**
+     * Handle default city choosing
+     *
+     * show message if user is choosing a default city,
+     * and this city is selected as the default city
+     *
+     */
     private fun handleDefaultCityChoosing() {
         val isChoosingDefaultCity = arguments?.getBoolean(CHOOSING_DEFAULT_CITY) ?: false
         if (isChoosingDefaultCity) {
@@ -119,6 +123,11 @@ class SearchLineFragment :
         }
     }
     
+    /**
+     * List scroll handler
+     *
+     * create new request each time user scroll to end of the list
+     */
     private fun listScrollHandler() {
         binding.cityLineList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(recyclerView : RecyclerView, newState : Int) {
@@ -264,6 +273,9 @@ class SearchLineFragment :
         if (isFirstTime) {
             isFirstTime = false
             handleCustomProperties(list)
+            listScrollHandler()
+            fabClickListener()
+            searchFilterClearButtonListener()
         }
         binding.cityLineList.adapter = searchLineAdapter
         handleAutoCompletes(list)
