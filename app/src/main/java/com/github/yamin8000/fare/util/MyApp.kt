@@ -24,11 +24,12 @@ package com.github.yamin8000.fare.util
 
 import android.app.Application
 import android.util.Log
-import com.github.yamin8000.fare.util.CONSTANTS.APP_PACKAGE
 import com.github.yamin8000.fare.util.CONSTANTS.CITY
 import com.github.yamin8000.fare.util.CONSTANTS.CITY_PREFS
 import com.github.yamin8000.fare.util.CONSTANTS.FEEDBACK
 import com.github.yamin8000.fare.util.CONSTANTS.FEEDBACK_PREFS
+import com.github.yamin8000.fare.util.CONSTANTS.GENERAL
+import com.github.yamin8000.fare.util.CONSTANTS.GENERAL_PREFS
 import com.github.yamin8000.fare.util.CONSTANTS.LICENSE
 import com.github.yamin8000.fare.util.CONSTANTS.LICENSE_PREFS
 import com.github.yamin8000.fare.util.CONSTANTS.LOG_TAG
@@ -51,11 +52,11 @@ class MyApp : Application() {
     }
     
     private fun prepareSharedPrefsNames() {
-        APP_PACKAGE = packageName
         LICENSE_PREFS = "$packageName.$LICENSE"
         FEEDBACK_PREFS = "$packageName.$FEEDBACK"
         STATE_PREFS = "$packageName.$STATE"
         CITY_PREFS = "$packageName.$CITY"
+        GENERAL_PREFS = "$packageName.$GENERAL"
     }
     
     private fun prepareLogger() {

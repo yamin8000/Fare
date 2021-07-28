@@ -31,6 +31,12 @@ import com.squareup.moshi.Types
 import retrofit2.*
 import retrofit2.converter.moshi.MoshiConverterFactory
 
+/**
+ * WEB service helper class
+ *
+ * @param baseUrl is defaulted to supabase api url
+ * @param converterFactory converter factory for converting response data which is defaulted to moshi
+ */
 class WEB(
     baseUrl : String = SUPA_BASE_URL,
     converterFactory : Converter.Factory = MoshiConverterFactory.create(),
@@ -39,6 +45,12 @@ class WEB(
     var retrofit : Retrofit = Retrofit.Builder().baseUrl(baseUrl).addConverterFactory(converterFactory)
         .build()
     
+    /**
+     * get service of given api/interface
+     *
+     * @param T type/class/interface of api
+     * @return service for that api
+     */
     inline fun <reified T> getService() : T = retrofit.create(T::class.java)
     
     companion object {
@@ -49,9 +61,9 @@ class WEB(
          * this callback is aware of context or lifecycle
          *
          * @param T result type
-         * @param callback callback lambda
-         * @receiver any type of retrofit Call
-         * @see Call<T>
+         * @param lifeCycleOwner lifecycle owner of this request
+         * @param onSuccess callback when request is successful
+         * @param onFail callback when request is failed
          */
         fun <T> Call<T>.async(
             lifeCycleOwner : LifecycleOwner, onSuccess : (T?) -> Unit,
@@ -74,6 +86,18 @@ class WEB(
             })
         }
         
+        /**
+         * async callback which pass Response class instead of only data
+         *
+         * this is useful when you want to know http headers or http codes
+         *
+         * this callback is aware of context or lifecycle
+         *
+         * @param T result type
+         * @param lifeCycleOwner lifecycle owner of this request
+         * @param onSuccess callback when request is successful
+         * @param onFail callback when request is failed
+         */
         fun <T> Call<T>.asyncResponse(
             lifeCycleOwner : LifecycleOwner, onSuccess : (Response<T>) -> Unit,
             onFail : (Throwable) -> Unit,
@@ -95,6 +119,12 @@ class WEB(
             })
         }
         
+        /**
+         * generic method for converting List of type T json array String
+         *
+         * @param T type of data
+         * @return json array string
+         */
         inline fun <reified T> List<T>.toJsonArray() : String {
             val moshi = Moshi.Builder().build()
             val type = Types.newParameterizedType(List::class.java, T::class.java)
@@ -102,6 +132,12 @@ class WEB(
             return jsonAdapter.toJson(this)
         }
         
+        /**
+         * generic method for converting json array string to List of objects
+         *
+         * @param T type of data
+         * @return List of type T
+         */
         inline fun <reified T> String.fromJsonArray() : List<T>? {
             return if (this.isNotBlank()) {
                 val moshi = Moshi.Builder().build()
@@ -111,8 +147,18 @@ class WEB(
             } else null
         }
         
+        /**
+         * Like query is used for supabase/postgrest requests
+         * that are added to query parameter
+         *
+         */
         fun String.likeQuery() = "like.*$this*"
         
+        /**
+         * Eq query is used for supabase/postgrest requests
+         * that are added to query parameter
+         *
+         */
         fun String.eqQuery() = "eq.$this"
     }
 }

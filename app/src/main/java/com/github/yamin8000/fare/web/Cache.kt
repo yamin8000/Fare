@@ -25,6 +25,16 @@ import com.github.yamin8000.fare.util.CONSTANTS.CACHE
 import com.github.yamin8000.fare.util.SharedPrefs
 import java.time.LocalDateTime
 
+/**
+ * abstract class for caching data in shared preferences
+ *
+ * @property cacheDatePolicy is lambda that passing current data and last date that data is cached,
+ *
+ * so you can provide a custom logic to decide whether data is expired or not
+ *
+ * @param context context is used for shared preferences
+ * @param sharedPrefsName name of shared preferences file
+ */
 abstract class Cache(
     context : Context, sharedPrefsName : String,
     private val cacheDatePolicy : (LocalDateTime, LocalDateTime) -> Boolean,

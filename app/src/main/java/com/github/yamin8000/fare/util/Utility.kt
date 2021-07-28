@@ -57,9 +57,17 @@ object Utility {
         }
     }
     
+    /**
+     * Handle soft crashes, that are suppressed using try-catch
+     *
+     * @param exception exception that caught
+     */
     fun Fragment.handleCrash(exception : Exception) {
+        //navigate user to a special crash screen
         this.findNavController().navigate(R.id.crashFragment)
+        //record and send exception data to firebase
         FirebaseCrashlytics.getInstance().recordException(exception)
+        //log it logcat
         Logger.d(exception.stackTraceToString())
     }
     

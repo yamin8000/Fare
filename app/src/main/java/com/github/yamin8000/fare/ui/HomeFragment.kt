@@ -23,34 +23,56 @@ package com.github.yamin8000.fare.ui
 import android.os.Bundle
 import android.view.View
 import androidx.activity.OnBackPressedCallback
+import androidx.core.os.bundleOf
 import androidx.navigation.fragment.findNavController
 import com.github.yamin8000.fare.R
 import com.github.yamin8000.fare.databinding.FragmentHomeBinding
 import com.github.yamin8000.fare.ui.fragment.BaseFragment
+import com.github.yamin8000.fare.util.CONSTANTS.CHOOSING_DEFAULT_CITY
+import com.github.yamin8000.fare.util.CONSTANTS.CITY_ID
+import com.github.yamin8000.fare.util.CONSTANTS.GENERAL_PREFS
+import com.github.yamin8000.fare.util.SharedPrefs
 import com.github.yamin8000.fare.util.helpers.ErrorHelper.snack
+import com.google.android.material.snackbar.Snackbar
 
 class HomeFragment : BaseFragment<FragmentHomeBinding>({ FragmentHomeBinding.inflate(it) }) {
     
     override fun onViewCreated(view : View, savedInstanceState : Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        
         binding.aboutButton.setOnClickListener {
             findNavController().navigate(R.id.action_homeFragment_to_aboutFragment)
         }
         
-        binding.searchButton.setOnClickListener {
-            findNavController().navigate(R.id.action_homeFragment_to_searchFragment)
+        binding.searchCityButton.setOnClickListener {
+            findNavController().navigate(R.id.action_homeFragment_to_searchCityFragment)
         }
         
-        binding.exitButton.setOnClickListener {
-            findNavController().navigate(R.id.exitNoticeModal)
-        }
+        binding.exitButton.setOnClickListener { findNavController().navigate(R.id.exitNoticeModal) }
         
-        binding.myCityButton.setOnClickListener { workInProgress() }
+        binding.myCityButton.setOnClickListener { handleMyCityButton() }
+        
         binding.mapButton.setOnClickListener { workInProgress() }
-        binding.settingsButton.setOnClickListener { workInProgress() }
+        
+        binding.settingsButton.setOnClickListener {
+            findNavController().navigate(R.id.action_homeFragment_to_settingsFragment)
+        }
         
         backPressHandler()
+    }
+    
+    private fun handleMyCityButton() {
+        context?.let {
+            val sharedPrefs = SharedPrefs(it, GENERAL_PREFS)
+            val myCityId = sharedPrefs.readString(CITY_ID)
+            if (myCityId.isNotEmpty()) {
+                val bundle = bundleOf(CITY_ID to myCityId)
+                findNavController().navigate(R.id.action_homeFragment_to_searchLineFragment, bundle)
+            } else {
+                snack(getString(R.string.no_my_city_added_yet), Snackbar.LENGTH_INDEFINITE)
+                val bundle = bundleOf(CHOOSING_DEFAULT_CITY to true)
+                findNavController().navigate(R.id.action_homeFragment_to_searchCityFragment, bundle)
+            }
+        }
     }
     
     private fun backPressHandler() {

@@ -23,7 +23,7 @@
     android:layout_height="match_parent">
 
     <Button
-        android:id="@+id/search_button"
+        android:id="@+id/search_city_button"
         style="@style/HomeButton"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -88,7 +88,7 @@
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
         android:orientation="horizontal"
-        app:constraint_referenced_ids="search_button,my_city_button,map_button,settings_button,about_button,exit_button"
+        app:constraint_referenced_ids="search_city_button,my_city_button,map_button,settings_button,about_button,exit_button"
         app:flow_horizontalGap="16dp"
         app:flow_horizontalStyle="packed"
         app:flow_maxElementsWrap="2"

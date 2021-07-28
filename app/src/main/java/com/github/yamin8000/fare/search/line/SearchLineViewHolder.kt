@@ -71,9 +71,9 @@ class SearchLineViewHolder(
         val priceStringBuilder = StringBuilder()
         for (price in prices) {
             val priceName = price.name ?: ""
-            if (price.price != "0") {
-                var priceFormatted = price.price.numFormat()
-                if (priceFormatted != price.price) {
+            if (price.value != "0") {
+                var priceFormatted = price.value.numFormat()
+                if (priceFormatted != price.value) {
                     priceFormatted = getString(R.string.rial_template, priceFormatted)
                 }
                 priceStringBuilder.append("$priceName $priceFormatted\n")

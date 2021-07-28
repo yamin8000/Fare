@@ -30,9 +30,10 @@ object CONSTANTS {
     const val STATE = "state"
     const val DATE = "date"
     const val CACHE = "cache"
-    lateinit var APP_PACKAGE : String
+    const val GENERAL = "general"
     const val FUZZY_SEARCH_WINDOW = 3
     //shared preferences names
+    lateinit var GENERAL_PREFS : String
     lateinit var LICENSE_PREFS : String
     lateinit var FEEDBACK_PREFS : String
     lateinit var STATE_PREFS : String
@@ -46,4 +47,5 @@ object CONSTANTS {
     const val LINE_CODE = "code"
     const val FEEDBACK = "feedback"
     const val LIMIT = "limit"
+    const val CHOOSING_DEFAULT_CITY = "is_choosing_default_city"
 }

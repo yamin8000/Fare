@@ -28,8 +28,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.github.yamin8000.fare.databinding.SearchCityItemBinding
 import com.github.yamin8000.fare.model.CityJoined
 
-
-class SearchCityAdapter(private val clickListener : (Int, CityJoined) -> Unit) :
+class SearchCityAdapter(private val clickListener : (String) -> Unit) :
     RecyclerView.Adapter<SearchCityViewHolder>() {
     
     private val asyncDiffer : AsyncListDiffer<CityJoined> = AsyncListDiffer(this, DiffCallback)

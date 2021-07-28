@@ -18,7 +18,7 @@
 
 <resources>
     <!-- Base application theme. -->
-    <style name="Theme.Fare" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+    <style name="Theme.Fare" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/primaryColor</item>
         <item name="colorPrimaryVariant">@color/primaryDarkColor</item>
@@ -29,7 +29,7 @@
         <item name="colorOnSecondary">@color/secondaryTextColor</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
-        <item name="android:navigationBarColor">?attr/colorPrimaryVariant</item>
+        <item name="android:navigationBarColor">?attr/colorPrimary</item>
         <!-- Customize your theme here. -->
         <item name="colorSurface">@color/primaryTextColor</item>
         <!-- Font -->

@@ -33,7 +33,7 @@ class EmptyAdapter(private val message : String = "") : RecyclerView.Adapter<Emp
     
     override fun onCreateViewHolder(parent : ViewGroup, viewType : Int) : EmptyViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.empty_adapter, parent, false)
-        if (message != "") view.findViewById<TextView>(R.id.empty_adapter_text).text = message
+        if (message.isNotEmpty()) view.findViewById<TextView>(R.id.empty_adapter_text).text = message
         return EmptyViewHolder(view)
     }
     

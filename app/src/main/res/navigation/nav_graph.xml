@@ -50,8 +50,14 @@
             app:popEnterAnim="@anim/nav_default_pop_enter_anim"
             app:popExitAnim="@anim/nav_default_pop_exit_anim" />
         <action
-            android:id="@+id/action_homeFragment_to_searchFragment"
+            android:id="@+id/action_homeFragment_to_searchCityFragment"
             app:destination="@id/searchCityFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_searchLineFragment"
+            app:destination="@id/searchLineFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment" />
     </fragment>
     <fragment
         android:id="@+id/licenseFragment"
@@ -90,7 +96,7 @@
         android:id="@+id/feedbackFragment"
         android:name="com.github.yamin8000.fare.about.FeedbackFragment"
         android:label="FeedbackFragment"
-        tools:layout="@layout/fragment_feedback" >
+        tools:layout="@layout/fragment_feedback">
         <argument
             android:name="feedback"
             app:argType="string" />
@@ -103,6 +109,9 @@
         <action
             android:id="@+id/action_searchCityFragment_to_searchLineFragment"
             app:destination="@id/searchLineFragment" />
+        <argument
+            android:name="is_choosing_default_city"
+            app:argType="boolean" />
     </fragment>
     <fragment
         android:id="@+id/crashFragment"
@@ -123,6 +132,9 @@
         <action
             android:id="@+id/action_searchLineFragment_to_feedbackFragment"
             app:destination="@id/feedbackFragment" />
+        <argument
+            android:name="is_choosing_default_city"
+            app:argType="boolean" />
     </fragment>
     <dialog
         android:id="@+id/cityLinesInfoModal"
@@ -138,4 +150,9 @@
         android:name="com.github.yamin8000.fare.ui.modal.ExitNoticeModal"
         android:label="ExitNoticeModal"
         tools:layout="@layout/exit_notice_modal" />
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.github.yamin8000.fare.ui.SettingsFragment"
+        android:label="SettingsFragment"
+        tools:layout="@layout/fragment_settings" />
 </navigation>

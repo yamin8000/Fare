@@ -35,8 +35,11 @@ import com.github.yamin8000.fare.model.State
 import com.github.yamin8000.fare.ui.fragment.BaseFragment
 import com.github.yamin8000.fare.ui.recyclerview.adapters.EmptyAdapter
 import com.github.yamin8000.fare.ui.recyclerview.adapters.LoadingAdapter
+import com.github.yamin8000.fare.util.CONSTANTS.CHOOSING_DEFAULT_CITY
 import com.github.yamin8000.fare.util.CONSTANTS.CITY_ID
 import com.github.yamin8000.fare.util.CONSTANTS.FUZZY_SEARCH_WINDOW
+import com.github.yamin8000.fare.util.CONSTANTS.GENERAL_PREFS
+import com.github.yamin8000.fare.util.SharedPrefs
 import com.github.yamin8000.fare.util.Utility.handleCrash
 import com.github.yamin8000.fare.util.Utility.hideKeyboard
 import com.github.yamin8000.fare.util.helpers.ErrorHelper.netError
@@ -83,15 +86,20 @@ class SearchCityFragment :
         }
     }
     
+    /**
+     * Load top/popular/cached cities
+     *
+     * very first run of app after install cache popular cities,
+     * on next runs this method load cached cities
+     *
+     */
     private fun loadTopCities() {
         binding.cityList.adapter = loadingAdapter
         context?.let {
             val cache = CitiesCache(it)
             val cachedList = cache.readCache().fromJsonArray<CityJoined>() ?: mutableListOf()
-            if (cachedList.isNotEmpty() && cache.isCached()) {
-                populateCityList(cachedList)
-                addToCachedCities(cachedList)
-            } else {
+            
+            if (!cache.isCached() || cachedList.isEmpty()) {
                 val topCitiesService = WEB().getService<Services.CityService>()
                 topCitiesService.searchCity(cityId = TOP_CITIES_ID).async(this, { cities ->
                     if (cities != null && cities.isNotEmpty()) {
@@ -102,30 +110,31 @@ class SearchCityFragment :
                     netError()
                     binding.cityList.adapter = emptyAdapter
                 }
-            }
+            } else populateCityList(cachedList)
         }
     }
     
+    /**
+     * State selector handler
+     *
+     * handling if data is already cached or needs to be requested from web
+     */
     private fun stateSelectorHandler() {
         binding.searchStateInput.setStartIconOnClickListener { stateAutoClearIconHandler() }
         context?.let {
             val cache = StatesCache(it)
             val isCached = cache.isCached()
-            val cachedList = cache.readCache().fromJsonArray<State>()
-            if (isCached && cachedList != null && cachedList.isNotEmpty()) {
-                populateStates(cachedList)
-            } else {
+            val cachedList = cache.readCache().fromJsonArray<State>() ?: mutableListOf()
+            
+            if (!isCached || cachedList.isEmpty()) {
                 val stateService = WEB().getService<Services.StateService>()
                 stateService.getAll().async(this, { stateList ->
                     if (stateList != null && stateList.isNotEmpty()) {
                         populateStates(stateList)
                         cache.writeCache(stateList.toJsonArray())
                     }
-                }) {
-                    netErrorCache()
-                    if (cachedList != null && cachedList.isNotEmpty()) populateStates(cachedList)
-                }
-            }
+                }) { netErrorCache() }
+            } else populateStates(cachedList)
         }
     }
     
@@ -137,6 +146,12 @@ class SearchCityFragment :
         }
     }
     
+    /**
+     * Populate states,
+     * fill states auto complete view/drowpdown
+     *
+     * @param stateList list of states
+     */
     private fun populateStates(stateList : List<State>) {
         context?.let {
             binding.searchStateInput.isEnabled = true
@@ -150,6 +165,11 @@ class SearchCityFragment :
         }
     }
     
+    /**
+     * Search city by state and name
+     *
+     * @param stateId state id of cities that user wants to search
+     */
     private fun searchCityByStateAndName(stateId : Int) {
         hideKeyboard()
         didYouMeanThisSnack?.dismiss()
@@ -182,6 +202,10 @@ class SearchCityFragment :
         } else searchCityByName()
     }
     
+    /**
+     * Search city by name
+     *
+     */
     private fun searchCityByName() {
         hideKeyboard()
         didYouMeanThisSnack?.dismiss()
@@ -200,6 +224,11 @@ class SearchCityFragment :
         }
     }
     
+    /**
+     * Add list of cities to cached cities
+     *
+     * @param cityList a list of cities data
+     */
     private fun addToCachedCities(cityList : List<CityJoined>) {
         context?.let { safeContext ->
             val cache = CitiesCache(safeContext)
@@ -211,6 +240,17 @@ class SearchCityFragment :
         }
     }
     
+    // TODO: 2021-07-28 analysing performance of the method
+    /**
+     * Load cached cities
+     *
+     * when there is no data connection or user input a typo this method is called,
+     * and data from cache is loaded
+     *
+     * @param cityName search in cache by city name
+     * @param stateId search in cache by state id
+     * @param cities is list of search term n-grams where n = 3 like گرگ - رگا - گان where search term is گرگان
+     */
     private fun loadCachedCities(cityName : String? = null, stateId : Int? = null,
                                  cities : List<String> = mutableListOf()) {
         context?.let { safeContext ->
@@ -239,6 +279,14 @@ class SearchCityFragment :
         }
     }
     
+    // TODO: 2021-07-28 analysing performance of method
+    /**
+     * Sort fuzzy search candidates
+     *
+     * @param list list of cities used as candidates for fuzzy search
+     * @param terms is list of search term n-grams where n = 3 like گرگ - رگا - گان where search term is گرگان
+     * @return sorted list of candidates based on their intersection by search term
+     */
     private fun sortCandidates(list : MutableList<CityJoined>,
                                terms : List<String>) : MutableSet<CityJoined> {
         val ranks = mutableListOf<Pair<Int, CityJoined>>()
@@ -249,6 +297,16 @@ class SearchCityFragment :
         return ranks.sortedByDescending { it.first }.map { it.second }.toMutableSet()
     }
     
+    /**
+     * Show did you mean this message
+     * for fuzzy searching
+     * when user put in input طهران
+     *
+     * show user did you mean تهران
+     *
+     * based on a rudimentary fuzzy search method
+     * @param first first result of fuzzy search, item with best rank
+     */
     private fun showDidYouMeanThisMessage(first : String) {
         val message = "${
             getString(R.string.did_you_mean_this)
@@ -257,6 +315,12 @@ class SearchCityFragment :
     }
     
     
+    /**
+     * Populate city list
+     * fill recycler-view with given list
+     *
+     * @param cityList list of city data
+     */
     private fun populateCityList(cityList : List<CityJoined>) {
         searchCityAdapter.submitList(cityList)
         binding.cityList.adapter = searchCityAdapter
@@ -268,10 +332,36 @@ class SearchCityFragment :
         }
     }
     
-    private fun onCitySelected(position : Int, city : CityJoined) {
-        val cityId = city.id.toString()
+    /**
+     * On city selected callback method
+     * for recycler-view item click
+     *
+     * @param cityId id of the city that user clicked
+     */
+    private fun onCitySelected(cityId : String) {
+        val isChoosingDefaultCity = handleDefaultCityChoosing(cityId)
         
-        val bundle = bundleOf(CITY_ID to cityId)
+        val bundle = bundleOf(CITY_ID to cityId, CHOOSING_DEFAULT_CITY to isChoosingDefaultCity)
         findNavController().navigate(R.id.action_searchCityFragment_to_searchLineFragment, bundle)
+    }
+    
+    /**
+     * Handle default city choosing
+     *
+     * @param cityId id of city user wants to be default city
+     * @return true if user is choosing default city and return false if this is a normal search
+     */
+    private fun handleDefaultCityChoosing(cityId : String) : Boolean {
+        arguments?.let {
+            val isChoosingDefaultCity = it.getBoolean(CHOOSING_DEFAULT_CITY)
+            if (isChoosingDefaultCity) {
+                context?.let { safeContext ->
+                    val sharedPrefs = SharedPrefs(safeContext, GENERAL_PREFS)
+                    sharedPrefs.write(CITY_ID, cityId)
+                }
+            }
+            return isChoosingDefaultCity
+        }
+        return false
     }
 }

@@ -26,13 +26,13 @@ import com.github.yamin8000.fare.model.CityJoined
 
 class SearchCityViewHolder(
     private val binding : SearchCityItemBinding,
-    clickListener : (Int, CityJoined) -> Unit, list : List<CityJoined>,
+    clickListener : (String) -> Unit, list : List<CityJoined>,
                           ) : RecyclerView.ViewHolder(binding.root) {
     
     init {
         binding.root.setOnClickListener {
             if (adapterPosition != RecyclerView.NO_POSITION) {
-                clickListener(adapterPosition, list[adapterPosition])
+                clickListener(list[adapterPosition].id.toString())
             }
         }
     }

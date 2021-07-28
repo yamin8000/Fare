@@ -41,7 +41,7 @@
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed|snap">
+            app:layout_scrollFlags="scroll|exitUntilCollapsed|snap|enterAlways">
 
             <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/search_city_lines_toolbar"
@@ -60,6 +60,7 @@
                     android:layout_height="match_parent"
                     android:layout_marginRight="8dp"
                     android:gravity="right|center_vertical"
+                    android:textColor="@color/black"
                     tools:ignore="RtlHardcoded"
                     tools:text="@tools:sample/lorem" />
 
@@ -164,7 +165,7 @@
         android:id="@+id/city_line_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+        app:layoutManager="androidx.recyclerview.widget.StaggeredGridLayoutManager"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

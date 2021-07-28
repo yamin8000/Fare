@@ -40,13 +40,16 @@ import com.github.yamin8000.fare.model.Line
 import com.github.yamin8000.fare.ui.fragment.BaseFragment
 import com.github.yamin8000.fare.ui.recyclerview.adapters.EmptyAdapter
 import com.github.yamin8000.fare.ui.recyclerview.adapters.LoadingAdapter
+import com.github.yamin8000.fare.util.CONSTANTS.CHOOSING_DEFAULT_CITY
 import com.github.yamin8000.fare.util.CONSTANTS.CITY_ID
 import com.github.yamin8000.fare.util.CONSTANTS.DESTINATION
 import com.github.yamin8000.fare.util.CONSTANTS.FEEDBACK
+import com.github.yamin8000.fare.util.CONSTANTS.GENERAL_PREFS
 import com.github.yamin8000.fare.util.CONSTANTS.LIMIT
 import com.github.yamin8000.fare.util.CONSTANTS.LINE_CODE
 import com.github.yamin8000.fare.util.CONSTANTS.ORIGIN
 import com.github.yamin8000.fare.util.CONSTANTS.ROW_LIMIT
+import com.github.yamin8000.fare.util.SharedPrefs
 import com.github.yamin8000.fare.util.Utility.handleCrash
 import com.github.yamin8000.fare.util.Utility.hideKeyboard
 import com.github.yamin8000.fare.util.helpers.ErrorHelper.netError
@@ -89,6 +92,8 @@ class SearchLineFragment :
         super.onViewCreated(view, savedInstanceState)
         
         try {
+            handleDefaultCityChoosing()
+            
             val cityId = arguments?.getString(CITY_ID) ?: ""
             if (cityId.isNotEmpty()) {
                 currentCityId = cityId
@@ -104,6 +109,13 @@ class SearchLineFragment :
             } else netError()
         } catch (exception : Exception) {
             handleCrash(exception)
+        }
+    }
+    
+    private fun handleDefaultCityChoosing() {
+        val isChoosingDefaultCity = arguments?.getBoolean(CHOOSING_DEFAULT_CITY) ?: false
+        if (isChoosingDefaultCity) {
+            snack(getString(R.string.city_set_as_current_city), Snackbar.LENGTH_LONG)
         }
     }
     
@@ -124,10 +136,11 @@ class SearchLineFragment :
     
     private fun fabClickListener() {
         binding.cityLinesFab.setOnClickListener {
-            val safeContext = context
-            safeContext?.let {
+            
+            context?.let {
                 var manager = binding.cityLineList.layoutManager
                 val drawable : Drawable?
+                //array has two params because span count is 2
                 val firstVisibleItems = intArrayOf(0, 0)
                 if (manager is LinearLayoutManager) {
                     firstVisibleItems[0] = manager.findFirstVisibleItemPosition()
@@ -153,8 +166,17 @@ class SearchLineFragment :
                     findNavController().navigate(R.id.action_searchLineFragment_to_cityLinesInfoModal, bundle)
                 }
                 R.id.search_city_line_menu_report -> cityDataErrorReport()
+                R.id.search_city_line_menu_my_city -> setCityAsMyCity(cityId)
             }
             true
+        }
+    }
+    
+    private fun setCityAsMyCity(cityId : String) {
+        context?.let {
+            val sharedPrefs = SharedPrefs(it, GENERAL_PREFS)
+            sharedPrefs.write(CITY_ID, cityId)
+            snack(getString(R.string.city_set_as_current_city), Snackbar.LENGTH_LONG)
         }
     }
     
@@ -217,7 +239,10 @@ class SearchLineFragment :
         service.getCityLines(cityId = cityIdQuery, lineCode = lineCodeQuery, origin = originQuery,
                              destination = destQuery, limit = limitQuery).async(this, { list ->
             if (list != null && list.isNotEmpty()) populateCityLinesList(list)
-            else binding.cityLineList.adapter = emptyAdapter
+            else {
+                snack(getString(R.string.data_empty))
+                binding.cityLineList.adapter = emptyAdapter
+            }
             scrollSnackbar?.dismiss()
         }) {
             scrollSnackbar?.dismiss()
@@ -239,9 +264,8 @@ class SearchLineFragment :
         if (isFirstTime) {
             isFirstTime = false
             handleCustomProperties(list)
-            
-            binding.cityLineList.adapter = searchLineAdapter
         }
+        binding.cityLineList.adapter = searchLineAdapter
         handleAutoCompletes(list)
     }
     
@@ -265,9 +289,8 @@ class SearchLineFragment :
     }
     
     private fun <T> populateAutoComplete(list : List<T>, autoCompleteTextView : AutoCompleteTextView) {
-        val safeContext = context
-        if (safeContext != null) {
-            val adapter = ArrayAdapter(safeContext, R.layout.dropdown_item, list)
+        context?.let {
+            val adapter = ArrayAdapter(it, R.layout.dropdown_item, list)
             autoCompleteTextView.setAdapter(adapter)
         }
     }

@@ -29,4 +29,9 @@
         android:icon="@drawable/ic_report"
         android:title="@string/report_bad_data"
         app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/search_city_line_menu_my_city"
+        android:icon="@drawable/ic_city"
+        android:title="@string/my_city"
+        app:showAsAction="ifRoom" />
 </menu>
