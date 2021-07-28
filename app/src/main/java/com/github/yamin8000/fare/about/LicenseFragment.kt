@@ -54,8 +54,10 @@ class LicenseFragment : BaseFragment<FragmentLicenseBinding>({ FragmentLicenseBi
                     WEB(SUPA_BASE_URL).getService<Services.LicenseService>().getLicense()
                         .async(this, { list ->
                             if (list != null && list.isNotEmpty()) {
-                                licenseText = list.first().text
-                                binding.licenseText.text = licenseText
+                                val stringBuilder = StringBuilder()
+                                list.forEach { stringBuilder.append(it.text).append("\n") }
+                                licenseText = "$stringBuilder"
+                                binding.licenseText.text = licenseText.trim()
                                 sharedPrefs.write(LICENSE, licenseText)
                             } else snack(getString(R.string.data_empty))
                         }) { netError() }

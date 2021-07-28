@@ -33,7 +33,7 @@
         <!-- Customize your theme here. -->
         <item name="colorSurface">@color/primaryTextColor</item>
         <!-- Font -->
-        <item name="fontFamily">@font/iranyekanwebbold</item>
-        <item name="android:fontFamily">@font/iranyekanwebbold</item>
+        <item name="fontFamily">@font/samimbold</item>
+        <item name="android:fontFamily">@font/samimbold</item>
     </style>
 </resources>

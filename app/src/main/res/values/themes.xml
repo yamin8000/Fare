@@ -36,8 +36,8 @@
         <item name="colorOnSurface">@color/secondaryDarkColor</item>
         <item name="android:colorBackground">@color/themeBackground</item>
         <!-- Font -->
-        <item name="fontFamily">@font/iranyekanwebbold</item>
-        <item name="android:fontFamily">@font/iranyekanwebbold</item>
+        <item name="fontFamily">@font/samimbold</item>
+        <item name="android:fontFamily">@font/samimbold</item>
     </style>
 
     <style name="HomeButton" parent="Widget.MaterialComponents.Button">
