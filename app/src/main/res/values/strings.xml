@@ -57,7 +57,7 @@
     <string name="report_bad_data">گزارش نقص اطلاعات</string>
     <string name="line_feed_data">%s\n%s</string>
     <string name="price_notice">توجه شود نرخ مصوب و معیار توسط سازمان تاکسیرانی هر شهر تعیین می‌شود و در داخل تاکسی‌ها نصب شده است و معیار اصلی کاغذ نصب شده در داخل تاکسی و حرف رانندگان تاکسی عزیز است و آمارهای این نرم‌افزار بر اساس جدیدترین اخبار موجود است.</string>
-    <string name="taxi_meter_city_notice">توجه داشته باشید کرایه در این شهر به صورت تاکسی‌متر هم محاسبه می‌شود و معیارهای جستجو مختص به خود را دارد.</string>
+    <string name="taxi_meter_city_notice">توجه: کرایه در این شهر به صورت تاکسی‌متر هم محاسبه می‌شود و معیارهای جستجو مختص به خود را دارد.</string>
     <string name="data_reference">منبع اطلاعات</string>
     <string name="more_info_header">اطلاعات بیشتر:</string>
     <string name="price_reference_header">منبع قیمت:</string>
@@ -70,7 +70,7 @@
     <string name="license_header">این برنامه تحت لایسنس GPLv3 است که توضیحات بیشتر در پایین موجود است.\nلینک سورس برنامه:\nhttps://github.com/yamin8000/Fare</string>
     <string name="work_in_progress">در دست ساخت…</string>
     <string name="did_you_mean_this">آیا منظور شما این بود؟</string>
-    <string name="city_set_as_current_city">این شهر به عنوان پیشفرض انتخاب شد و از طریق گزینه شهر من مستقیم قابل دسترسی است.</string>
-    <string name="no_my_city_added_yet">"هنوز شهری به عنوان شهر پیشفرض انتخاب نشده، شهر مورد نظر را جستجو کنید بعد از انتخاب شما آن شهر پیشفرض می‌شود. "</string>
+    <string name="city_set_as_current_city">این شهر پیشفرض شما شد و از طریق گزینه شهر من قابل دسترسی است.</string>
+    <string name="no_my_city_added_yet">"شهر پیشفرضی انتخاب نشده، شهر مورد نظر را جستجو و انتخاب کنید تا پیشفرض شود."</string>
     <string name="day_night_switch">زمینه تاریک/زمینه روشن</string>
 </resources>
