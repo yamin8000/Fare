@@ -23,6 +23,16 @@
     android:layout_height="match_parent">
 
     <TextView
+        android:id="@+id/app_help_button"
+        style="@style/ClickableTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/app_help"
+        app:drawableRightCompat="@drawable/ic_help_center"
+        tools:layout_editor_absoluteX="148dp"
+        tools:layout_editor_absoluteY="8dp" />
+
+    <TextView
         android:id="@+id/send_feedback_button"
         style="@style/ClickableTextView"
         android:layout_width="0dp"
@@ -60,7 +70,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         android:orientation="vertical"
-        app:constraint_referenced_ids="license_button,about_developer_button,send_feedback_button"
+        app:constraint_referenced_ids="license_button,app_help_button,about_developer_button,send_feedback_button"
         app:flow_maxElementsWrap="1"
         app:flow_verticalGap="16dp"
         app:layout_constraintBottom_toBottomOf="parent"

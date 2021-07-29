@@ -31,13 +31,13 @@
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <item name="android:navigationBarColor">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
+        <!-- Font -->
+        <item name="fontFamily">@font/samimbold</item>
+        <item name="android:fontFamily">@font/samimbold</item>
         <item name="android:textColor">@color/paragraphText</item>
         <item name="colorSurface">@color/secondaryLightestColor</item>
         <item name="colorOnSurface">@color/secondaryDarkColor</item>
         <item name="android:colorBackground">@color/themeBackground</item>
-        <!-- Font -->
-        <item name="fontFamily">@font/samimbold</item>
-        <item name="android:fontFamily">@font/samimbold</item>
     </style>
 
     <style name="HomeButton" parent="Widget.MaterialComponents.Button">

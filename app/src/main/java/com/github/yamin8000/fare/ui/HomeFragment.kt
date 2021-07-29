@@ -32,6 +32,7 @@ import com.github.yamin8000.fare.util.CONSTANTS.CHOOSING_DEFAULT_CITY
 import com.github.yamin8000.fare.util.CONSTANTS.CITY_ID
 import com.github.yamin8000.fare.util.CONSTANTS.GENERAL_PREFS
 import com.github.yamin8000.fare.util.SharedPrefs
+import com.github.yamin8000.fare.util.Utility.handleCrash
 import com.github.yamin8000.fare.util.helpers.ErrorHelper.snack
 import com.google.android.material.snackbar.Snackbar
 
@@ -39,25 +40,30 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>({ FragmentHomeBinding.inf
     
     override fun onViewCreated(view : View, savedInstanceState : Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.aboutButton.setOnClickListener {
-            findNavController().navigate(R.id.action_homeFragment_to_aboutFragment)
+        
+        try {
+            binding.aboutButton.setOnClickListener {
+                findNavController().navigate(R.id.action_homeFragment_to_aboutFragment)
+            }
+            
+            binding.searchCityButton.setOnClickListener {
+                findNavController().navigate(R.id.action_homeFragment_to_searchCityFragment)
+            }
+            
+            binding.exitButton.setOnClickListener { findNavController().navigate(R.id.exitNoticeModal) }
+            
+            binding.myCityButton.setOnClickListener { handleMyCityButton() }
+            
+            binding.mapButton.setOnClickListener { workInProgress() }
+            
+            binding.settingsButton.setOnClickListener {
+                findNavController().navigate(R.id.action_homeFragment_to_settingsFragment)
+            }
+            
+            backPressHandler()
+        } catch (exception : Exception) {
+            handleCrash(exception)
         }
-        
-        binding.searchCityButton.setOnClickListener {
-            findNavController().navigate(R.id.action_homeFragment_to_searchCityFragment)
-        }
-        
-        binding.exitButton.setOnClickListener { findNavController().navigate(R.id.exitNoticeModal) }
-        
-        binding.myCityButton.setOnClickListener { handleMyCityButton() }
-        
-        binding.mapButton.setOnClickListener { workInProgress() }
-        
-        binding.settingsButton.setOnClickListener {
-            findNavController().navigate(R.id.action_homeFragment_to_settingsFragment)
-        }
-        
-        backPressHandler()
     }
     
     private fun handleMyCityButton() {

@@ -45,6 +45,10 @@ class AboutFragment : BaseFragment<FragmentAboutBinding>({ FragmentAboutBinding.
             binding.sendFeedbackButton.setOnClickListener {
                 findNavController().navigate(R.id.action_aboutFragment_to_feedbackFragment)
             }
+            
+            binding.appHelpButton.setOnClickListener {
+                findNavController().navigate(R.id.action_aboutFragment_to_appHelpFragment)
+            }
         } catch (exception : Exception) {
             handleCrash(exception)
         }

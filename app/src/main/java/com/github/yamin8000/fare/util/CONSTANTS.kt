@@ -32,6 +32,7 @@ object CONSTANTS {
     const val CACHE = "cache"
     const val GENERAL = "general"
     const val FUZZY_SEARCH_WINDOW = 3
+    const val IS_NIGHT_THEME = "is_night_theme"
     //shared preferences names
     lateinit var GENERAL_PREFS : String
     lateinit var LICENSE_PREFS : String
