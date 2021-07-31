@@ -1,6 +1,6 @@
 /*
- *     Category.kt Created by Yamin Siahmargooei at 2021/7/1
  *     Fare: find Iran's cities taxi fares
+ *     CachePolicy.kt Created by Yamin Siahmargooei at 2021/7/31
  *     This file is part of Fare.
  *     Copyright (C) 2021  Yamin Siahmargooei
  *
@@ -18,11 +18,15 @@
  *     along with Fare.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.github.yamin8000.fare.model
+package com.github.yamin8000.fare.cache
 
-import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
+import java.time.LocalDateTime
 
-@JsonClass(generateAdapter = true)
-data class Category(@Json(name = "id") val id : String?, @Json(name = "parent_id") val parentId : String?,
-                    @Json(name = "name") val name : String?, @Json(name = "logo") var imageUrl : String?)
+typealias Policy = (LocalDateTime, LocalDateTime) -> Boolean
+
+object CachePolicy {
+    
+    val DailyCache : Policy = { current, last -> current.minusDays(1).isAfter(last) }
+    val WeeklyCache : Policy = { current, last -> current.minusDays(7).isAfter(last) }
+    val MonthlyCache : Policy = { current, last -> current.minusMonths(1).isAfter(last) }
+}

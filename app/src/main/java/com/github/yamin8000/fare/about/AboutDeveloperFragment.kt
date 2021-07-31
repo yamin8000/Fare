@@ -20,22 +20,8 @@
 
 package com.github.yamin8000.fare.about
 
-import android.os.Bundle
-import android.view.View
 import com.github.yamin8000.fare.databinding.FragmentAboutDeveloperBinding
 import com.github.yamin8000.fare.ui.fragment.BaseFragment
-import com.github.yamin8000.fare.util.Utility.handleCrash
 
 class AboutDeveloperFragment :
-    BaseFragment<FragmentAboutDeveloperBinding>({ FragmentAboutDeveloperBinding.inflate(it) }) {
-    
-    override fun onViewCreated(view : View, savedInstanceState : Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        
-        try {
-            //ignored
-        } catch (exception : Exception) {
-            handleCrash(exception)
-        }
-    }
-}
+    BaseFragment<FragmentAboutDeveloperBinding>({ FragmentAboutDeveloperBinding.inflate(it) })

@@ -59,4 +59,6 @@ class SharedPrefs(context : Context, name : String) {
     private fun writeBoolean(key : String, value : Boolean) = sharedPrefs.edit { putBoolean(key, value) }
     
     private fun writeLong(key : String, value : Long) = sharedPrefs.edit { putLong(key, value) }
+    
+    fun clearData() = sharedPrefs.edit().clear().apply()
 }

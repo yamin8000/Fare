@@ -25,10 +25,12 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.ArrayAdapter
 import androidx.core.os.bundleOf
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.yamin8000.fare.R
+import com.github.yamin8000.fare.cache.Cache
 import com.github.yamin8000.fare.databinding.FragmentSearchCityBinding
 import com.github.yamin8000.fare.model.CityJoined
 import com.github.yamin8000.fare.model.State
@@ -37,8 +39,10 @@ import com.github.yamin8000.fare.ui.recyclerview.adapters.EmptyAdapter
 import com.github.yamin8000.fare.ui.recyclerview.adapters.LoadingAdapter
 import com.github.yamin8000.fare.util.CONSTANTS.CHOOSING_DEFAULT_CITY
 import com.github.yamin8000.fare.util.CONSTANTS.CITY_ID
+import com.github.yamin8000.fare.util.CONSTANTS.CITY_PREFS
 import com.github.yamin8000.fare.util.CONSTANTS.FUZZY_SEARCH_WINDOW
 import com.github.yamin8000.fare.util.CONSTANTS.GENERAL_PREFS
+import com.github.yamin8000.fare.util.CONSTANTS.STATE_PREFS
 import com.github.yamin8000.fare.util.SharedPrefs
 import com.github.yamin8000.fare.util.Utility.handleCrash
 import com.github.yamin8000.fare.util.Utility.hideKeyboard
@@ -54,63 +58,73 @@ import com.github.yamin8000.fare.web.WEB.Companion.fromJsonArray
 import com.github.yamin8000.fare.web.WEB.Companion.likeQuery
 import com.github.yamin8000.fare.web.WEB.Companion.toJsonArray
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.*
 
 private const val NOT_SELECTED = -1
 
 class SearchCityFragment :
     BaseFragment<FragmentSearchCityBinding>({ FragmentSearchCityBinding.inflate(it) }) {
     
+    private val cityService : Services.CityService by lazy(LazyThreadSafetyMode.NONE) { WEB().getService() }
+    
     private val loadingAdapter : LoadingAdapter by lazy(LazyThreadSafetyMode.NONE) {
         LoadingAdapter(R.layout.shimmer_city_search)
     }
     
-    private val cityService = WEB().getService<Services.CityService>()
-    
     private val emptyAdapter : EmptyAdapter by lazy(LazyThreadSafetyMode.NONE) { EmptyAdapter() }
-    
-    private var selectedStateId = NOT_SELECTED
     
     private val searchCityAdapter = SearchCityAdapter(this::onCitySelected)
     
+    private var selectedStateId = NOT_SELECTED
+    
     private var didYouMeanThisSnack : Snackbar? = null
+    
+    private var backScope = CoroutineScope(Dispatchers.Default)
     
     override fun onViewCreated(view : View, savedInstanceState : Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         
         try {
-            stateSelectorHandler()
-            citySearchHandler()
-            loadTopCities()
+            lifecycleScope.launch { stateSelectorHandler() }
+            lifecycleScope.launch { citySearchHandler() }
+            lifecycleScope.launch { handleCachedCities() }
         } catch (exception : Exception) {
             handleCrash(exception)
         }
     }
     
     /**
-     * Load top/popular/cached cities
+     * Load cached cities
      *
-     * very first run of app after install cache popular cities,
-     * on next runs this method load cached cities
-     *
+     * this method load cached cities
      */
-    private fun loadTopCities() {
+    private suspend fun handleCachedCities() {
         binding.cityList.adapter = loadingAdapter
         context?.let {
-            val cache = CitiesCache(it)
-            val cachedList = cache.readCache().fromJsonArray<CityJoined>() ?: mutableListOf()
-            
-            if (!cache.isCached() || cachedList.isEmpty()) {
-                val topCitiesService = WEB().getService<Services.CityService>()
-                topCitiesService.searchCity(cityId = TOP_CITIES_ID).async(this, { cities ->
-                    if (cities != null && cities.isNotEmpty()) {
-                        populateCityList(cities)
-                        addToCachedCities(cities)
-                    } else binding.cityList.adapter = emptyAdapter
-                }) {
-                    netError()
-                    binding.cityList.adapter = emptyAdapter
-                }
-            } else populateCityList(cachedList)
+            val cache = Cache(it, CITY_PREFS)
+            val cachedList = withContext(backScope.coroutineContext) {
+                cache.readCache().fromJsonArray<CityJoined>() ?: mutableListOf()
+            }
+            if (cachedList.isEmpty()) fetchTopCities()
+            else populateCityList(cachedList.take(35))
+        }
+    }
+    
+    /**
+     * Fetch top/popular cities from server
+     *
+     * very first run of app after install cache popular cities
+     */
+    private fun fetchTopCities() {
+        val topCitiesService = WEB().getService<Services.CityService>()
+        topCitiesService.searchCity(cityId = TOP_CITIES_ID).async(this, { cities ->
+            if (cities != null && cities.isNotEmpty()) {
+                populateCityList(cities)
+                addToCachedCities(cities)
+            } else binding.cityList.adapter = emptyAdapter
+        }) {
+            netError()
+            binding.cityList.adapter = emptyAdapter
         }
     }
     
@@ -119,23 +133,31 @@ class SearchCityFragment :
      *
      * handling if data is already cached or needs to be requested from web
      */
-    private fun stateSelectorHandler() {
+    private suspend fun stateSelectorHandler() {
         binding.searchStateInput.setStartIconOnClickListener { stateAutoClearIconHandler() }
         context?.let {
-            val cache = StatesCache(it)
-            val isCached = cache.isCached()
-            val cachedList = cache.readCache().fromJsonArray<State>() ?: mutableListOf()
-            
-            if (!isCached || cachedList.isEmpty()) {
-                val stateService = WEB().getService<Services.StateService>()
-                stateService.getAll().async(this, { stateList ->
-                    if (stateList != null && stateList.isNotEmpty()) {
-                        populateStates(stateList)
-                        cache.writeCache(stateList.toJsonArray())
-                    }
-                }) { netErrorCache() }
-            } else populateStates(cachedList)
+            val cache = Cache(it, STATE_PREFS)
+            val cachedList = withContext(backScope.coroutineContext) {
+                cache.readCache().fromJsonArray<State>() ?: mutableListOf()
+            }
+            if (cachedList.isEmpty()) fetchStates(cache)
+            else populateStates(cachedList)
         }
+    }
+    
+    /**
+     * Fetch states from server and cache them
+     *
+     * @param cache states cache
+     */
+    private fun fetchStates(cache : Cache) {
+        val stateService = WEB().getService<Services.StateService>()
+        stateService.getAll().async(this, { stateList ->
+            if (stateList != null && stateList.isNotEmpty()) {
+                populateStates(stateList)
+                backScope.launch { cache.writeCache(stateList.toJsonArray()) }
+            }
+        }) { netErrorCache() }
     }
     
     private fun stateAutoClearIconHandler() {
@@ -143,6 +165,7 @@ class SearchCityFragment :
             selectedStateId = NOT_SELECTED
             binding.searchStateEdit.text.clear()
             binding.cityList.adapter = null
+            lifecycleScope.launch { handleCachedCities() }
         }
     }
     
@@ -180,10 +203,10 @@ class SearchCityFragment :
                 if (cityList != null && cityList.isNotEmpty()) {
                     populateCityList(cityList)
                     addToCachedCities(cityList)
-                } else loadCachedCities(cities = cityName.windowed(3))
+                } else lifecycleScope.launch { loadCachedCities(cityGrams = cityName.windowed(3)) }
             }) {
                 netErrorCache()
-                loadCachedCities(cities = cityName.windowed(3))
+                lifecycleScope.launch { loadCachedCities(cityGrams = cityName.windowed(3)) }
             }
     }
     
@@ -217,10 +240,12 @@ class SearchCityFragment :
             if (cityList != null && cityList.isNotEmpty()) {
                 populateCityList(cityList)
                 addToCachedCities(cityList)
-            } else loadCachedCities(cities = cityName.windowed(FUZZY_SEARCH_WINDOW))
+            } else lifecycleScope.launch {
+                loadCachedCities(cityGrams = cityName.windowed(FUZZY_SEARCH_WINDOW))
+            }
         }) {
             netErrorCache()
-            loadCachedCities(cities = cityName.windowed(FUZZY_SEARCH_WINDOW))
+            lifecycleScope.launch { loadCachedCities(cityGrams = cityName.windowed(FUZZY_SEARCH_WINDOW)) }
         }
     }
     
@@ -229,14 +254,13 @@ class SearchCityFragment :
      *
      * @param cityList a list of cities data
      */
-    private fun addToCachedCities(cityList : List<CityJoined>) {
+    private fun addToCachedCities(cityList : List<CityJoined>) = backScope.launch {
         context?.let { safeContext ->
-            val cache = CitiesCache(safeContext)
-            val cachedList = cache.readCache().fromJsonArray<CityJoined>()
-            val newSet = mutableSetOf<CityJoined>()
-            newSet.addAll(cityList)
-            cachedList?.let { newSet.addAll(it) }
-            cache.writeCache(newSet.toList().toJsonArray())
+            val cache = Cache(safeContext, CITY_PREFS)
+            val setOfCachedCities = (cache.readCache().fromJsonArray<CityJoined>()
+                                     ?: mutableListOf()).toMutableSet()
+            setOfCachedCities.addAll(cityList)
+            cache.writeCache(setOfCachedCities.toList().toJsonArray())
         }
     }
     
@@ -249,37 +273,36 @@ class SearchCityFragment :
      *
      * @param cityName search in cache by city name
      * @param stateId search in cache by state id
-     * @param cities is list of search term n-grams where n = 3 like گرگ - رگا - گان where search term is گرگان
+     * @param cityGrams is list of search term n-grams where n = 3 like گرگ - رگا - گان where search term is گرگان
      */
-    private fun loadCachedCities(cityName : String? = null, stateId : Int? = null,
-                                 cities : List<String> = mutableListOf()) {
+    private suspend fun loadCachedCities(cityName : String? = null, stateId : Int? = null,
+                                         cityGrams : List<String> = mutableListOf()) {
         context?.let { safeContext ->
-            val cache = CitiesCache(safeContext)
-            val isCached = cache.isCached()
+            val cache = Cache(safeContext, CITY_PREFS)
             val cachedList = cache.readCache().fromJsonArray<CityJoined>() ?: mutableListOf()
             var searchCandidates = mutableSetOf<CityJoined>()
-            if (isCached && cachedList.isNotEmpty()) {
+            if (cachedList.isNotEmpty()) {
                 if (cityName != null) {
                     searchCandidates.addAll(cachedList.filter { it.name.contains(cityName) })
                 }
                 if (stateId != null) {
                     searchCandidates.addAll(cachedList.filter { it.state.id == stateId })
                 }
-                cities.forEach {
+                //search terms
+                cityGrams.forEach {
                     searchCandidates.addAll(cachedList.filter { city -> city.name.contains(it) })
                 }
                 if (searchCandidates.isNotEmpty()) {
-                    searchCandidates = sortCandidates(searchCandidates.toMutableList(), cities)
-                    val first = searchCandidates.first().name
-                    showDidYouMeanThisMessage(first)
+                    searchCandidates = sortCandidatesAsync(searchCandidates.toMutableList(),
+                                                           cityGrams).await()
+                    showDidYouMeanThisMessage(searchCandidates.first().name)
                 }
-            } else netError()
+            } else binding.cityList.adapter = emptyAdapter
             if (searchCandidates.isNotEmpty()) populateCityList(searchCandidates.toList())
             else binding.cityList.adapter = emptyAdapter
         }
     }
     
-    // TODO: 2021-07-28 analysing performance of method
     /**
      * Sort fuzzy search candidates
      *
@@ -287,14 +310,13 @@ class SearchCityFragment :
      * @param terms is list of search term n-grams where n = 3 like گرگ - رگا - گان where search term is گرگان
      * @return sorted list of candidates based on their intersection by search term
      */
-    private fun sortCandidates(list : MutableList<CityJoined>,
-                               terms : List<String>) : MutableSet<CityJoined> {
+    private fun sortCandidatesAsync(list : MutableList<CityJoined>, terms : List<String>) = backScope.async {
         val ranks = mutableListOf<Pair<Int, CityJoined>>()
         for (cityJoined in list) {
             val rank = cityJoined.name.windowed(FUZZY_SEARCH_WINDOW).intersect(terms).size
             ranks.add(rank to cityJoined)
         }
-        return ranks.sortedByDescending { it.first }.map { it.second }.toMutableSet()
+        return@async ranks.sortedByDescending { it.first }.map { it.second }.toMutableSet()
     }
     
     /**
@@ -308,12 +330,9 @@ class SearchCityFragment :
      * @param first first result of fuzzy search, item with best rank
      */
     private fun showDidYouMeanThisMessage(first : String) {
-        val message = "${
-            getString(R.string.did_you_mean_this)
-        }: $first"
+        val message = "${getString(R.string.did_you_mean_this)}: $first"
         didYouMeanThisSnack = snack(message, Snackbar.LENGTH_INDEFINITE)
     }
-    
     
     /**
      * Populate city list

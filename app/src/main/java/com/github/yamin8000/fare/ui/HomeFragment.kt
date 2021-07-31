@@ -26,14 +26,23 @@ import androidx.activity.OnBackPressedCallback
 import androidx.core.os.bundleOf
 import androidx.navigation.fragment.findNavController
 import com.github.yamin8000.fare.R
+import com.github.yamin8000.fare.cache.Cache
+import com.github.yamin8000.fare.cache.CachePolicy
 import com.github.yamin8000.fare.databinding.FragmentHomeBinding
 import com.github.yamin8000.fare.ui.fragment.BaseFragment
 import com.github.yamin8000.fare.util.CONSTANTS.CHOOSING_DEFAULT_CITY
 import com.github.yamin8000.fare.util.CONSTANTS.CITY_ID
+import com.github.yamin8000.fare.util.CONSTANTS.CITY_PREFS
 import com.github.yamin8000.fare.util.CONSTANTS.GENERAL_PREFS
+import com.github.yamin8000.fare.util.CONSTANTS.LICENSE_PREFS
+import com.github.yamin8000.fare.util.CONSTANTS.STATE_PREFS
 import com.github.yamin8000.fare.util.SharedPrefs
 import com.github.yamin8000.fare.util.Utility.handleCrash
+import com.github.yamin8000.fare.util.helpers.ErrorHelper.netErrorCache
 import com.github.yamin8000.fare.util.helpers.ErrorHelper.snack
+import com.github.yamin8000.fare.web.Services
+import com.github.yamin8000.fare.web.WEB
+import com.github.yamin8000.fare.web.WEB.Companion.asyncResponse
 import com.google.android.material.snackbar.Snackbar
 
 class HomeFragment : BaseFragment<FragmentHomeBinding>({ FragmentHomeBinding.inflate(it) }) {
@@ -42,27 +51,54 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>({ FragmentHomeBinding.inf
         super.onViewCreated(view, savedInstanceState)
         
         try {
-            binding.aboutButton.setOnClickListener {
-                findNavController().navigate(R.id.action_homeFragment_to_aboutFragment)
-            }
-            
-            binding.searchCityButton.setOnClickListener {
-                findNavController().navigate(R.id.action_homeFragment_to_searchCityFragment)
-            }
-            
-            binding.exitButton.setOnClickListener { findNavController().navigate(R.id.exitNoticeModal) }
-            
-            binding.myCityButton.setOnClickListener { handleMyCityButton() }
-            
-            binding.mapButton.setOnClickListener { workInProgress() }
-            
-            binding.settingsButton.setOnClickListener {
-                findNavController().navigate(R.id.action_homeFragment_to_settingsFragment)
-            }
-            
+            handleButtonClickListeners()
             backPressHandler()
+            handleFreshnessOfCache()
         } catch (exception : Exception) {
             handleCrash(exception)
+        }
+    }
+    
+    private fun handleButtonClickListeners() {
+        binding.aboutButton.setOnClickListener {
+            findNavController().navigate(R.id.action_homeFragment_to_aboutFragment)
+        }
+        
+        binding.searchCityButton.setOnClickListener {
+            findNavController().navigate(R.id.action_homeFragment_to_searchCityFragment)
+        }
+        
+        binding.exitButton.setOnClickListener { findNavController().navigate(R.id.exitNoticeModal) }
+        
+        binding.myCityButton.setOnClickListener { handleMyCityButton() }
+        
+        binding.mapButton.setOnClickListener { workInProgress() }
+        
+        binding.settingsButton.setOnClickListener {
+            findNavController().navigate(R.id.action_homeFragment_to_settingsFragment)
+        }
+    }
+    
+    private fun handleFreshnessOfCache() {
+        //checking if server is responsive
+        val service = WEB().getService<Services.StateService>()
+        service.getCount().asyncResponse(this, {
+            //remove data if user has access to server
+            if (it.code() == 200) clearOldCache()
+        }) { netErrorCache() }
+    }
+    
+    /**
+     * Clear old cache if data is not fresh
+     *
+     */
+    private fun clearOldCache() {
+        context?.let { safeContext ->
+            val citiesCache = Cache(safeContext, CITY_PREFS)
+            val statesCache = Cache(safeContext, STATE_PREFS, CachePolicy.MonthlyCache)
+            val licensesCache = Cache(safeContext, LICENSE_PREFS, CachePolicy.MonthlyCache)
+            val list = listOf(citiesCache, statesCache, licensesCache)
+            list.forEach { cache -> if (!cache.isDataFresh()) cache.sharedPrefs.clearData() }
         }
     }
     

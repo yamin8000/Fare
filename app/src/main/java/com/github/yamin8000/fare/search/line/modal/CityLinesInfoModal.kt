@@ -39,6 +39,8 @@ import com.github.yamin8000.fare.web.WEB
 import com.github.yamin8000.fare.web.WEB.Companion.async
 import com.github.yamin8000.fare.web.WEB.Companion.eqQuery
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 
 class CityLinesInfoModal : BottomSheetDialogFragment() {
     
@@ -48,6 +50,8 @@ class CityLinesInfoModal : BottomSheetDialogFragment() {
     
     private val web : WEB by lazy(LazyThreadSafetyMode.NONE) { WEB() }
     
+    private var backScope = CoroutineScope(Dispatchers.Default)
+    
     override fun onCreateView(inflater : LayoutInflater, container : ViewGroup?, bundle : Bundle?) : View {
         return binding.root
     }
@@ -56,10 +60,9 @@ class CityLinesInfoModal : BottomSheetDialogFragment() {
         super.onViewCreated(view, savedInstanceState)
         
         try {
-            val args = arguments
-            val cityId = arguments?.getString(CITY_ID)
+            val cityId = arguments?.getString(CITY_ID) ?: ""
             
-            if (args != null && cityId != null) {
+            if (cityId.isNotBlank()) {
                 getReferences(cityId)
                 getCityExtras(cityId)
             }

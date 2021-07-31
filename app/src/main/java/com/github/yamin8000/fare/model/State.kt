@@ -25,5 +25,6 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 data class State(val id : Int, val name : String) {
     
+    //this method is overridden for using this class in auto complete view
     override fun toString() = this.name
 }

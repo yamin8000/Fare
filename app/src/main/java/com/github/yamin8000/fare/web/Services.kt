@@ -73,6 +73,10 @@ object Services {
         @Headers("$APIKEY: $SUPA_BASE_KEY", "$AUTHORIZATION: $BEARER $SUPA_BASE_KEY")
         @GET(STATE)
         fun getAll(@Query(value = SELECT) query : String? = null) : Call<List<State>>
+        
+        @Headers("$APIKEY: $SUPA_BASE_KEY", "$AUTHORIZATION: $BEARER $SUPA_BASE_KEY")
+        @HEAD(STATE)
+        fun getCount() : Call<Void>
     }
     
     interface CityService {

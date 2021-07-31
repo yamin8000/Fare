@@ -53,16 +53,19 @@ class FeedbackFragment : BaseFragment<FragmentFeedbackBinding>({ FragmentFeedbac
         
         try {
             sharedPrefs = context?.let { SharedPrefs(it, FEEDBACK_PREFS) }
-            
-            val feedbackParam = arguments?.getString(FEEDBACK) ?: ""
-            if (feedbackParam.isNotEmpty()) {
-                binding.feedbackEdit.setText(feedbackParam)
-                binding.feedbackEdit.requestFocus()
-                noticeSnackbar = snack(getString(R.string.feedback_notice), Snackbar.LENGTH_INDEFINITE)
-            }
+            handleAutomatedReportFromCityLineFragment()
             binding.sendFeedback.setOnClickListener { createNewFeedback() }
         } catch (exception : Exception) {
             handleCrash(exception)
+        }
+    }
+    
+    private fun handleAutomatedReportFromCityLineFragment() {
+        val feedbackParam = arguments?.getString(FEEDBACK) ?: ""
+        if (feedbackParam.isNotEmpty()) {
+            binding.feedbackEdit.setText(feedbackParam)
+            binding.feedbackEdit.requestFocus()
+            noticeSnackbar = snack(getString(R.string.feedback_notice), Snackbar.LENGTH_INDEFINITE)
         }
     }
     
@@ -103,6 +106,11 @@ class FeedbackFragment : BaseFragment<FragmentFeedbackBinding>({ FragmentFeedbac
         binding.sendFeedback.isEnabled = true
     }
     
+    /**
+     * check if user is spamming / sending dummy data using feedback fragment
+     *
+     * @return true if user is spamming / if trying to send more that one feedback in under 2 minutes
+     */
     private fun isSpamming() : Boolean {
         val now = LocalDateTime.now()
         val lastDateString = sharedPrefs?.readString(DATE) ?: ""

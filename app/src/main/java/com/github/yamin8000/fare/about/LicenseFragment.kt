@@ -44,20 +44,21 @@ class LicenseFragment : BaseFragment<FragmentLicenseBinding>({ FragmentLicenseBi
         super.onViewCreated(view, savedInstanceState)
         
         try {
-            val safeContext = context
-            if (safeContext != null) {
+            context?.let {
                 LinkifyCompat.addLinks(binding.licenseHeader, Linkify.ALL)
                 
-                val sharedPrefs = SharedPrefs(safeContext, LICENSE_PREFS)
+                val sharedPrefs = SharedPrefs(it, LICENSE_PREFS)
                 var licenseText = sharedPrefs.readString(LICENSE)
                 if (licenseText.isEmpty()) {
                     WEB(SUPA_BASE_URL).getService<Services.LicenseService>().getLicense()
                         .async(this, { list ->
                             if (list != null && list.isNotEmpty()) {
                                 val stringBuilder = StringBuilder()
-                                list.forEach { stringBuilder.append(it.text).append("\n") }
-                                licenseText = "$stringBuilder"
-                                binding.licenseText.text = licenseText.trim()
+                                list.forEach { licenseItem ->
+                                    stringBuilder.append(licenseItem.text).append("\n")
+                                }
+                                licenseText = "$stringBuilder".trim()
+                                binding.licenseText.text = licenseText
                                 sharedPrefs.write(LICENSE, licenseText)
                             } else snack(getString(R.string.data_empty))
                         }) { netError() }

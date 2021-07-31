@@ -20,16 +20,7 @@
 
 package com.github.yamin8000.fare.about
 
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import com.github.yamin8000.fare.databinding.FragmentHelpBinding
 import com.github.yamin8000.fare.ui.fragment.BaseFragment
 
-class AppHelpFragment : BaseFragment<FragmentHelpBinding>({ FragmentHelpBinding.inflate(it) }) {
-    
-    override fun onCreateView(inflater : LayoutInflater, container : ViewGroup?, bundle : Bundle?) : View {
-        return binding.root
-    }
-}
+class AppHelpFragment : BaseFragment<FragmentHelpBinding>({ FragmentHelpBinding.inflate(it) })
