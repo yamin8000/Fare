@@ -51,7 +51,7 @@ class WEB(
      * @param T type/class/interface of api
      * @return service for that api
      */
-    inline fun <reified T> getService() : T = retrofit.create(T::class.java)
+    inline fun <reified T> getAPI() : T = retrofit.create(T::class.java)
     
     companion object {
         
@@ -65,10 +65,10 @@ class WEB(
          * @param onSuccess callback when request is successful
          * @param onFail callback when request is failed
          */
-        fun <T> Call<T>.async(
-            lifeCycleOwner : LifecycleOwner, onSuccess : (T?) -> Unit,
-            onFail : (Throwable) -> Unit,
-                             ) {
+        inline fun <reified T> Call<T>.async(
+            lifeCycleOwner : LifecycleOwner, crossinline onSuccess : (T) -> Unit,
+            crossinline onFail : (Throwable) -> Unit,
+                                            ) {
             lifeCycleOwner.lifecycle.addObserver(object : LifecycleObserver {
                 @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
                 fun cancelCall() {
@@ -77,7 +77,22 @@ class WEB(
             })
             
             this.enqueue(object : Callback<T> {
-                override fun onResponse(call : Call<T>, response : Response<T>) = onSuccess(response.body())
+                override fun onResponse(call : Call<T>, response : Response<T>) {
+                    val body = response.body()
+                    if (body != null) onSuccess(body)
+                    else {
+                        /**
+                         * beware in this project we know that.
+                         * all of our api interface methods return a list,
+                         * so this is safe, casting listOf<T> as T,
+                         * because we know T is actually List<*> everytime in here,
+                         * anyway to prevent ClassCastException,
+                         * we also double check T type,
+                         * so if T is not a list onSuccess callback is never called when response body is null
+                         */
+                        if (T::class.java == listOf<T>()::class.java) onSuccess(listOf<T>() as T)
+                    }
+                }
                 
                 override fun onFailure(call : Call<T>, t : Throwable) {
                     if (!isCanceled) onFail(t)

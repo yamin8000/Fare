@@ -25,6 +25,8 @@ package com.github.yamin8000.fare.util
 import android.app.Application
 import android.util.Log
 import com.github.yamin8000.fare.util.CONSTANTS.CITY
+import com.github.yamin8000.fare.util.CONSTANTS.CITY_EXTRA
+import com.github.yamin8000.fare.util.CONSTANTS.CITY_EXTRA_PREFS
 import com.github.yamin8000.fare.util.CONSTANTS.CITY_PREFS
 import com.github.yamin8000.fare.util.CONSTANTS.FEEDBACK
 import com.github.yamin8000.fare.util.CONSTANTS.FEEDBACK_PREFS
@@ -33,6 +35,8 @@ import com.github.yamin8000.fare.util.CONSTANTS.GENERAL_PREFS
 import com.github.yamin8000.fare.util.CONSTANTS.LICENSE
 import com.github.yamin8000.fare.util.CONSTANTS.LICENSE_PREFS
 import com.github.yamin8000.fare.util.CONSTANTS.LOG_TAG
+import com.github.yamin8000.fare.util.CONSTANTS.PRICE_REFERENCE
+import com.github.yamin8000.fare.util.CONSTANTS.PRICE_REFERENCE_PREFS
 import com.github.yamin8000.fare.util.CONSTANTS.STATE
 import com.github.yamin8000.fare.util.CONSTANTS.STATE_PREFS
 import com.orhanobut.logger.AndroidLogAdapter
@@ -57,6 +61,8 @@ class MyApp : Application() {
         STATE_PREFS = "$packageName.$STATE"
         CITY_PREFS = "$packageName.$CITY"
         GENERAL_PREFS = "$packageName.$GENERAL"
+        CITY_EXTRA_PREFS = "$packageName.$CITY_EXTRA"
+        PRICE_REFERENCE_PREFS = "$packageName.$PRICE_REFERENCE"
     }
     
     private fun prepareLogger() {

@@ -54,7 +54,7 @@ import com.github.yamin8000.fare.util.Utility.handleCrash
 import com.github.yamin8000.fare.util.Utility.hideKeyboard
 import com.github.yamin8000.fare.util.helpers.ErrorHelper.netError
 import com.github.yamin8000.fare.util.helpers.ErrorHelper.snack
-import com.github.yamin8000.fare.web.Services
+import com.github.yamin8000.fare.web.APIs
 import com.github.yamin8000.fare.web.WEB
 import com.github.yamin8000.fare.web.WEB.Companion.async
 import com.github.yamin8000.fare.web.WEB.Companion.eqQuery
@@ -69,7 +69,7 @@ class SearchLineFragment :
     private val web : WEB by lazy(LazyThreadSafetyMode.NONE) { WEB() }
     
     private val loadingAdapter : LoadingAdapter by lazy(LazyThreadSafetyMode.NONE) {
-        LoadingAdapter(R.layout.shimmer_city_search)
+        LoadingAdapter(R.layout.search_line_item)
     }
     
     private val emptyAdapter : EmptyAdapter by lazy(LazyThreadSafetyMode.NONE) { EmptyAdapter() }
@@ -83,6 +83,8 @@ class SearchLineFragment :
     private val searchLineAdapter = SearchLineAdapter { _, _ -> }
     
     private var rowLimit = ROW_LIMIT
+    
+    private var lastRowSize = ROW_LIMIT
     
     private var recyclerViewState : Parcelable? = null
     
@@ -132,7 +134,10 @@ class SearchLineFragment :
         binding.cityLineList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(recyclerView : RecyclerView, newState : Int) {
                 super.onScrollStateChanged(recyclerView, newState)
-                if (!recyclerView.canScrollVertically(1) && newState == RecyclerView.SCROLL_STATE_IDLE) {
+                val isAllDataFetched = lastRowSize >= rowLimit
+                val isScrollingToEnd = !recyclerView.canScrollVertically(1)
+                val isScrollEnded = newState == RecyclerView.SCROLL_STATE_IDLE
+                if (isScrollingToEnd && isScrollEnded && isAllDataFetched) {
                     rowLimit += ROW_LIMIT
                     searchParams[LIMIT] = "$rowLimit"
                     recyclerViewState = recyclerView.layoutManager?.onSaveInstanceState()
@@ -216,9 +221,9 @@ class SearchLineFragment :
     }
     
     private fun getCityInfo(cityId : String) {
-        val service = web.getService<Services.CityService>()
+        val service = web.getAPI<APIs.CityAPI>()
         service.searchCity(cityId = cityId.eqQuery()).async(this, { list ->
-            if (list != null && list.isNotEmpty()) {
+            if (list.isNotEmpty()) {
                 val cityInfo = list.first()
                 binding.cityLinesToolbarTitle.text = getString(R.string.line_city_name_template,
                                                                cityInfo.name)
@@ -244,11 +249,13 @@ class SearchLineFragment :
         val destQuery = searchParams[DESTINATION]?.likeQuery()
         val limitQuery = searchParams[LIMIT]
         
-        val service = web.getService<Services.LineService>()
+        val service = web.getAPI<APIs.LineAPI>()
         service.getCityLines(cityId = cityIdQuery, lineCode = lineCodeQuery, origin = originQuery,
                              destination = destQuery, limit = limitQuery).async(this, { list ->
-            if (list != null && list.isNotEmpty()) populateCityLinesList(list)
-            else {
+            if (list.isNotEmpty()) {
+                populateCityLinesList(list)
+                lastRowSize = list.size
+            } else {
                 snack(getString(R.string.data_empty))
                 binding.cityLineList.adapter = emptyAdapter
             }

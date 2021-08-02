@@ -24,6 +24,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.github.yamin8000.fare.R
+import com.github.yamin8000.fare.databinding.ShimmerBinding
 
 /**
  * Generic Loading adapter for recyclerview
@@ -35,8 +37,11 @@ class LoadingAdapter(private val viewId : Int, private val items : Int = 10) :
     RecyclerView.Adapter<LoadingAdapter.LoadingViewHolder>() {
     
     override fun onCreateViewHolder(parent : ViewGroup, viewType : Int) : LoadingViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(viewId, parent, false)
-        return LoadingViewHolder(view)
+        val inflater = LayoutInflater.from(parent.context)
+        val binding = ShimmerBinding.inflate(inflater, parent, false)
+        val includeView = inflater.inflate(viewId, binding.root, false)
+        binding.root.addView(includeView)
+        return LoadingViewHolder(binding.root)
     }
     
     override fun onBindViewHolder(holder : LoadingViewHolder, position : Int) {

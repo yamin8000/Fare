@@ -34,7 +34,7 @@ import com.github.yamin8000.fare.util.SUPABASE.SUPA_BASE_KEY
 import retrofit2.Call
 import retrofit2.http.*
 
-object Services {
+object APIs {
     
     //table
     private const val FEEDBACK = "Feedback"
@@ -54,21 +54,21 @@ object Services {
     const val TOP_CITIES_ID = "in.(61,71,88,114,124,173,187,231,283,297,323,366,399,606,679,719,738,761,826,836,922,923,930,1050,1060,1081,1109,1122,1137,1142,1218,1356,1378,1528,1543,1547)"
     
     
-    interface FeedbackService {
+    interface FeedbackAPI {
         
         @Headers("$APIKEY: $SUPA_BASE_KEY", "$AUTHORIZATION: $BEARER $SUPA_BASE_KEY")
         @POST(FEEDBACK)
         fun createFeedback(@Body feedback : Feedback) : Call<Unit>
     }
     
-    interface LicenseService {
+    interface LicenseAPI {
         
         @Headers("$APIKEY: $SUPA_BASE_KEY", "$AUTHORIZATION: $BEARER $SUPA_BASE_KEY")
         @GET(LICENSE)
-        fun getLicense() : Call<List<License>>
+        fun getAll() : Call<List<License>>
     }
     
-    interface StateService {
+    interface StateAPI {
         
         @Headers("$APIKEY: $SUPA_BASE_KEY", "$AUTHORIZATION: $BEARER $SUPA_BASE_KEY")
         @GET(STATE)
@@ -79,7 +79,7 @@ object Services {
         fun getCount() : Call<Void>
     }
     
-    interface CityService {
+    interface CityAPI {
         
         @Headers("$APIKEY: $SUPA_BASE_KEY", "$AUTHORIZATION: $BEARER $SUPA_BASE_KEY")
         @GET(CITY)
@@ -92,7 +92,7 @@ object Services {
                        @Query(SELECT) select : String = CITY_JOIN) : Call<List<CityJoined>>
     }
     
-    interface LineService {
+    interface LineAPI {
         
         @Headers("$APIKEY: $SUPA_BASE_KEY", "$AUTHORIZATION: $BEARER $SUPA_BASE_KEY")
         @GET(LINE)
@@ -106,14 +106,14 @@ object Services {
                          @Query(SELECT) select : String = LINE_PRICE_JOIN) : Call<List<Line>>
     }
     
-    interface PriceReferenceService {
+    interface PriceReferenceAPI {
         
         @Headers("$APIKEY: $SUPA_BASE_KEY", "$AUTHORIZATION: $BEARER $SUPA_BASE_KEY")
         @GET(PRICE_REFERENCE)
-        fun getCityReference(@Query(CITY_ID) cityId : String) : Call<List<Reference>>
+        fun getCityReference(@Query(CITY_ID) cityId : String) : Call<List<PriceReference>>
     }
     
-    interface CityExtraService {
+    interface CityExtraAPI {
         
         @Headers("$APIKEY: $SUPA_BASE_KEY", "$AUTHORIZATION: $BEARER $SUPA_BASE_KEY")
         @GET(CITY_EXTRA)

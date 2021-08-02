@@ -25,18 +25,20 @@ import android.text.util.Linkify
 import android.view.View
 import androidx.core.text.util.LinkifyCompat
 import com.github.yamin8000.fare.R
+import com.github.yamin8000.fare.cache.Cache
 import com.github.yamin8000.fare.databinding.FragmentLicenseBinding
+import com.github.yamin8000.fare.model.License
 import com.github.yamin8000.fare.ui.fragment.BaseFragment
-import com.github.yamin8000.fare.util.CONSTANTS.LICENSE
 import com.github.yamin8000.fare.util.CONSTANTS.LICENSE_PREFS
 import com.github.yamin8000.fare.util.SUPABASE.SUPA_BASE_URL
-import com.github.yamin8000.fare.util.SharedPrefs
 import com.github.yamin8000.fare.util.Utility.handleCrash
 import com.github.yamin8000.fare.util.helpers.ErrorHelper.netError
 import com.github.yamin8000.fare.util.helpers.ErrorHelper.snack
-import com.github.yamin8000.fare.web.Services
+import com.github.yamin8000.fare.web.APIs
 import com.github.yamin8000.fare.web.WEB
 import com.github.yamin8000.fare.web.WEB.Companion.async
+import com.github.yamin8000.fare.web.WEB.Companion.fromJsonArray
+import com.github.yamin8000.fare.web.WEB.Companion.toJsonArray
 
 class LicenseFragment : BaseFragment<FragmentLicenseBinding>({ FragmentLicenseBinding.inflate(it) }) {
     
@@ -46,26 +48,29 @@ class LicenseFragment : BaseFragment<FragmentLicenseBinding>({ FragmentLicenseBi
         try {
             context?.let {
                 LinkifyCompat.addLinks(binding.licenseHeader, Linkify.ALL)
-                
-                val sharedPrefs = SharedPrefs(it, LICENSE_PREFS)
-                var licenseText = sharedPrefs.readString(LICENSE)
-                if (licenseText.isEmpty()) {
-                    WEB(SUPA_BASE_URL).getService<Services.LicenseService>().getLicense()
-                        .async(this, { list ->
-                            if (list != null && list.isNotEmpty()) {
-                                val stringBuilder = StringBuilder()
-                                list.forEach { licenseItem ->
-                                    stringBuilder.append(licenseItem.text).append("\n")
-                                }
-                                licenseText = "$stringBuilder".trim()
-                                binding.licenseText.text = licenseText
-                                sharedPrefs.write(LICENSE, licenseText)
-                            } else snack(getString(R.string.data_empty))
-                        }) { netError() }
-                } else binding.licenseText.text = licenseText
+                val licenseCache = Cache(it, LICENSE_PREFS)
+                val listOfLicenses = licenseCache.readCache().fromJsonArray<License>() ?: mutableListOf()
+                if (listOfLicenses.isEmpty()) {
+                    WEB(SUPA_BASE_URL).getAPI<APIs.LicenseAPI>().getAll().async(this, { list ->
+                        if (list.isNotEmpty()) {
+                            val licenseText = createLinedText(list)
+                            binding.licenseText.text = licenseText
+                            licenseCache.writeCache(cache = list.toJsonArray())
+                        } else snack(getString(R.string.data_empty))
+                    }) { netError() }
+                } else binding.licenseText.text = createLinedText(listOfLicenses)
             }
         } catch (exception : Exception) {
             handleCrash(exception)
         }
+    }
+    
+    private fun createLinedText(list : List<License>) : String {
+        val stringBuilder = StringBuilder()
+        list.forEach { licenseItem ->
+            stringBuilder.append(licenseItem.text).append("\n")
+        }
+        val licenseText = "$stringBuilder".trim()
+        return licenseText
     }
 }

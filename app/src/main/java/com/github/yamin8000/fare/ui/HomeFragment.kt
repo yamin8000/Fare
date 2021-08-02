@@ -31,16 +31,18 @@ import com.github.yamin8000.fare.cache.CachePolicy
 import com.github.yamin8000.fare.databinding.FragmentHomeBinding
 import com.github.yamin8000.fare.ui.fragment.BaseFragment
 import com.github.yamin8000.fare.util.CONSTANTS.CHOOSING_DEFAULT_CITY
+import com.github.yamin8000.fare.util.CONSTANTS.CITY_EXTRA_PREFS
 import com.github.yamin8000.fare.util.CONSTANTS.CITY_ID
 import com.github.yamin8000.fare.util.CONSTANTS.CITY_PREFS
 import com.github.yamin8000.fare.util.CONSTANTS.GENERAL_PREFS
 import com.github.yamin8000.fare.util.CONSTANTS.LICENSE_PREFS
+import com.github.yamin8000.fare.util.CONSTANTS.PRICE_REFERENCE_PREFS
 import com.github.yamin8000.fare.util.CONSTANTS.STATE_PREFS
 import com.github.yamin8000.fare.util.SharedPrefs
 import com.github.yamin8000.fare.util.Utility.handleCrash
 import com.github.yamin8000.fare.util.helpers.ErrorHelper.netErrorCache
 import com.github.yamin8000.fare.util.helpers.ErrorHelper.snack
-import com.github.yamin8000.fare.web.Services
+import com.github.yamin8000.fare.web.APIs
 import com.github.yamin8000.fare.web.WEB
 import com.github.yamin8000.fare.web.WEB.Companion.asyncResponse
 import com.google.android.material.snackbar.Snackbar
@@ -81,7 +83,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>({ FragmentHomeBinding.inf
     
     private fun handleFreshnessOfCache() {
         //checking if server is responsive
-        val service = WEB().getService<Services.StateService>()
+        val service = WEB().getAPI<APIs.StateAPI>()
         service.getCount().asyncResponse(this, {
             //remove data if user has access to server
             if (it.code() == 200) clearOldCache()
@@ -97,7 +99,9 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>({ FragmentHomeBinding.inf
             val citiesCache = Cache(safeContext, CITY_PREFS)
             val statesCache = Cache(safeContext, STATE_PREFS, CachePolicy.MonthlyCache)
             val licensesCache = Cache(safeContext, LICENSE_PREFS, CachePolicy.MonthlyCache)
-            val list = listOf(citiesCache, statesCache, licensesCache)
+            val cityExtraCache = Cache(safeContext, CITY_EXTRA_PREFS)
+            val priceReferenceCache = Cache(safeContext, PRICE_REFERENCE_PREFS)
+            val list = listOf(citiesCache, statesCache, licensesCache, cityExtraCache, priceReferenceCache)
             list.forEach { cache -> if (!cache.isDataFresh()) cache.sharedPrefs.clearData() }
         }
     }

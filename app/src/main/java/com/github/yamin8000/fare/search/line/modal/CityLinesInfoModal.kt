@@ -28,19 +28,22 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.text.util.LinkifyCompat
 import com.github.yamin8000.fare.R
+import com.github.yamin8000.fare.cache.Cache
 import com.github.yamin8000.fare.databinding.CityLinesInfoModalBinding
 import com.github.yamin8000.fare.model.CityExtra
-import com.github.yamin8000.fare.model.Reference
+import com.github.yamin8000.fare.model.PriceReference
+import com.github.yamin8000.fare.util.CONSTANTS.CITY_EXTRA_PREFS
 import com.github.yamin8000.fare.util.CONSTANTS.CITY_ID
+import com.github.yamin8000.fare.util.CONSTANTS.PRICE_REFERENCE_PREFS
 import com.github.yamin8000.fare.util.Utility.handleCrash
 import com.github.yamin8000.fare.util.helpers.ErrorHelper.netError
-import com.github.yamin8000.fare.web.Services
+import com.github.yamin8000.fare.web.APIs
 import com.github.yamin8000.fare.web.WEB
 import com.github.yamin8000.fare.web.WEB.Companion.async
 import com.github.yamin8000.fare.web.WEB.Companion.eqQuery
+import com.github.yamin8000.fare.web.WEB.Companion.fromJsonArray
+import com.github.yamin8000.fare.web.WEB.Companion.toJsonArray
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 
 class CityLinesInfoModal : BottomSheetDialogFragment() {
     
@@ -49,8 +52,6 @@ class CityLinesInfoModal : BottomSheetDialogFragment() {
     }
     
     private val web : WEB by lazy(LazyThreadSafetyMode.NONE) { WEB() }
-    
-    private var backScope = CoroutineScope(Dispatchers.Default)
     
     override fun onCreateView(inflater : LayoutInflater, container : ViewGroup?, bundle : Bundle?) : View {
         return binding.root
@@ -63,45 +64,49 @@ class CityLinesInfoModal : BottomSheetDialogFragment() {
             val cityId = arguments?.getString(CITY_ID) ?: ""
             
             if (cityId.isNotBlank()) {
-                getReferences(cityId)
-                getCityExtras(cityId)
+                context?.let {
+                    val cityExtraCache = Cache(it, CITY_EXTRA_PREFS)
+                    val priceReferenceCache = Cache(it, PRICE_REFERENCE_PREFS)
+                    getReferences(cityId, priceReferenceCache)
+                    getCityExtras(cityId, cityExtraCache)
+                }
             }
         } catch (exception : Exception) {
             handleCrash(exception)
         }
     }
     
-    private fun getCityExtras(cityId : String) {
-        val service = web.getService<Services.CityExtraService>()
-        service.getCityExtra(cityId.eqQuery()).async(this, { list ->
-            when {
-                list != null && list.isEmpty() -> {
-                    addTextLineByLine(getString(R.string.data_empty), binding.cityLinesMoreInfo)
-                }
-                list != null -> handleExtrasData(list)
-                else -> netError()
-            }
-        }) { netError() }
+    private fun getCityExtras(cityId : String, cache : Cache) {
+        val cachedCityExtras = cache.readCache(cityId).fromJsonArray<CityExtra>() ?: mutableListOf()
+        if (cachedCityExtras.isEmpty()) {
+            val service = web.getAPI<APIs.CityExtraAPI>()
+            service.getCityExtra(cityId.eqQuery()).async(this, { list ->
+                if (list.isNotEmpty()) {
+                    handleExtrasData(list)
+                    cache.writeCache(cityId, list.toJsonArray())
+                } else addTextLineByLine(getString(R.string.data_empty), binding.cityLinesMoreInfo)
+            }) { netError() }
+        } else handleExtrasData(cachedCityExtras)
     }
     
     private fun handleExtrasData(list : List<CityExtra>) {
         for (cityExtra in list) addTextLineByLine(cityExtra.info, binding.cityLinesMoreInfo, false)
     }
     
-    private fun getReferences(cityId : String) {
-        val service = web.getService<Services.PriceReferenceService>()
-        service.getCityReference(cityId.eqQuery()).async(this, { list ->
-            when {
-                list != null && list.isEmpty() -> {
-                    addTextLineByLine(getString(R.string.data_empty), binding.cityLinesReference)
-                }
-                list != null -> handleReferenceData(list)
-                else -> netError()
-            }
-        }) { netError() }
+    private fun getReferences(cityId : String, cache : Cache) {
+        val cachedReferences = cache.readCache(cityId).fromJsonArray<PriceReference>() ?: mutableListOf()
+        if (cachedReferences.isEmpty()) {
+            val service = web.getAPI<APIs.PriceReferenceAPI>()
+            service.getCityReference(cityId.eqQuery()).async(this, { list ->
+                if (list.isNotEmpty()) {
+                    handleReferenceData(list)
+                    cache.writeCache(cityId, list.toJsonArray())
+                } else addTextLineByLine(getString(R.string.data_empty), binding.cityLinesReference)
+            }) { netError() }
+        } else handleReferenceData(cachedReferences)
     }
     
-    private fun handleReferenceData(list : List<Reference>) {
+    private fun handleReferenceData(list : List<PriceReference>) {
         for (item in list) addTextLineByLine(item.data, binding.cityLinesReference)
     }
     

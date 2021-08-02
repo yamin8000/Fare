@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-  ~     shimmer_include.xml Created by Yamin Siahmargooei at 2021/7/9
+  ~     Fare: find Iran's cities taxi fares
+  ~     shimmer.xml Created by Yamin Siahmargooei at 2021/8/2
   ~     This file is part of Fare.
+  ~     Copyright (C) 2021  Yamin Siahmargooei
   ~
   ~     Fare is free software: you can redistribute it and/or modify
   ~     it under the terms of the GNU General Public License as published by
@@ -18,13 +20,6 @@
 
 <com.facebook.shimmer.ShimmerFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    tools:context=".search.city.SearchCityFragment"
-    app:shimmer_duration="1800"
-    tools:viewBindingIgnore="true">
-
-    <include layout="@layout/search_city_item" />
-
-</com.facebook.shimmer.ShimmerFrameLayout>
+    app:shimmer_duration="1800" />

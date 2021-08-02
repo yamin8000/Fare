@@ -49,8 +49,8 @@ import com.github.yamin8000.fare.util.Utility.hideKeyboard
 import com.github.yamin8000.fare.util.helpers.ErrorHelper.netError
 import com.github.yamin8000.fare.util.helpers.ErrorHelper.netErrorCache
 import com.github.yamin8000.fare.util.helpers.ErrorHelper.snack
-import com.github.yamin8000.fare.web.Services
-import com.github.yamin8000.fare.web.Services.TOP_CITIES_ID
+import com.github.yamin8000.fare.web.APIs
+import com.github.yamin8000.fare.web.APIs.TOP_CITIES_ID
 import com.github.yamin8000.fare.web.WEB
 import com.github.yamin8000.fare.web.WEB.Companion.async
 import com.github.yamin8000.fare.web.WEB.Companion.eqQuery
@@ -65,10 +65,12 @@ private const val NOT_SELECTED = -1
 class SearchCityFragment :
     BaseFragment<FragmentSearchCityBinding>({ FragmentSearchCityBinding.inflate(it) }) {
     
-    private val cityService : Services.CityService by lazy(LazyThreadSafetyMode.NONE) { WEB().getService() }
+    private val web = WEB()
+    
+    private val cityAPI : APIs.CityAPI by lazy(LazyThreadSafetyMode.NONE) { web.getAPI() }
     
     private val loadingAdapter : LoadingAdapter by lazy(LazyThreadSafetyMode.NONE) {
-        LoadingAdapter(R.layout.shimmer_city_search)
+        LoadingAdapter(R.layout.search_city_item)
     }
     
     private val emptyAdapter : EmptyAdapter by lazy(LazyThreadSafetyMode.NONE) { EmptyAdapter() }
@@ -116,9 +118,9 @@ class SearchCityFragment :
      * very first run of app after install cache popular cities
      */
     private fun fetchTopCities() {
-        val topCitiesService = WEB().getService<Services.CityService>()
-        topCitiesService.searchCity(cityId = TOP_CITIES_ID).async(this, { cities ->
-            if (cities != null && cities.isNotEmpty()) {
+        val topCitiesAPI = web.getAPI<APIs.CityAPI>()
+        topCitiesAPI.searchCity(cityId = TOP_CITIES_ID).async(this, { cities ->
+            if (cities.isNotEmpty()) {
                 populateCityList(cities)
                 addToCachedCities(cities)
             } else binding.cityList.adapter = emptyAdapter
@@ -151,11 +153,11 @@ class SearchCityFragment :
      * @param cache states cache
      */
     private fun fetchStates(cache : Cache) {
-        val stateService = WEB().getService<Services.StateService>()
+        val stateService = web.getAPI<APIs.StateAPI>()
         stateService.getAll().async(this, { stateList ->
-            if (stateList != null && stateList.isNotEmpty()) {
+            if (stateList.isNotEmpty()) {
                 populateStates(stateList)
-                backScope.launch { cache.writeCache(stateList.toJsonArray()) }
+                backScope.launch { cache.writeCache(cache = stateList.toJsonArray()) }
             }
         }) { netErrorCache() }
     }
@@ -198,9 +200,9 @@ class SearchCityFragment :
         didYouMeanThisSnack?.dismiss()
         binding.cityList.adapter = loadingAdapter
         val cityName = binding.searchCityEdit.text.toString().trim()
-        cityService.searchCity(cityName = cityName.likeQuery(), stateId = "$stateId".eqQuery())
+        cityAPI.searchCity(cityName = cityName.likeQuery(), stateId = "$stateId".eqQuery())
             .async(this, { cityList ->
-                if (cityList != null && cityList.isNotEmpty()) {
+                if (cityList.isNotEmpty()) {
                     populateCityList(cityList)
                     addToCachedCities(cityList)
                 } else lifecycleScope.launch { loadCachedCities(cityGrams = cityName.windowed(3)) }
@@ -236,8 +238,8 @@ class SearchCityFragment :
         val cityName = binding.searchCityEdit.text.toString().trim()
         
         val query = cityName.likeQuery()
-        cityService.searchCity(cityName = query).async(this, { cityList ->
-            if (cityList != null && cityList.isNotEmpty()) {
+        cityAPI.searchCity(cityName = query).async(this, { cityList ->
+            if (cityList.isNotEmpty()) {
                 populateCityList(cityList)
                 addToCachedCities(cityList)
             } else lifecycleScope.launch {
@@ -260,7 +262,7 @@ class SearchCityFragment :
             val setOfCachedCities = (cache.readCache().fromJsonArray<CityJoined>()
                                      ?: mutableListOf()).toMutableSet()
             setOfCachedCities.addAll(cityList)
-            cache.writeCache(setOfCachedCities.toList().toJsonArray())
+            cache.writeCache(cache = setOfCachedCities.toList().toJsonArray())
         }
     }
     

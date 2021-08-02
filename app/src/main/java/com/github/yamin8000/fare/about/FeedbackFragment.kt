@@ -36,7 +36,7 @@ import com.github.yamin8000.fare.util.Utility.handleCrash
 import com.github.yamin8000.fare.util.Utility.hideKeyboard
 import com.github.yamin8000.fare.util.helpers.ErrorHelper.netError
 import com.github.yamin8000.fare.util.helpers.ErrorHelper.snack
-import com.github.yamin8000.fare.web.Services
+import com.github.yamin8000.fare.web.APIs
 import com.github.yamin8000.fare.web.WEB
 import com.github.yamin8000.fare.web.WEB.Companion.asyncResponse
 import com.google.android.material.snackbar.Snackbar
@@ -85,7 +85,7 @@ class FeedbackFragment : BaseFragment<FragmentFeedbackBinding>({ FragmentFeedbac
     
     private fun sendFeedback(feedbackText : CharSequence, feedbackUser : Editable?) {
         val feedback = Feedback("$feedbackText", "$feedbackUser")
-        val service = WEB(SUPA_BASE_URL).getService<Services.FeedbackService>()
+        val service = WEB(SUPA_BASE_URL).getAPI<APIs.FeedbackAPI>()
         service.createFeedback(feedback).asyncResponse(this, {
             if (it.code() == 201) {
                 snack(getString(R.string.feedback_created_success))

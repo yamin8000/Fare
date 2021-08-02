@@ -70,17 +70,16 @@ class Cache(
      */
     fun isDataFresh() : Boolean {
         val currentDate = LocalDateTime.now()
-        val data = sharedPrefs.readString(CACHE)
         val lastDate = sharedPrefs.readDate()
         var isDataExpired = false
         if (lastDate.isNotBlank()) isDataExpired = cacheDatePolicy(currentDate, LocalDateTime.parse(lastDate))
-        return data.isNotBlank() && lastDate.isNotBlank() && !isDataExpired
+        return lastDate.isNotBlank() && !isDataExpired
     }
     
-    fun readCache() = sharedPrefs.readString(CACHE)
+    fun readCache(key : String = CACHE) = sharedPrefs.readString(key)
     
-    fun <T> writeCache(cache : T) {
+    fun <T> writeCache(key : String = CACHE, cache : T) {
         sharedPrefs.writeDate()
-        sharedPrefs.write(CACHE, cache)
+        sharedPrefs.write(key, cache)
     }
 }

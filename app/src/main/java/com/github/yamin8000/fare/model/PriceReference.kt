@@ -25,5 +25,5 @@ import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-data class Reference(val id : String, @Json(name = CITY_ID) val cityId : Int, val data : String,
-                     @Json(name = "data_type") val dataType : String)
+data class PriceReference(val id : String, @Json(name = CITY_ID) val cityId : Int, val data : String,
+                          @Json(name = "data_type") val dataType : String)

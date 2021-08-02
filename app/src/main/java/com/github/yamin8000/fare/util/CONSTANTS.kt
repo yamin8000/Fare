@@ -33,12 +33,16 @@ object CONSTANTS {
     const val GENERAL = "general"
     const val FUZZY_SEARCH_WINDOW = 3
     const val IS_NIGHT_THEME = "is_night_theme"
+    const val CITY_EXTRA = "city_extra"
+    const val PRICE_REFERENCE = "price_reference"
     //shared preferences names
     lateinit var GENERAL_PREFS : String
     lateinit var LICENSE_PREFS : String
     lateinit var FEEDBACK_PREFS : String
     lateinit var STATE_PREFS : String
     lateinit var CITY_PREFS : String
+    lateinit var CITY_EXTRA_PREFS : String
+    lateinit var PRICE_REFERENCE_PREFS : String
     //params
     const val STATE_ID = "state_id"
     const val COUNTY_ID = "county_id"
