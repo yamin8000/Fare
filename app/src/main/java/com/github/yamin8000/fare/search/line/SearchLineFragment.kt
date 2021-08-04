@@ -60,6 +60,10 @@ import com.github.yamin8000.fare.web.WEB.Companion.async
 import com.github.yamin8000.fare.web.WEB.Companion.eqQuery
 import com.github.yamin8000.fare.web.WEB.Companion.likeQuery
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 
 class SearchLineFragment :
     BaseFragment<FragmentSearchLineBinding>({ FragmentSearchLineBinding.inflate(it) }) {
@@ -69,7 +73,7 @@ class SearchLineFragment :
     private val web : WEB by lazy(LazyThreadSafetyMode.NONE) { WEB() }
     
     private val loadingAdapter : LoadingAdapter by lazy(LazyThreadSafetyMode.NONE) {
-        LoadingAdapter(R.layout.search_line_item)
+        LoadingAdapter(4)
     }
     
     private val emptyAdapter : EmptyAdapter by lazy(LazyThreadSafetyMode.NONE) { EmptyAdapter() }
@@ -90,6 +94,10 @@ class SearchLineFragment :
     
     private var scrollSnackbar : Snackbar? = null
     
+    private val mainScope = CoroutineScope(Dispatchers.Main)
+    
+    private val backScope = CoroutineScope(Dispatchers.Default)
+    
     override fun onViewCreated(view : View, savedInstanceState : Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         
@@ -102,9 +110,9 @@ class SearchLineFragment :
                 searchParams[CITY_ID] = cityId
                 searchParams[LIMIT] = "$rowLimit"
                 
-                getCityLines()
-                getCityInfo(cityId)
-                handleMenu(cityId)
+                mainScope.launch { getCityLines() }
+                mainScope.launch { getCityInfo(cityId) }
+                mainScope.launch { handleMenu(cityId) }
             } else netError()
         } catch (exception : Exception) {
             handleCrash(exception)
@@ -285,7 +293,7 @@ class SearchLineFragment :
             searchFilterClearButtonListener()
         }
         binding.cityLineList.adapter = searchLineAdapter
-        handleAutoCompletes(list)
+        mainScope.launch { handleAutoCompletes(list) }
     }
     
     private fun handleCustomProperties(list : List<Line>) {
@@ -293,18 +301,24 @@ class SearchLineFragment :
         if (hasCustomProperties) snack(getString(R.string.taxi_meter_city_notice), Snackbar.LENGTH_LONG)
     }
     
-    private fun handleAutoCompletes(list : List<Line>) {
+    private suspend fun handleAutoCompletes(list : List<Line>) {
         searchFilterHandler()
         
-        val codes = list.filter { !it.code.isNullOrBlank() }.asSequence().map { it.code }.toSet().toList()
-        val origins = list.filter { !it.origin.isNullOrBlank() }.asSequence().map { it.origin }.toSet()
-            .toList()
-        val destinations = list.filter { !it.destination.isNullOrBlank() }.asSequence().map { it.destination }
-            .toSet().toList()
+        val codes = backScope.async {
+            list.asSequence().filter { !it.code.isNullOrBlank() }.map { it.code }.toSet().toList()
+        }
+        val origins = backScope.async {
+            list.asSequence().filter { !it.origin.isNullOrBlank() }.asSequence().map { it.origin }.toSet()
+                .toList()
+        }
+        val destinations = backScope.async {
+            list.asSequence().filter { !it.destination.isNullOrBlank() }.asSequence().map { it.destination }
+                .toSet().toList()
+        }
         
-        populateAutoComplete(codes, binding.lineCodeAuto)
-        populateAutoComplete(origins, binding.lineOriginAuto)
-        populateAutoComplete(destinations, binding.lineDestinationAuto)
+        populateAutoComplete(codes.await(), binding.lineCodeAuto)
+        populateAutoComplete(origins.await(), binding.lineOriginAuto)
+        populateAutoComplete(destinations.await(), binding.lineDestinationAuto)
     }
     
     private fun <T> populateAutoComplete(list : List<T>, autoCompleteTextView : AutoCompleteTextView) {
@@ -315,52 +329,52 @@ class SearchLineFragment :
     }
     
     private fun searchFilterHandler() {
-        binding.lineCodeInput.setStartIconOnClickListener { codeFilterHandler() }
-        binding.lineCodeAuto.setOnItemClickListener { _, _, _, _ -> codeFilterHandler() }
+        binding.lineCodeInput.setStartIconOnClickListener {
+            filterHandler(LINE_CODE, binding.lineCodeAuto.text.toString())
+        }
+        binding.lineCodeAuto.setOnItemClickListener { _, _, _, _ ->
+            filterHandler(LINE_CODE, binding.lineCodeAuto.text.toString())
+        }
         binding.lineCodeAuto.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                codeFilterHandler()
+                filterHandler(LINE_CODE, binding.lineCodeAuto.text.toString())
                 binding.lineCodeAuto.dismissDropDown()
             }
             true
         }
         
-        binding.lineOriginInput.setStartIconOnClickListener { originFilterHandler() }
-        binding.lineOriginAuto.setOnItemClickListener { _, _, _, _ -> originFilterHandler() }
+        binding.lineOriginInput.setStartIconOnClickListener {
+            filterHandler(ORIGIN, binding.lineOriginAuto.text.toString())
+        }
+        binding.lineOriginAuto.setOnItemClickListener { _, _, _, _ ->
+            filterHandler(ORIGIN, binding.lineOriginAuto.text.toString())
+        }
         binding.lineOriginAuto.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                originFilterHandler()
+                filterHandler(ORIGIN, binding.lineOriginAuto.text.toString())
                 binding.lineOriginAuto.dismissDropDown()
             }
             true
         }
         
-        binding.lineDestinationInput.setStartIconOnClickListener { destinationFilterHandler() }
-        binding.lineDestinationAuto.setOnItemClickListener { _, _, _, _ -> destinationFilterHandler() }
+        binding.lineDestinationInput.setStartIconOnClickListener {
+            filterHandler(DESTINATION, binding.lineDestinationAuto.text.toString())
+        }
+        binding.lineDestinationAuto.setOnItemClickListener { _, _, _, _ ->
+            filterHandler(DESTINATION, binding.lineDestinationAuto.text.toString())
+        }
         binding.lineDestinationAuto.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                destinationFilterHandler()
+                filterHandler(DESTINATION, binding.lineDestinationAuto.text.toString())
                 binding.lineDestinationAuto.dismissDropDown()
             }
             true
         }
     }
     
-    private fun codeFilterHandler() {
+    private fun filterHandler(paramConstant : String, searchParam : String) {
         binding.lineSearchFilterClear.isEnabled = true
-        searchParams[LINE_CODE] = binding.lineCodeAuto.text.toString()
-        getCityLines()
-    }
-    
-    private fun originFilterHandler() {
-        binding.lineSearchFilterClear.isEnabled = true
-        searchParams[ORIGIN] = binding.lineOriginAuto.text.toString()
-        getCityLines()
-    }
-    
-    private fun destinationFilterHandler() {
-        binding.lineSearchFilterClear.isEnabled = true
-        searchParams[DESTINATION] = binding.lineDestinationAuto.text.toString()
+        searchParams[paramConstant] = searchParam
         getCityLines()
     }
 }

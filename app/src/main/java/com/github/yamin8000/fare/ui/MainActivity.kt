@@ -22,10 +22,7 @@ package com.github.yamin8000.fare.ui
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
 import com.github.yamin8000.fare.databinding.ActivityMainBinding
-import com.github.yamin8000.fare.util.CONSTANTS
-import com.github.yamin8000.fare.util.SharedPrefs
 
 class MainActivity : AppCompatActivity() {
     
@@ -35,14 +32,6 @@ class MainActivity : AppCompatActivity() {
     
     override fun onCreate(savedInstanceState : Bundle?) {
         super.onCreate(savedInstanceState)
-        handleDayNightTheme()
         setContentView(binding.root)
-    }
-    
-    private fun handleDayNightTheme() {
-        val sharedPrefs = SharedPrefs(this, CONSTANTS.GENERAL_PREFS)
-        val isNightTheme = sharedPrefs.readBoolean(CONSTANTS.IS_NIGHT_THEME)
-        val nightMode = if (isNightTheme) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
-        AppCompatDelegate.setDefaultNightMode(nightMode)
     }
 }

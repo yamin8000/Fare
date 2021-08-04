@@ -70,7 +70,7 @@ class SearchCityFragment :
     private val cityAPI : APIs.CityAPI by lazy(LazyThreadSafetyMode.NONE) { web.getAPI() }
     
     private val loadingAdapter : LoadingAdapter by lazy(LazyThreadSafetyMode.NONE) {
-        LoadingAdapter(R.layout.search_city_item)
+        LoadingAdapter()
     }
     
     private val emptyAdapter : EmptyAdapter by lazy(LazyThreadSafetyMode.NONE) { EmptyAdapter() }
