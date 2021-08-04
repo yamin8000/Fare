@@ -21,9 +21,7 @@
 package com.github.yamin8000.fare.ui
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatDelegate
 import com.github.yamin8000.fare.databinding.FragmentSettingsBinding
 import com.github.yamin8000.fare.ui.fragment.BaseFragment
@@ -33,10 +31,6 @@ import com.github.yamin8000.fare.util.SharedPrefs
 import com.github.yamin8000.fare.util.Utility.handleCrash
 
 class SettingsFragment : BaseFragment<FragmentSettingsBinding>({ FragmentSettingsBinding.inflate(it) }) {
-    
-    override fun onCreateView(inflater : LayoutInflater, container : ViewGroup?, bundle : Bundle?) : View {
-        return binding.root
-    }
     
     override fun onViewCreated(view : View, savedInstanceState : Bundle?) {
         super.onViewCreated(view, savedInstanceState)
