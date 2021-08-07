@@ -95,8 +95,12 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:justificationMode="inter_word"
                     android:text="@string/line_search_filter_notice"
-                    tools:layout_editor_absoluteY="8dp" />
+                    android:textSize="16sp"
+                    tools:layout_editor_absoluteX="8dp"
+                    tools:layout_editor_absoluteY="8dp"
+                    tools:targetApi="o" />
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/line_code_input"
