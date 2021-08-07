@@ -163,6 +163,7 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
+    <!--change fab click listener logic if span count is changed here-->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/city_line_list"
         android:layout_width="match_parent"

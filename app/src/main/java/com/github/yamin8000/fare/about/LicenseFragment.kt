@@ -46,23 +46,38 @@ class LicenseFragment : BaseFragment<FragmentLicenseBinding>({ FragmentLicenseBi
         super.onViewCreated(view, savedInstanceState)
         
         try {
-            context?.let {
-                LinkifyCompat.addLinks(binding.licenseHeader, Linkify.ALL)
-                val licenseCache = Cache(it, LICENSE_PREFS)
-                val listOfLicenses = licenseCache.readCache().fromJsonArray<License>() ?: mutableListOf()
-                if (listOfLicenses.isEmpty()) {
-                    WEB(SUPA_BASE_URL).getAPI<APIs.LicenseAPI>().getAll().async(this, { list ->
-                        if (list.isNotEmpty()) {
-                            val licenseText = createLinedText(list)
-                            binding.licenseText.text = licenseText
-                            licenseCache.writeCache(cache = list.toJsonArray())
-                        } else snack(getString(R.string.data_empty))
-                    }) { netError() }
-                } else binding.licenseText.text = createLinedText(listOfLicenses)
-            }
+            LinkifyCompat.addLinks(binding.licenseHeader, Linkify.ALL)
+            loadLicensesText()
         } catch (exception : Exception) {
             handleCrash(exception)
         }
+    }
+    
+    /**
+     * Load licenses text from web or cache
+     *
+     */
+    private fun loadLicensesText() {
+        context?.let {
+            val licenseCache = Cache(it, LICENSE_PREFS)
+            val listOfLicenses = licenseCache.readCache().fromJsonArray<License>() ?: mutableListOf()
+            if (listOfLicenses.isNotEmpty()) binding.licenseText.text = createLinedText(listOfLicenses)
+            else getLicenseFromServer(licenseCache)
+        }
+    }
+    
+    /**
+     * Get license from server
+     *
+     * @param licenseCache cache is used for writing new data to cache
+     */
+    private fun getLicenseFromServer(licenseCache : Cache) {
+        WEB(SUPA_BASE_URL).getAPI<APIs.LicenseAPI>().getAll().async(this, { list ->
+            if (list.isNotEmpty()) {
+                binding.licenseText.text = createLinedText(list)
+                licenseCache.writeCache(cache = list.toJsonArray())
+            } else snack(getString(R.string.data_empty))
+        }) { netError() }
     }
     
     private fun createLinedText(list : List<License>) : String {
@@ -70,7 +85,6 @@ class LicenseFragment : BaseFragment<FragmentLicenseBinding>({ FragmentLicenseBi
         list.forEach { licenseItem ->
             stringBuilder.append(licenseItem.text).append("\n")
         }
-        val licenseText = "$stringBuilder".trim()
-        return licenseText
+        return "$stringBuilder".trim()
     }
 }

@@ -28,7 +28,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.github.yamin8000.fare.databinding.SearchLineItemBinding
 import com.github.yamin8000.fare.model.Line
 
-class SearchLineAdapter(private val clickListener : (Int, Line) -> Unit) :
+class SearchLineAdapter :
     RecyclerView.Adapter<SearchLineViewHolder>() {
     
     private val asyncDiffer : AsyncListDiffer<Line> = AsyncListDiffer(this, DiffCallback)
@@ -43,7 +43,7 @@ class SearchLineAdapter(private val clickListener : (Int, Line) -> Unit) :
     override fun onCreateViewHolder(parent : ViewGroup, viewType : Int) : SearchLineViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = SearchLineItemBinding.inflate(inflater, parent, false)
-        return SearchLineViewHolder(binding, clickListener, asyncDiffer.currentList, parent.context)
+        return SearchLineViewHolder(binding, asyncDiffer.currentList, parent.context)
     }
     
     override fun onBindViewHolder(holder : SearchLineViewHolder, position : Int) {

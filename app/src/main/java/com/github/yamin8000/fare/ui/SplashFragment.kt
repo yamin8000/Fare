@@ -24,14 +24,11 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.View
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.postDelayed
 import androidx.navigation.fragment.findNavController
 import com.github.yamin8000.fare.R
 import com.github.yamin8000.fare.databinding.FragmentSplashBinding
 import com.github.yamin8000.fare.ui.fragment.BaseFragment
-import com.github.yamin8000.fare.util.CONSTANTS
-import com.github.yamin8000.fare.util.SharedPrefs
 import com.orhanobut.logger.Logger
 
 class SplashFragment : BaseFragment<FragmentSplashBinding>({ FragmentSplashBinding.inflate(it) }) {
@@ -43,13 +40,6 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>({ FragmentSplashBindi
             val handler = Handler(Looper.getMainLooper())
             handler.postDelayed(1500) {
                 findNavController().navigate(R.id.action_splashFragment_to_homeFragment)
-                
-                context?.let {
-                    val sharedPrefs = SharedPrefs(it, CONSTANTS.GENERAL_PREFS)
-                    val isNightTheme = sharedPrefs.readBoolean(CONSTANTS.IS_NIGHT_THEME)
-                    val nightMode = if (isNightTheme) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
-                    AppCompatDelegate.setDefaultNightMode(nightMode)
-                }
             }
         } catch (exception : Exception) {
             Logger.d(exception.stackTraceToString())

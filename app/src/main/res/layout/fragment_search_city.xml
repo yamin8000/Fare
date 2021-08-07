@@ -51,10 +51,7 @@
                         android:id="@+id/search_state_edit"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginLeft="8dp"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginEnd="8dp"
+                        android:layout_margin="8dp"
                         android:hint="@string/select_state"
                         android:nextFocusForward="@id/search_city_edit"
                         android:singleLine="true" />

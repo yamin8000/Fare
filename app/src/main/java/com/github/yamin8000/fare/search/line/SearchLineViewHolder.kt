@@ -30,18 +30,9 @@ import com.github.yamin8000.fare.model.Price
 import com.github.yamin8000.fare.util.Utility.numFormat
 
 class SearchLineViewHolder(
-    private val binding : SearchLineItemBinding, clickListener : (Int, Line) -> Unit,
-    private val list : List<Line>,
+    private val binding : SearchLineItemBinding, private val list : List<Line>,
     private val context : Context,
                           ) : RecyclerView.ViewHolder(binding.root) {
-    
-    init {
-        binding.root.setOnClickListener {
-            if (adapterPosition != RecyclerView.NO_POSITION) {
-                clickListener(adapterPosition, list[adapterPosition])
-            }
-        }
-    }
     
     fun setCode(code : String, position : Int) {
         if (code.isNotBlank()) {

@@ -24,6 +24,7 @@ package com.github.yamin8000.fare.util
 
 import android.app.Application
 import android.util.Log
+import androidx.appcompat.app.AppCompatDelegate
 import com.github.yamin8000.fare.util.CONSTANTS.CITY
 import com.github.yamin8000.fare.util.CONSTANTS.CITY_EXTRA
 import com.github.yamin8000.fare.util.CONSTANTS.CITY_EXTRA_PREFS
@@ -32,6 +33,7 @@ import com.github.yamin8000.fare.util.CONSTANTS.FEEDBACK
 import com.github.yamin8000.fare.util.CONSTANTS.FEEDBACK_PREFS
 import com.github.yamin8000.fare.util.CONSTANTS.GENERAL
 import com.github.yamin8000.fare.util.CONSTANTS.GENERAL_PREFS
+import com.github.yamin8000.fare.util.CONSTANTS.IS_NIGHT_THEME
 import com.github.yamin8000.fare.util.CONSTANTS.LICENSE
 import com.github.yamin8000.fare.util.CONSTANTS.LICENSE_PREFS
 import com.github.yamin8000.fare.util.CONSTANTS.LOG_TAG
@@ -50,8 +52,18 @@ class MyApp : Application() {
         try {
             prepareLogger()
             prepareSharedPrefsNames()
+            handleDayNightTheme()
         } catch (exception : Exception) {
             Log.d(LOG_TAG, "Application Failed!")
+        }
+    }
+    
+    private fun handleDayNightTheme() {
+        applicationContext?.let {
+            val sharedPrefs = SharedPrefs(it, GENERAL_PREFS)
+            val isNightTheme = sharedPrefs.readBoolean(IS_NIGHT_THEME)
+            val nightMode = if (isNightTheme) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
+            AppCompatDelegate.setDefaultNightMode(nightMode)
         }
     }
     

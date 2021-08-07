@@ -29,6 +29,7 @@ import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -62,7 +63,6 @@ import com.github.yamin8000.fare.web.WEB.Companion.likeQuery
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 class SearchLineFragment :
@@ -72,9 +72,7 @@ class SearchLineFragment :
     
     private val web : WEB by lazy(LazyThreadSafetyMode.NONE) { WEB() }
     
-    private val loadingAdapter : LoadingAdapter by lazy(LazyThreadSafetyMode.NONE) {
-        LoadingAdapter(4)
-    }
+    private val loadingAdapter : LoadingAdapter by lazy(LazyThreadSafetyMode.NONE) { LoadingAdapter(8) }
     
     private val emptyAdapter : EmptyAdapter by lazy(LazyThreadSafetyMode.NONE) { EmptyAdapter() }
     
@@ -84,7 +82,7 @@ class SearchLineFragment :
     
     private var cityModel : CityJoined? = null
     
-    private val searchLineAdapter = SearchLineAdapter { _, _ -> }
+    private val searchLineAdapter = SearchLineAdapter()
     
     private var rowLimit = ROW_LIMIT
     
@@ -94,9 +92,9 @@ class SearchLineFragment :
     
     private var scrollSnackbar : Snackbar? = null
     
-    private val mainScope = CoroutineScope(Dispatchers.Main)
-    
     private val backScope = CoroutineScope(Dispatchers.Default)
+    
+    private val ioScope = CoroutineScope(Dispatchers.IO)
     
     override fun onViewCreated(view : View, savedInstanceState : Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -110,9 +108,9 @@ class SearchLineFragment :
                 searchParams[CITY_ID] = cityId
                 searchParams[LIMIT] = "$rowLimit"
                 
-                mainScope.launch { getCityLines() }
-                mainScope.launch { getCityInfo(cityId) }
-                mainScope.launch { handleMenu(cityId) }
+                lifecycleScope.launch { getCityLines() }
+                lifecycleScope.launch { getCityInfo(cityId) }
+                lifecycleScope.launch { handleMenu(cityId) }
             } else netError()
         } catch (exception : Exception) {
             handleCrash(exception)
@@ -142,9 +140,9 @@ class SearchLineFragment :
         binding.cityLineList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(recyclerView : RecyclerView, newState : Int) {
                 super.onScrollStateChanged(recyclerView, newState)
-                val isAllDataFetched = lastRowSize >= rowLimit
                 val isScrollingToEnd = !recyclerView.canScrollVertically(1)
                 val isScrollEnded = newState == RecyclerView.SCROLL_STATE_IDLE
+                val isAllDataFetched = lastRowSize >= rowLimit
                 if (isScrollingToEnd && isScrollEnded && isAllDataFetched) {
                     rowLimit += ROW_LIMIT
                     searchParams[LIMIT] = "$rowLimit"
@@ -156,13 +154,21 @@ class SearchLineFragment :
         })
     }
     
+    /**
+     * FAB click listener,
+     * this fab is used for changing between list layout manager or grid/stagger layout manager
+     *
+     */
     private fun fabClickListener() {
         binding.cityLinesFab.setOnClickListener {
-            
             context?.let {
                 var manager = binding.cityLineList.layoutManager
                 val drawable : Drawable?
-                //array has two params because span count is 2
+                /**
+                 * First visible items,
+                 * array has two params because span count is 2,
+                 * this is very error-prone if span count is changed
+                 */
                 val firstVisibleItems = intArrayOf(0, 0)
                 if (manager is LinearLayoutManager) {
                     firstVisibleItems[0] = manager.findFirstVisibleItemPosition()
@@ -196,22 +202,33 @@ class SearchLineFragment :
     
     private fun setCityAsMyCity(cityId : String) {
         context?.let {
-            val sharedPrefs = SharedPrefs(it, GENERAL_PREFS)
-            sharedPrefs.write(CITY_ID, cityId)
-            snack(getString(R.string.city_set_as_current_city), Snackbar.LENGTH_LONG)
+            ioScope.launch {
+                val sharedPrefs = SharedPrefs(it, GENERAL_PREFS)
+                sharedPrefs.write(CITY_ID, cityId)
+            }
         }
+        snack(getString(R.string.city_set_as_current_city), Snackbar.LENGTH_LONG)
     }
     
+    /**
+     * report city line data error,
+     * using feedback fragment
+     *
+     */
     private fun cityDataErrorReport() {
-        if (cityModel != null) {
-            val safeCity = cityModel
-            val cityLongName = "${safeCity?.id}-${safeCity?.name}-${safeCity?.county?.name}-${safeCity?.state?.name}"
+        cityModel?.let {
+            val cityLongName = "${it.id}-${it.name}-${it.county.name}-${it.state.name}"
             val feedbackTemplate = getString(R.string.line_error_feedback_template, cityLongName)
             val bundle = bundleOf(FEEDBACK to feedbackTemplate)
             findNavController().navigate(R.id.action_searchLineFragment_to_feedbackFragment, bundle)
-        } else snack(getString(R.string.please_wait))
+        }
     }
     
+    /**
+     * Search filter clear button listener,
+     * this button clear input/filters and make a new search
+     *
+     */
     private fun searchFilterClearButtonListener() {
         binding.lineSearchFilterClear.setOnClickListener {
             it.isEnabled = false
@@ -240,6 +257,10 @@ class SearchLineFragment :
         }) { netError() }
     }
     
+    /**
+     * Get current city lines form server
+     *
+     */
     private fun getCityLines() {
         hideKeyboard()
         if (isFirstTime) binding.cityLineList.adapter = loadingAdapter
@@ -274,17 +295,15 @@ class SearchLineFragment :
         }
     }
     
+    /**
+     * Populate city lines list to recycler view
+     *
+     * @param list list of city lines
+     */
     private fun populateCityLinesList(list : List<Line>) {
         searchLineAdapter.submitList(list)
         
-        if (context != null && recyclerViewState == null) {
-            val layoutManager = if (list.size <= 2) LinearLayoutManager(context)
-            else StaggeredGridLayoutManager(2, RecyclerView.VERTICAL)
-            binding.cityLineList.layoutManager = layoutManager
-        }
-        
-        binding.cityLineList.layoutManager?.onRestoreInstanceState(recyclerViewState)
-        
+        handleLayoutManager(list.size)
         if (isFirstTime) {
             isFirstTime = false
             handleCustomProperties(list)
@@ -293,34 +312,66 @@ class SearchLineFragment :
             searchFilterClearButtonListener()
         }
         binding.cityLineList.adapter = searchLineAdapter
-        mainScope.launch { handleAutoCompletes(list) }
+        lifecycleScope.launch { handleAutoCompletes(list) }
     }
     
+    /**
+     * Handle layout manager,
+     * change layout manager based on data size
+     *
+     * @param listSize size of the list
+     */
+    private fun handleLayoutManager(listSize : Int) {
+        if (context != null && recyclerViewState == null) {
+            val layoutManager = if (listSize <= 2) LinearLayoutManager(context)
+            else StaggeredGridLayoutManager(2, RecyclerView.VERTICAL)
+            binding.cityLineList.layoutManager = layoutManager
+        }
+        binding.cityLineList.layoutManager?.onRestoreInstanceState(recyclerViewState)
+    }
+    
+    /**
+     * Handle custom properties,
+     * search if this city has custom property like taxi meter
+     *
+     * @param list list of city lines
+     */
     private fun handleCustomProperties(list : List<Line>) {
         val hasCustomProperties = list.any { it.hasCustomProperty }
         if (hasCustomProperties) snack(getString(R.string.taxi_meter_city_notice), Snackbar.LENGTH_LONG)
     }
     
-    private suspend fun handleAutoCompletes(list : List<Line>) {
+    /**
+     * Handle auto completes,
+     * prepare data for autocompletes
+     *
+     * @param list list of city lines
+     */
+    private fun handleAutoCompletes(list : List<Line>) = backScope.launch {
         searchFilterHandler()
         
-        val codes = backScope.async {
-            list.asSequence().filter { !it.code.isNullOrBlank() }.map { it.code }.toSet().toList()
-        }
-        val origins = backScope.async {
-            list.asSequence().filter { !it.origin.isNullOrBlank() }.asSequence().map { it.origin }.toSet()
-                .toList()
-        }
-        val destinations = backScope.async {
-            list.asSequence().filter { !it.destination.isNullOrBlank() }.asSequence().map { it.destination }
-                .toSet().toList()
-        }
         
-        populateAutoComplete(codes.await(), binding.lineCodeAuto)
-        populateAutoComplete(origins.await(), binding.lineOriginAuto)
-        populateAutoComplete(destinations.await(), binding.lineDestinationAuto)
+        val codes = list.asSequence().filter { !it.code.isNullOrBlank() }.map { it.code }.toSet().toList()
+        val origins = list.asSequence().filter { !it.origin.isNullOrBlank() }.asSequence().map { it.origin }
+            .toSet().toList()
+        val destinations = list.asSequence().filter { !it.destination.isNullOrBlank() }.asSequence()
+            .map { it.destination }.toSet().toList()
+        
+        lifecycleScope.launch {
+            populateAutoComplete(codes, binding.lineCodeAuto)
+            populateAutoComplete(origins, binding.lineOriginAuto)
+            populateAutoComplete(destinations, binding.lineDestinationAuto)
+        }
     }
     
+    /**
+     * Populate auto complete,
+     * add data to auto complete
+     *
+     * @param T data type
+     * @param list list of data
+     * @param autoCompleteTextView autocomplete that's going to be filled
+     */
     private fun <T> populateAutoComplete(list : List<T>, autoCompleteTextView : AutoCompleteTextView) {
         context?.let {
             val adapter = ArrayAdapter(it, R.layout.dropdown_item, list)
@@ -372,6 +423,12 @@ class SearchLineFragment :
         }
     }
     
+    /**
+     * Filter handler, add given filter to params and start a new search
+     *
+     * @param paramConstant filter parameter name
+     * @param searchParam filter parameter content
+     */
     private fun filterHandler(paramConstant : String, searchParam : String) {
         binding.lineSearchFilterClear.isEnabled = true
         searchParams[paramConstant] = searchParam

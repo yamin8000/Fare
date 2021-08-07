@@ -60,6 +60,16 @@ class FeedbackFragment : BaseFragment<FragmentFeedbackBinding>({ FragmentFeedbac
         }
     }
     
+    /**
+     * Handle automated report from city line fragment
+     *
+     * there are two entry to this fragment
+     * first => AboutFragment -> FeedbackFragment
+     * second => SearchLineFragment -> Toolbar menu button -> FeedbackFragment
+     *
+     * this method handle the second entry
+     *
+     */
     private fun handleAutomatedReportFromCityLineFragment() {
         val feedbackParam = arguments?.getString(FEEDBACK) ?: ""
         if (feedbackParam.isNotEmpty()) {
@@ -69,9 +79,17 @@ class FeedbackFragment : BaseFragment<FragmentFeedbackBinding>({ FragmentFeedbac
         }
     }
     
+    /**
+     * Create new feedback
+     *
+     * handle/decide user data and spam detection
+     *
+     */
     private fun createNewFeedback() {
         hideKeyboard()
+        //feedback text, text that describe content of user feedback
         val feedbackText = binding.feedbackEdit.text ?: ""
+        //user name, user contact info, can be nullable
         val feedbackUser = binding.feedbackContactEdit.text
         when {
             isSpamming() -> snack(getString(R.string.feedback_spam_notice))
@@ -83,13 +101,28 @@ class FeedbackFragment : BaseFragment<FragmentFeedbackBinding>({ FragmentFeedbac
         }
     }
     
+    /**
+     * Send actual feedback web request
+     *
+     * @param feedbackText content of feedback
+     * @param feedbackUser user contact info | nullable
+     */
     private fun sendFeedback(feedbackText : CharSequence, feedbackUser : Editable?) {
         val feedback = Feedback("$feedbackText", "$feedbackUser")
         val service = WEB(SUPA_BASE_URL).getAPI<APIs.FeedbackAPI>()
         service.createFeedback(feedback).asyncResponse(this, {
+            /**
+             * The HTTP 201 Created success status response code indicates that the request has succeeded and has led to the creation of a resource.
+             * The new resource is effectively created before this response is sent back and the new resource is returned in the body of the message,
+             * its location being either the URL of the request, or the content of the Location header.
+             */
             if (it.code() == 201) {
                 snack(getString(R.string.feedback_created_success))
                 resetForm()
+                /**
+                 * write date of last time user created a feedback,
+                 * this is useful for spam detection
+                 */
                 sharedPrefs?.writeDate()
             } else netError()
             noticeSnackbar?.dismiss()
@@ -99,6 +132,10 @@ class FeedbackFragment : BaseFragment<FragmentFeedbackBinding>({ FragmentFeedbac
         }
     }
     
+    /**
+     * Reset form to initial state of emptiness
+     *
+     */
     private fun resetForm() {
         binding.feedbackEdit.text?.clear()
         binding.feedbackContactEdit.text?.clear()

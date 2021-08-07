@@ -58,7 +58,10 @@ import com.github.yamin8000.fare.web.WEB.Companion.fromJsonArray
 import com.github.yamin8000.fare.web.WEB.Companion.likeQuery
 import com.github.yamin8000.fare.web.WEB.Companion.toJsonArray
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 private const val NOT_SELECTED = -1
 
@@ -69,9 +72,7 @@ class SearchCityFragment :
     
     private val cityAPI : APIs.CityAPI by lazy(LazyThreadSafetyMode.NONE) { web.getAPI() }
     
-    private val loadingAdapter : LoadingAdapter by lazy(LazyThreadSafetyMode.NONE) {
-        LoadingAdapter()
-    }
+    private val loadingAdapter : LoadingAdapter by lazy(LazyThreadSafetyMode.NONE) { LoadingAdapter() }
     
     private val emptyAdapter : EmptyAdapter by lazy(LazyThreadSafetyMode.NONE) { EmptyAdapter() }
     
@@ -82,6 +83,8 @@ class SearchCityFragment :
     private var didYouMeanThisSnack : Snackbar? = null
     
     private var backScope = CoroutineScope(Dispatchers.Default)
+    
+    private var ioScope = CoroutineScope(Dispatchers.IO)
     
     override fun onViewCreated(view : View, savedInstanceState : Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -104,7 +107,7 @@ class SearchCityFragment :
         binding.cityList.adapter = loadingAdapter
         context?.let {
             val cache = Cache(it, CITY_PREFS)
-            val cachedList = withContext(backScope.coroutineContext) {
+            val cachedList = withContext(ioScope.coroutineContext) {
                 cache.readCache().fromJsonArray<CityJoined>() ?: mutableListOf()
             }
             if (cachedList.isEmpty()) fetchTopCities()
@@ -139,7 +142,7 @@ class SearchCityFragment :
         binding.searchStateInput.setStartIconOnClickListener { stateAutoClearIconHandler() }
         context?.let {
             val cache = Cache(it, STATE_PREFS)
-            val cachedList = withContext(backScope.coroutineContext) {
+            val cachedList = withContext(ioScope.coroutineContext) {
                 cache.readCache().fromJsonArray<State>() ?: mutableListOf()
             }
             if (cachedList.isEmpty()) fetchStates(cache)
@@ -157,7 +160,7 @@ class SearchCityFragment :
         stateService.getAll().async(this, { stateList ->
             if (stateList.isNotEmpty()) {
                 populateStates(stateList)
-                backScope.launch { cache.writeCache(cache = stateList.toJsonArray()) }
+                ioScope.launch { cache.writeCache(cache = stateList.toJsonArray()) }
             }
         }) { netErrorCache() }
     }
@@ -173,7 +176,7 @@ class SearchCityFragment :
     
     /**
      * Populate states,
-     * fill states auto complete view/drowpdown
+     * fill states auto complete view/dropdown
      *
      * @param stateList list of states
      */
@@ -256,7 +259,7 @@ class SearchCityFragment :
      *
      * @param cityList a list of cities data
      */
-    private fun addToCachedCities(cityList : List<CityJoined>) = backScope.launch {
+    private fun addToCachedCities(cityList : List<CityJoined>) = ioScope.launch {
         context?.let { safeContext ->
             val cache = Cache(safeContext, CITY_PREFS)
             val setOfCachedCities = (cache.readCache().fromJsonArray<CityJoined>()
@@ -266,7 +269,6 @@ class SearchCityFragment :
         }
     }
     
-    // TODO: 2021-07-28 analysing performance of the method
     /**
      * Load cached cities
      *
@@ -278,10 +280,12 @@ class SearchCityFragment :
      * @param cityGrams is list of search term n-grams where n = 3 like گرگ - رگا - گان where search term is گرگان
      */
     private suspend fun loadCachedCities(cityName : String? = null, stateId : Int? = null,
-                                         cityGrams : List<String> = mutableListOf()) {
+                                         cityGrams : List<String> = mutableListOf()) = backScope.launch {
         context?.let { safeContext ->
             val cache = Cache(safeContext, CITY_PREFS)
-            val cachedList = cache.readCache().fromJsonArray<CityJoined>() ?: mutableListOf()
+            val cachedList = withContext(ioScope.coroutineContext) {
+                cache.readCache().fromJsonArray<CityJoined>() ?: mutableListOf()
+            }
             var searchCandidates = mutableSetOf<CityJoined>()
             if (cachedList.isNotEmpty()) {
                 if (cityName != null) {
@@ -295,13 +299,14 @@ class SearchCityFragment :
                     searchCandidates.addAll(cachedList.filter { city -> city.name.contains(it) })
                 }
                 if (searchCandidates.isNotEmpty()) {
-                    searchCandidates = sortCandidatesAsync(searchCandidates.toMutableList(),
-                                                           cityGrams).await()
-                    showDidYouMeanThisMessage(searchCandidates.first().name)
+                    searchCandidates = sortCandidates(searchCandidates.toMutableList(), cityGrams)
+                    val first = searchCandidates.firstOrNull()
+                    first?.let { showDidYouMeanThisMessage(it.name) }
                 }
             } else binding.cityList.adapter = emptyAdapter
-            if (searchCandidates.isNotEmpty()) populateCityList(searchCandidates.toList())
-            else binding.cityList.adapter = emptyAdapter
+            if (searchCandidates.isNotEmpty()) {
+                lifecycleScope.launch { populateCityList(searchCandidates.toList()) }
+            } else binding.cityList.adapter = emptyAdapter
         }
     }
     
@@ -312,13 +317,14 @@ class SearchCityFragment :
      * @param terms is list of search term n-grams where n = 3 like گرگ - رگا - گان where search term is گرگان
      * @return sorted list of candidates based on their intersection by search term
      */
-    private fun sortCandidatesAsync(list : MutableList<CityJoined>, terms : List<String>) = backScope.async {
+    private fun sortCandidates(list : MutableList<CityJoined>,
+                               terms : List<String>) : MutableSet<CityJoined> {
         val ranks = mutableListOf<Pair<Int, CityJoined>>()
         for (cityJoined in list) {
             val rank = cityJoined.name.windowed(FUZZY_SEARCH_WINDOW).intersect(terms).size
             ranks.add(rank to cityJoined)
         }
-        return@async ranks.sortedByDescending { it.first }.map { it.second }.toMutableSet()
+        return ranks.sortedByDescending { it.first }.map { it.second }.toMutableSet()
     }
     
     /**

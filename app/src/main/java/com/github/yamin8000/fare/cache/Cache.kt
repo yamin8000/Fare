@@ -1,25 +1,5 @@
 /*
  *     Fare: find Iran's cities taxi fares
- *     Cache.kt Created by Yamin Siahmargooei at 2021/7/31
- *     This file is part of Fare.
- *     Copyright (C) 2021  Yamin Siahmargooei
- *
- *     Fare is free software: you can redistribute it and/or modify
- *     it under the terms of the GNU General Public License as published by
- *     the Free Software Foundation, either version 3 of the License, or
- *     (at your option) any later version.
- *
- *     Fare is distributed in the hope that it will be useful,
- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *     GNU General Public License for more details.
- *
- *     You should have received a copy of the GNU General Public License
- *     along with Fare.  If not, see <https://www.gnu.org/licenses/>.
- */
-
-/*
- *     Fare: find Iran's cities taxi fares
  *     Cache.kt Created by Yamin Siahmargooei at 2021/7/25
  *     This file is part of Fare.
  *     Copyright (C) 2021  Yamin Siahmargooei
@@ -48,8 +28,7 @@ import java.time.LocalDateTime
 /**
  * class for caching data in shared preferences
  *
- * @property cacheDatePolicy is lambda that passing current data and last date that data is cached,
- *
+ * @property cacheDatePolicy is a lambda that takes current data and last date that data is cached as input parameter,
  * so you can provide a custom logic to decide whether data is expired or not
  * @see Policy
  *
@@ -76,8 +55,20 @@ class Cache(
         return lastDate.isNotBlank() && !isDataExpired
     }
     
+    /**
+     * Read cache from shared preferences
+     *
+     * @param key key of shared preference, by default it's "cache" but it can be different
+     */
     fun readCache(key : String = CACHE) = sharedPrefs.readString(key)
     
+    /**
+     * Write cache to shared preferences
+     *
+     * @param T type of cache/data
+     * @param key key of shared preference, by default it's "cache" but it can be different
+     * @param cache data/cache content
+     */
     fun <T> writeCache(key : String = CACHE, cache : T) {
         sharedPrefs.writeDate()
         sharedPrefs.write(key, cache)
