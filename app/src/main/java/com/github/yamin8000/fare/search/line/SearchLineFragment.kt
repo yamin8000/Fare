@@ -201,6 +201,10 @@ class SearchLineFragment :
                 }
                 R.id.search_city_line_menu_report -> cityDataErrorReport()
                 R.id.search_city_line_menu_my_city -> setCityAsMyCity(cityId)
+                R.id.search_city_line_menu_jump_up -> {
+                    binding.cityLineList.scrollToPosition(0)
+                    binding.searchLineAppbar.setExpanded(true,true)
+                }
             }
             true
         }

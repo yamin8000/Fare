@@ -36,6 +36,7 @@
         app:srcCompat="@drawable/ic_list_grid" />
 
     <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/search_line_appbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/transparent">
@@ -43,7 +44,7 @@
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed|snap|enterAlways">
+            app:layout_scrollFlags="scroll|exitUntilCollapsed|snap|enterAlwaysCollapsed">
 
             <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/search_city_lines_toolbar"

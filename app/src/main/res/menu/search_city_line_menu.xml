@@ -34,4 +34,8 @@
         android:icon="@drawable/ic_city"
         android:title="@string/my_city"
         app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/search_city_line_menu_jump_up"
+        android:title="@string/jump_up"
+        app:showAsAction="ifRoom" />
 </menu>
