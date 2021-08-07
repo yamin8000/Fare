@@ -27,4 +27,4 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 data class Line(val id : String, val code : String?, val origin : String?, val destination : String?,
                 @Json(name = "has_custom_property_name") val hasCustomProperty : Boolean,
-                @Json(name = CITY_ID) val cityId : Int, val price : List<Price>?)
+                @Json(name = CITY_ID) val cityId : Int?, val price : List<Price>?)

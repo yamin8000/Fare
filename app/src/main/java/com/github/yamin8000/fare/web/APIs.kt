@@ -50,7 +50,7 @@ object APIs {
     private const val NAME = "name"
     //join
     private const val CITY_JOIN = "id,name,county:County(*),state:State(*)"
-    private const val LINE_PRICE_JOIN = "*,price:Price(*)"
+    private const val LINE_PRICE_JOIN = "id,code,origin,destination,has_custom_property_name,price:Price(name,price)"
     const val TOP_CITIES_ID = "in.(61,71,88,114,124,173,187,231,283,297,323,366,399,606,679,719,738,761,826,836,922,923,930,1050,1060,1081,1109,1122,1137,1142,1218,1356,1378,1528,1543,1547)"
     
     

@@ -29,6 +29,7 @@ import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
+import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -90,11 +91,17 @@ class SearchLineFragment :
     
     private var recyclerViewState : Parcelable? = null
     
-    private var scrollSnackbar : Snackbar? = null
+    private var pleaseWaitSnackbar : Snackbar? = null
     
     private val backScope = CoroutineScope(Dispatchers.Default)
     
     private val ioScope = CoroutineScope(Dispatchers.IO)
+    
+    private val codesSet = mutableSetOf<String?>()
+    
+    private val originsSet = mutableSetOf<String?>()
+    
+    private val destinationsSet = mutableSetOf<String?>()
     
     override fun onViewCreated(view : View, savedInstanceState : Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -148,7 +155,6 @@ class SearchLineFragment :
                     searchParams[LIMIT] = "$rowLimit"
                     recyclerViewState = recyclerView.layoutManager?.onSaveInstanceState()
                     getCityLines()
-                    scrollSnackbar = snack(getString(R.string.please_wait))
                 }
             }
         })
@@ -262,6 +268,7 @@ class SearchLineFragment :
      *
      */
     private fun getCityLines() {
+        pleaseWaitSnackbar = snack(getString(R.string.please_wait))
         hideKeyboard()
         if (isFirstTime) binding.cityLineList.adapter = loadingAdapter
         
@@ -288,9 +295,9 @@ class SearchLineFragment :
                 snack(getString(R.string.data_empty))
                 binding.cityLineList.adapter = emptyAdapter
             }
-            scrollSnackbar?.dismiss()
+            pleaseWaitSnackbar?.dismiss()
         }) {
-            scrollSnackbar?.dismiss()
+            pleaseWaitSnackbar?.dismiss()
             netError()
         }
     }
@@ -310,6 +317,7 @@ class SearchLineFragment :
             listScrollHandler()
             fabClickListener()
             searchFilterClearButtonListener()
+            searchFilterHandler()
         }
         binding.cityLineList.adapter = searchLineAdapter
         lifecycleScope.launch { handleAutoCompletes(list) }
@@ -322,8 +330,8 @@ class SearchLineFragment :
      * @param listSize size of the list
      */
     private fun handleLayoutManager(listSize : Int) {
-        if (context != null && recyclerViewState == null) {
-            val layoutManager = if (listSize <= 2) LinearLayoutManager(context)
+        context?.let {
+            val layoutManager = if (listSize <= 2) LinearLayoutManager(it)
             else StaggeredGridLayoutManager(2, RecyclerView.VERTICAL)
             binding.cityLineList.layoutManager = layoutManager
         }
@@ -348,19 +356,18 @@ class SearchLineFragment :
      * @param list list of city lines
      */
     private fun handleAutoCompletes(list : List<Line>) = backScope.launch {
-        searchFilterHandler()
+        val codes = list.asSequence().filter { !it.code.isNullOrBlank() }.map { it.code }
+        val origins = list.asSequence().filter { !it.origin.isNullOrBlank() }.map { it.origin }
+        val destinations = list.asSequence().filter { !it.destination.isNullOrBlank() }.map { it.destination }
         
-        
-        val codes = list.asSequence().filter { !it.code.isNullOrBlank() }.map { it.code }.toSet().toList()
-        val origins = list.asSequence().filter { !it.origin.isNullOrBlank() }.asSequence().map { it.origin }
-            .toSet().toList()
-        val destinations = list.asSequence().filter { !it.destination.isNullOrBlank() }.asSequence()
-            .map { it.destination }.toSet().toList()
+        codesSet.addAll(codes)
+        originsSet.addAll(origins)
+        destinationsSet.addAll(destinations)
         
         lifecycleScope.launch {
-            populateAutoComplete(codes, binding.lineCodeAuto)
-            populateAutoComplete(origins, binding.lineOriginAuto)
-            populateAutoComplete(destinations, binding.lineDestinationAuto)
+            populateAutoComplete(codesSet.toList(), binding.lineCodeAuto)
+            populateAutoComplete(originsSet.toList(), binding.lineOriginAuto)
+            populateAutoComplete(destinationsSet.toList(), binding.lineDestinationAuto)
         }
     }
     
@@ -379,6 +386,7 @@ class SearchLineFragment :
         }
     }
     
+    // TODO: 2021-08-07 consider refactoring this method
     private fun searchFilterHandler() {
         binding.lineCodeInput.setStartIconOnClickListener {
             filterHandler(LINE_CODE, binding.lineCodeAuto.text.toString())
@@ -392,6 +400,12 @@ class SearchLineFragment :
                 binding.lineCodeAuto.dismissDropDown()
             }
             true
+        }
+        binding.lineCodeAuto.doAfterTextChanged {
+            if (it.isNullOrBlank()) {
+                searchParams.remove(LINE_CODE)
+                getCityLines()
+            }
         }
         
         binding.lineOriginInput.setStartIconOnClickListener {
@@ -407,6 +421,12 @@ class SearchLineFragment :
             }
             true
         }
+        binding.lineOriginAuto.doAfterTextChanged {
+            if (it.isNullOrBlank()) {
+                searchParams.remove(ORIGIN)
+                getCityLines()
+            }
+        }
         
         binding.lineDestinationInput.setStartIconOnClickListener {
             filterHandler(DESTINATION, binding.lineDestinationAuto.text.toString())
@@ -420,6 +440,12 @@ class SearchLineFragment :
                 binding.lineDestinationAuto.dismissDropDown()
             }
             true
+        }
+        binding.lineDestinationAuto.doAfterTextChanged {
+            if (it.isNullOrBlank()) {
+                searchParams.remove(DESTINATION)
+                getCityLines()
+            }
         }
     }
     
