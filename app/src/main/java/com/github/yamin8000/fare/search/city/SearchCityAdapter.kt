@@ -43,7 +43,7 @@ class SearchCityAdapter(private val clickListener : (String, String) -> Unit) :
     override fun onCreateViewHolder(parent : ViewGroup, viewType : Int) : SearchCityViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = SearchCityItemBinding.inflate(inflater, parent, false)
-        return SearchCityViewHolder(binding, clickListener, asyncDiffer.currentList)
+        return SearchCityViewHolder(binding, clickListener, asyncDiffer)
     }
     
     override fun onBindViewHolder(holder : SearchCityViewHolder, position : Int) {

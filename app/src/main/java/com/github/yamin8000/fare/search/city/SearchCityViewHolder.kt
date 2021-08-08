@@ -20,20 +20,21 @@
 
 package com.github.yamin8000.fare.search.city
 
+import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.RecyclerView
 import com.github.yamin8000.fare.databinding.SearchCityItemBinding
 import com.github.yamin8000.fare.model.CityJoined
 
 class SearchCityViewHolder(
     private val binding : SearchCityItemBinding,
-    clickListener : (String, String) -> Unit, list : List<CityJoined>,
+    clickListener : (String, String) -> Unit, asyncListDiffer : AsyncListDiffer<CityJoined>,
                           ) : RecyclerView.ViewHolder(binding.root) {
     
     init {
         binding.root.setOnClickListener {
             if (adapterPosition != RecyclerView.NO_POSITION) {
-                val cityId = list[adapterPosition].id.toString()
-                val cityName = list[adapterPosition].name
+                val cityId = asyncListDiffer.currentList[adapterPosition].id.toString()
+                val cityName = asyncListDiffer.currentList[adapterPosition].name
                 clickListener(cityId, cityName)
             }
         }

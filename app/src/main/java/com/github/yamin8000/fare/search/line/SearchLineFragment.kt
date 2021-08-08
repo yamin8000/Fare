@@ -92,7 +92,7 @@ class SearchLineFragment :
     
     private var lastRowSize = ROW_LIMIT
     
-    private var recyclerViewState : Parcelable? = null
+    private var recyclerViewBeforeScrollState : Parcelable? = null
     
     private var pleaseWaitSnackbar : Snackbar? = null
     
@@ -123,7 +123,6 @@ class SearchLineFragment :
                 
                 lifecycleScope.launch { getCityCompactLines(cityId) }
                 lifecycleScope.launch { getCityLinesFullInfo() }
-                //lifecycleScope.launch { getCityInfo(cityId) }
                 lifecycleScope.launch { handleMenu(cityId, cityName) }
             } else netError()
         } catch (exception : Exception) {
@@ -182,7 +181,7 @@ class SearchLineFragment :
                 if (isScrollingToEnd && isScrollEnded && isAllDataFetched) {
                     rowLimit += ROW_LIMIT
                     searchParams[LIMIT] = "$rowLimit"
-                    recyclerViewState = recyclerView.layoutManager?.onSaveInstanceState()
+                    recyclerViewBeforeScrollState = recyclerView.layoutManager?.onSaveInstanceState()
                     getCityLinesFullInfo()
                 }
             }
@@ -214,11 +213,20 @@ class SearchLineFragment :
                     manager = LinearLayoutManager(it)
                     drawable = ContextCompat.getDrawable(it, R.drawable.ic_list)
                 }
-                binding.cityLineList.layoutManager = manager
+                changeListLayoutManager(manager)
                 binding.cityLinesFab.setImageDrawable(drawable)
                 binding.cityLineList.scrollToPosition(firstVisibleItems[0])
             }
         }
+    }
+    
+    /**
+     * Change list layout manager
+     *
+     * @param layoutManager desired layout manager
+     */
+    private fun changeListLayoutManager(layoutManager : RecyclerView.LayoutManager) {
+        binding.cityLineList.layoutManager = layoutManager
     }
     
     private fun handleMenu(cityId : String, cityName : String) {
@@ -336,11 +344,8 @@ class SearchLineFragment :
             handleCustomProperties(list)
             listScrollHandler()
             fabClickListener()
-            //searchFilterClearButtonListener()
-            //searchFilterHandler()
         }
         binding.cityLineList.adapter = searchLineAdapter
-        //lifecycleScope.launch { handleAutoCompletes(list) }
     }
     
     /**
@@ -351,11 +356,17 @@ class SearchLineFragment :
      */
     private fun handleLayoutManager(listSize : Int) {
         context?.let {
-            val layoutManager = if (listSize <= 2) LinearLayoutManager(it)
-            else StaggeredGridLayoutManager(2, RecyclerView.VERTICAL)
-            binding.cityLineList.layoutManager = layoutManager
+            val layoutManager : RecyclerView.LayoutManager? = when {
+                listSize <= 2 -> LinearLayoutManager(it)
+                recyclerViewBeforeScrollState == null -> {
+                    StaggeredGridLayoutManager(2, RecyclerView.VERTICAL)
+                }
+                else -> null
+            }
+            layoutManager?.let { binding.cityLineList.layoutManager = layoutManager }
+            
         }
-        binding.cityLineList.layoutManager?.onRestoreInstanceState(recyclerViewState)
+        binding.cityLineList.layoutManager?.onRestoreInstanceState(recyclerViewBeforeScrollState)
     }
     
     /**

@@ -32,16 +32,6 @@
         tools:layout_editor_absoluteY="390dp" />
 
     <Button
-        android:id="@+id/map_button"
-        style="@style/HomeButton"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:backgroundTint="@color/secondaryColor"
-        android:text="@string/map"
-        tools:layout_editor_absoluteX="206dp"
-        tools:layout_editor_absoluteY="342dp" />
-
-    <Button
         android:id="@+id/my_city_button"
         style="@style/HomeButton"
         android:layout_width="0dp"
@@ -61,21 +51,11 @@
         tools:layout_editor_absoluteY="294dp" />
 
     <Button
-        android:id="@+id/exit_button"
-        style="@style/HomeButton"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:backgroundTint="@color/primaryLightColor"
-        android:text="@string/exit"
-        tools:layout_editor_absoluteX="206dp"
-        tools:layout_editor_absoluteY="294dp" />
-
-    <Button
         android:id="@+id/about_button"
         style="@style/HomeButton"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:backgroundTint="@color/primaryLightColor"
+        android:backgroundTint="@color/secondaryColor"
         android:text="@string/about"
         tools:layout_editor_absoluteX="118dp"
         tools:layout_editor_absoluteY="342dp" />
@@ -88,7 +68,7 @@
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
         android:orientation="horizontal"
-        app:constraint_referenced_ids="search_city_button,my_city_button,map_button,settings_button,about_button,exit_button"
+        app:constraint_referenced_ids="search_city_button,my_city_button,settings_button,about_button"
         app:flow_horizontalGap="16dp"
         app:flow_horizontalStyle="packed"
         app:flow_maxElementsWrap="2"

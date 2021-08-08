@@ -71,11 +71,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>({ FragmentHomeBinding.inf
             findNavController().navigate(R.id.action_homeFragment_to_searchCityFragment)
         }
         
-        binding.exitButton.setOnClickListener { findNavController().navigate(R.id.exitNoticeModal) }
-        
         binding.myCityButton.setOnClickListener { handleMyCityButton() }
-        
-        binding.mapButton.setOnClickListener { workInProgress() }
         
         binding.settingsButton.setOnClickListener {
             findNavController().navigate(R.id.action_homeFragment_to_settingsFragment)
@@ -130,9 +126,5 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>({ FragmentHomeBinding.inf
             }
         }
         activity?.onBackPressedDispatcher?.addCallback(viewLifecycleOwner, callback)
-    }
-    
-    private fun workInProgress() {
-        snack(getString(R.string.work_in_progress))
     }
 }
