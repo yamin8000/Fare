@@ -1,6 +1,6 @@
 /*
- *     Line.kt Created by Yamin Siahmargooei at 2021/7/14
  *     Fare: find Iran's cities taxi fares
+ *     CompactLine.kt Created by Yamin Siahmargooei at 2021/8/7
  *     This file is part of Fare.
  *     Copyright (C) 2021  Yamin Siahmargooei
  *
@@ -20,11 +20,7 @@
 
 package com.github.yamin8000.fare.model
 
-import com.github.yamin8000.fare.util.CONSTANTS.CITY_ID
-import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-data class Line(val id : String, val code : String?, val origin : String?, val destination : String?,
-                @Json(name = "has_custom_property_name") val hasCustomProperty : Boolean,
-                @Json(name = CITY_ID) val cityId : Int?, val price : List<Price>?)
+data class CompactLine(val code : String?, val origin : String?, val destination : String?)

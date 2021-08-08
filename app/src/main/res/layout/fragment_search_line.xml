@@ -108,7 +108,9 @@
                     style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:enabled="false"
                     app:startIconDrawable="@drawable/ic_search"
+                    tools:layout_editor_absoluteX="8dp"
                     tools:layout_editor_absoluteY="41dp">
 
                     <com.google.android.material.textfield.MaterialAutoCompleteTextView
@@ -125,7 +127,9 @@
                     style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:enabled="false"
                     app:startIconDrawable="@drawable/ic_search"
+                    tools:layout_editor_absoluteX="8dp"
                     tools:layout_editor_absoluteY="111dp">
 
                     <com.google.android.material.textfield.MaterialAutoCompleteTextView
@@ -142,7 +146,9 @@
                     style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:enabled="false"
                     app:startIconDrawable="@drawable/ic_search"
+                    tools:layout_editor_absoluteX="8dp"
                     tools:layout_editor_absoluteY="181dp">
 
                     <com.google.android.material.textfield.MaterialAutoCompleteTextView

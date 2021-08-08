@@ -25,7 +25,7 @@ object CONSTANTS {
     //general
     const val LOG_TAG = "<--> "
     const val LICENSE = "license"
-    const val ROW_LIMIT = 50
+    const val ROW_LIMIT = 20
     const val CITY = "city"
     const val STATE = "state"
     const val DATE = "date"
@@ -53,4 +53,5 @@ object CONSTANTS {
     const val FEEDBACK = "feedback"
     const val LIMIT = "limit"
     const val CHOOSING_DEFAULT_CITY = "is_choosing_default_city"
+    const val CITY_NAME = "city_name"
 }

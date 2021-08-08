@@ -39,6 +39,7 @@ import com.github.yamin8000.fare.ui.recyclerview.adapters.EmptyAdapter
 import com.github.yamin8000.fare.ui.recyclerview.adapters.LoadingAdapter
 import com.github.yamin8000.fare.util.CONSTANTS.CHOOSING_DEFAULT_CITY
 import com.github.yamin8000.fare.util.CONSTANTS.CITY_ID
+import com.github.yamin8000.fare.util.CONSTANTS.CITY_NAME
 import com.github.yamin8000.fare.util.CONSTANTS.CITY_PREFS
 import com.github.yamin8000.fare.util.CONSTANTS.FUZZY_SEARCH_WINDOW
 import com.github.yamin8000.fare.util.CONSTANTS.GENERAL_PREFS
@@ -365,10 +366,11 @@ class SearchCityFragment :
      *
      * @param cityId id of the city that user clicked
      */
-    private fun onCitySelected(cityId : String) {
-        val isChoosingDefaultCity = handleDefaultCityChoosing(cityId)
+    private fun onCitySelected(cityId : String, cityName : String) {
+        val isChoosingDefaultCity = handleDefaultCityChoosing(cityId, cityName)
         
-        val bundle = bundleOf(CITY_ID to cityId, CHOOSING_DEFAULT_CITY to isChoosingDefaultCity)
+        val bundle = bundleOf(CITY_ID to cityId, CHOOSING_DEFAULT_CITY to isChoosingDefaultCity,
+                              CITY_NAME to cityName)
         findNavController().navigate(R.id.action_searchCityFragment_to_searchLineFragment, bundle)
     }
     
@@ -378,13 +380,14 @@ class SearchCityFragment :
      * @param cityId id of city user wants to be default city
      * @return true if user is choosing default city and return false if this is a normal search
      */
-    private fun handleDefaultCityChoosing(cityId : String) : Boolean {
+    private fun handleDefaultCityChoosing(cityId : String, cityName : String) : Boolean {
         arguments?.let {
             val isChoosingDefaultCity = it.getBoolean(CHOOSING_DEFAULT_CITY)
             if (isChoosingDefaultCity) {
                 context?.let { safeContext ->
                     val sharedPrefs = SharedPrefs(safeContext, GENERAL_PREFS)
                     sharedPrefs.write(CITY_ID, cityId)
+                    sharedPrefs.write(CITY_NAME, cityName)
                 }
             }
             return isChoosingDefaultCity

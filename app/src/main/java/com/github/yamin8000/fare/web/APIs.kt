@@ -48,11 +48,11 @@ object APIs {
     private const val SELECT = "select"
     private const val ID = "id"
     private const val NAME = "name"
-    //join
+    //advanced queries
     private const val CITY_JOIN = "id,name,county:County(*),state:State(*)"
     private const val LINE_PRICE_JOIN = "id,code,origin,destination,has_custom_property_name,price:Price(name,price)"
     const val TOP_CITIES_ID = "in.(61,71,88,114,124,173,187,231,283,297,323,366,399,606,679,719,738,761,826,836,922,923,930,1050,1060,1081,1109,1122,1137,1142,1218,1356,1378,1528,1543,1547)"
-    
+    private const val COMPACT_LINE_QUERY = "code,origin,destination"
     
     interface FeedbackAPI {
         
@@ -118,5 +118,13 @@ object APIs {
         @Headers("$APIKEY: $SUPA_BASE_KEY", "$AUTHORIZATION: $BEARER $SUPA_BASE_KEY")
         @GET(CITY_EXTRA)
         fun getCityExtra(@Query(CITY_ID) cityId : String) : Call<List<CityExtra>>
+    }
+    
+    interface CompactLineApi {
+        
+        @Headers("$APIKEY: $SUPA_BASE_KEY", "$AUTHORIZATION: $BEARER $SUPA_BASE_KEY")
+        @GET(LINE)
+        fun getCityLines(@Query(CITY_ID) cityId : String,
+                         @Query(SELECT) select : String = COMPACT_LINE_QUERY) : Call<List<CompactLine>>
     }
 }

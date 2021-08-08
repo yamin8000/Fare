@@ -91,6 +91,7 @@ class WEB(
                          * so if T is not a list onSuccess callback is never called when response body is null
                          */
                         if (T::class.java == listOf<T>()::class.java) onSuccess(listOf<T>() as T)
+                        onFail(IllegalStateException("Body is not a list!"))
                     }
                 }
                 

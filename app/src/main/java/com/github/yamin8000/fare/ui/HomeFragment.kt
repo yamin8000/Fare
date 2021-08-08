@@ -33,6 +33,7 @@ import com.github.yamin8000.fare.ui.fragment.BaseFragment
 import com.github.yamin8000.fare.util.CONSTANTS.CHOOSING_DEFAULT_CITY
 import com.github.yamin8000.fare.util.CONSTANTS.CITY_EXTRA_PREFS
 import com.github.yamin8000.fare.util.CONSTANTS.CITY_ID
+import com.github.yamin8000.fare.util.CONSTANTS.CITY_NAME
 import com.github.yamin8000.fare.util.CONSTANTS.CITY_PREFS
 import com.github.yamin8000.fare.util.CONSTANTS.GENERAL_PREFS
 import com.github.yamin8000.fare.util.CONSTANTS.LICENSE_PREFS
@@ -110,8 +111,9 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>({ FragmentHomeBinding.inf
         context?.let {
             val sharedPrefs = SharedPrefs(it, GENERAL_PREFS)
             val myCityId = sharedPrefs.readString(CITY_ID)
+            val myCityName = sharedPrefs.readString(CITY_NAME)
             if (myCityId.isNotEmpty()) {
-                val bundle = bundleOf(CITY_ID to myCityId)
+                val bundle = bundleOf(CITY_ID to myCityId, CITY_NAME to myCityName)
                 findNavController().navigate(R.id.action_homeFragment_to_searchLineFragment, bundle)
             } else {
                 snack(getString(R.string.no_my_city_added_yet), Snackbar.LENGTH_INDEFINITE)

@@ -138,6 +138,9 @@
         <argument
             android:name="is_choosing_default_city"
             app:argType="boolean" />
+        <argument
+            android:name="city_name"
+            app:argType="string" />
     </fragment>
     <dialog
         android:id="@+id/cityLinesInfoModal"

@@ -38,12 +38,14 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.github.yamin8000.fare.R
 import com.github.yamin8000.fare.databinding.FragmentSearchLineBinding
 import com.github.yamin8000.fare.model.CityJoined
+import com.github.yamin8000.fare.model.CompactLine
 import com.github.yamin8000.fare.model.Line
 import com.github.yamin8000.fare.ui.fragment.BaseFragment
 import com.github.yamin8000.fare.ui.recyclerview.adapters.EmptyAdapter
 import com.github.yamin8000.fare.ui.recyclerview.adapters.LoadingAdapter
 import com.github.yamin8000.fare.util.CONSTANTS.CHOOSING_DEFAULT_CITY
 import com.github.yamin8000.fare.util.CONSTANTS.CITY_ID
+import com.github.yamin8000.fare.util.CONSTANTS.CITY_NAME
 import com.github.yamin8000.fare.util.CONSTANTS.DESTINATION
 import com.github.yamin8000.fare.util.CONSTANTS.FEEDBACK
 import com.github.yamin8000.fare.util.CONSTANTS.GENERAL_PREFS
@@ -62,6 +64,7 @@ import com.github.yamin8000.fare.web.WEB.Companion.async
 import com.github.yamin8000.fare.web.WEB.Companion.eqQuery
 import com.github.yamin8000.fare.web.WEB.Companion.likeQuery
 import com.google.android.material.snackbar.Snackbar
+import com.orhanobut.logger.Logger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -109,18 +112,44 @@ class SearchLineFragment :
         try {
             handleDefaultCityChoosing()
             
+            val cityName = arguments?.getString(CITY_NAME) ?: ""
+            binding.cityLinesToolbarTitle.text = getString(R.string.line_city_name_template, cityName)
+            
             val cityId = arguments?.getString(CITY_ID) ?: ""
             if (cityId.isNotEmpty()) {
                 currentCityId = cityId
                 searchParams[CITY_ID] = cityId
                 searchParams[LIMIT] = "$rowLimit"
                 
-                lifecycleScope.launch { getCityLines() }
-                lifecycleScope.launch { getCityInfo(cityId) }
-                lifecycleScope.launch { handleMenu(cityId) }
+                lifecycleScope.launch { getCityCompactLines(cityId) }
+                lifecycleScope.launch { getCityLinesFullInfo() }
+                //lifecycleScope.launch { getCityInfo(cityId) }
+                lifecycleScope.launch { handleMenu(cityId, cityName) }
             } else netError()
         } catch (exception : Exception) {
             handleCrash(exception)
+        }
+    }
+    
+    /**
+     * Get city compact lines,
+     * get only code,origin,destination of line
+     *
+     * @param cityId
+     */
+    private fun getCityCompactLines(cityId : String) {
+        web.getAPI<APIs.CompactLineApi>().getCityLines(cityId.eqQuery()).async(this, {
+            if (it.isNotEmpty()) {
+                binding.lineCodeInput.isEnabled = true
+                binding.lineDestinationInput.isEnabled = true
+                binding.lineOriginInput.isEnabled = true
+                searchFilterClearButtonListener()
+                searchFilterHandler()
+                lifecycleScope.launch { handleAutoCompletes(it) }
+            }
+        }) {
+            Logger.d(it)
+            netError()
         }
     }
     
@@ -154,7 +183,7 @@ class SearchLineFragment :
                     rowLimit += ROW_LIMIT
                     searchParams[LIMIT] = "$rowLimit"
                     recyclerViewState = recyclerView.layoutManager?.onSaveInstanceState()
-                    getCityLines()
+                    getCityLinesFullInfo()
                 }
             }
         })
@@ -192,7 +221,7 @@ class SearchLineFragment :
         }
     }
     
-    private fun handleMenu(cityId : String) {
+    private fun handleMenu(cityId : String, cityName : String) {
         binding.searchCityLinesToolbar.setOnMenuItemClickListener {
             when (it.itemId) {
                 R.id.search_city_line_menu_reference -> {
@@ -200,22 +229,21 @@ class SearchLineFragment :
                     findNavController().navigate(R.id.action_searchLineFragment_to_cityLinesInfoModal, bundle)
                 }
                 R.id.search_city_line_menu_report -> cityDataErrorReport()
-                R.id.search_city_line_menu_my_city -> setCityAsMyCity(cityId)
+                R.id.search_city_line_menu_my_city -> setCityAsMyCity(cityId, cityName)
                 R.id.search_city_line_menu_jump_up -> {
                     binding.cityLineList.scrollToPosition(0)
-                    binding.searchLineAppbar.setExpanded(true,true)
+                    binding.searchLineAppbar.setExpanded(true, true)
                 }
             }
             true
         }
     }
     
-    private fun setCityAsMyCity(cityId : String) {
+    private fun setCityAsMyCity(cityId : String, cityName : String) = ioScope.launch {
         context?.let {
-            ioScope.launch {
-                val sharedPrefs = SharedPrefs(it, GENERAL_PREFS)
-                sharedPrefs.write(CITY_ID, cityId)
-            }
+            val sharedPrefs = SharedPrefs(it, GENERAL_PREFS)
+            sharedPrefs.write(CITY_ID, cityId)
+            sharedPrefs.write(CITY_NAME, cityName)
         }
         snack(getString(R.string.city_set_as_current_city), Snackbar.LENGTH_LONG)
     }
@@ -251,27 +279,15 @@ class SearchLineFragment :
             searchParams[CITY_ID] = currentCityId
             searchParams[LIMIT] = "$rowLimit"
             
-            getCityLines()
+            getCityLinesFullInfo()
         }
-    }
-    
-    private fun getCityInfo(cityId : String) {
-        val service = web.getAPI<APIs.CityAPI>()
-        service.searchCity(cityId = cityId.eqQuery()).async(this, { list ->
-            if (list.isNotEmpty()) {
-                val cityInfo = list.first()
-                binding.cityLinesToolbarTitle.text = getString(R.string.line_city_name_template,
-                                                               cityInfo.name)
-                this.cityModel = cityInfo
-            }
-        }) { netError() }
     }
     
     /**
      * Get current city lines form server
      *
      */
-    private fun getCityLines() {
+    private fun getCityLinesFullInfo() {
         pleaseWaitSnackbar = snack(getString(R.string.please_wait))
         hideKeyboard()
         if (isFirstTime) binding.cityLineList.adapter = loadingAdapter
@@ -320,11 +336,11 @@ class SearchLineFragment :
             handleCustomProperties(list)
             listScrollHandler()
             fabClickListener()
-            searchFilterClearButtonListener()
-            searchFilterHandler()
+            //searchFilterClearButtonListener()
+            //searchFilterHandler()
         }
         binding.cityLineList.adapter = searchLineAdapter
-        lifecycleScope.launch { handleAutoCompletes(list) }
+        //lifecycleScope.launch { handleAutoCompletes(list) }
     }
     
     /**
@@ -359,7 +375,7 @@ class SearchLineFragment :
      *
      * @param list list of city lines
      */
-    private fun handleAutoCompletes(list : List<Line>) = backScope.launch {
+    private fun handleAutoCompletes(list : List<CompactLine>) = backScope.launch {
         val codes = list.asSequence().filter { !it.code.isNullOrBlank() }.map { it.code }
         val origins = list.asSequence().filter { !it.origin.isNullOrBlank() }.map { it.origin }
         val destinations = list.asSequence().filter { !it.destination.isNullOrBlank() }.map { it.destination }
@@ -408,7 +424,7 @@ class SearchLineFragment :
         binding.lineCodeAuto.doAfterTextChanged {
             if (it.isNullOrBlank()) {
                 searchParams.remove(LINE_CODE)
-                getCityLines()
+                getCityLinesFullInfo()
             }
         }
         
@@ -428,7 +444,7 @@ class SearchLineFragment :
         binding.lineOriginAuto.doAfterTextChanged {
             if (it.isNullOrBlank()) {
                 searchParams.remove(ORIGIN)
-                getCityLines()
+                getCityLinesFullInfo()
             }
         }
         
@@ -448,7 +464,7 @@ class SearchLineFragment :
         binding.lineDestinationAuto.doAfterTextChanged {
             if (it.isNullOrBlank()) {
                 searchParams.remove(DESTINATION)
-                getCityLines()
+                getCityLinesFullInfo()
             }
         }
     }
@@ -462,6 +478,6 @@ class SearchLineFragment :
     private fun filterHandler(paramConstant : String, searchParam : String) {
         binding.lineSearchFilterClear.isEnabled = true
         searchParams[paramConstant] = searchParam
-        getCityLines()
+        getCityLinesFullInfo()
     }
 }
