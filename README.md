@@ -1,5 +1,7 @@
 # Fare
 
+![logo](https://raw.githubusercontent.com/yamin8000/Fare/master/app/src/main/ic_launcher-playstore.png)
+
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=yamin8000_Fare&metric=alert_status)](https://sonarcloud.io/dashboard?id=yamin8000_Fare)
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
@@ -51,6 +53,10 @@
 ---
 
 ## Preview
+
+![screenshot](https://raw.githubusercontent.com/yamin8000/Fare/master/screenshot/1.0/search_line_filter.png)
+
+[more screenshot here]([Fare/screenshot at master · yamin8000/Fare · GitHub](https://github.com/yamin8000/Fare/tree/master/screenshot))
 
 ## Compatibility
 
