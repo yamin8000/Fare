@@ -20,7 +20,6 @@
     <string name="app_name">کرایه</string>
     <string name="data_empty">متاسفانه داده ای یافت نشد</string>
     <string name="search">جستجو</string>
-    <string name="map">نقشه</string>
     <string name="my_city">شهر من</string>
     <string name="settings">تنظیمات</string>
     <string name="exit">خروج</string>
@@ -64,7 +63,6 @@
     <string name="list_to_grid">تغییر لیست به جدول</string>
     <string name="developers">توسعه:\nیمین سیاه‌مرگوئی\nیعقوب سیاه‌مرگوئی\n\nتست و ایده:\nشهریار مداح</string>
     <string name="license_header">این برنامه تحت لایسنس GPLv3 است که توضیحات بیشتر در پایین موجود است.\nلینک سورس برنامه:\nhttps://github.com/yamin8000/Fare</string>
-    <string name="work_in_progress">در دست ساخت…</string>
     <string name="did_you_mean_this">آیا منظور شما این بود؟</string>
     <string name="city_set_as_current_city">این شهر پیشفرض شما شد و از طریق گزینه شهر من قابل دسترسی است.</string>
     <string name="no_my_city_added_yet">"شهر پیشفرضی انتخاب نشده، شهر مورد نظر را جستجو و انتخاب کنید تا پیشفرض شود."</string>

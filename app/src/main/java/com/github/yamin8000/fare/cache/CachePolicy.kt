@@ -18,6 +18,8 @@
  *     along with Fare.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+@file:Suppress("unused")
+
 package com.github.yamin8000.fare.cache
 
 import java.time.LocalDateTime
