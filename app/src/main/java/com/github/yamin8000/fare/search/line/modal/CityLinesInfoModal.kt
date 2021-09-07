@@ -46,23 +46,23 @@ import com.github.yamin8000.fare.web.WEB.Companion.toJsonArray
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 class CityLinesInfoModal : BottomSheetDialogFragment() {
-    
-    private val binding : CityLinesInfoModalBinding by lazy(LazyThreadSafetyMode.NONE) {
+
+    private val binding: CityLinesInfoModalBinding by lazy(LazyThreadSafetyMode.NONE) {
         CityLinesInfoModalBinding.inflate(layoutInflater)
     }
-    
-    private val web : WEB by lazy(LazyThreadSafetyMode.NONE) { WEB() }
-    
-    override fun onCreateView(inflater : LayoutInflater, container : ViewGroup?, bundle : Bundle?) : View {
+
+    private val web: WEB by lazy(LazyThreadSafetyMode.NONE) { WEB() }
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, bundle: Bundle?): View {
         return binding.root
     }
-    
-    override fun onViewCreated(view : View, savedInstanceState : Bundle?) {
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        
+
         try {
             val cityId = arguments?.getString(CITY_ID) ?: ""
-            
+
             if (cityId.isNotBlank()) {
                 context?.let {
                     val cityExtraCache = Cache(it, CITY_EXTRA_PREFS)
@@ -71,12 +71,12 @@ class CityLinesInfoModal : BottomSheetDialogFragment() {
                     getCityExtras(cityId, cityExtraCache)
                 }
             }
-        } catch (exception : Exception) {
+        } catch (exception: Exception) {
             handleCrash(exception)
         }
     }
-    
-    private fun getCityExtras(cityId : String, cache : Cache) {
+
+    private fun getCityExtras(cityId: String, cache: Cache) {
         val cachedCityExtras = cache.readCache(cityId).fromJsonArray<CityExtra>() ?: mutableListOf()
         if (cachedCityExtras.isEmpty()) {
             val service = web.getAPI<APIs.CityExtraAPI>()
@@ -88,12 +88,12 @@ class CityLinesInfoModal : BottomSheetDialogFragment() {
             }) { netError() }
         } else handleExtrasData(cachedCityExtras)
     }
-    
-    private fun handleExtrasData(list : List<CityExtra>) {
+
+    private fun handleExtrasData(list: List<CityExtra>) {
         for (cityExtra in list) addTextLineByLine(cityExtra.info, binding.cityLinesMoreInfo, false)
     }
-    
-    private fun getReferences(cityId : String, cache : Cache) {
+
+    private fun getReferences(cityId: String, cache: Cache) {
         val cachedReferences = cache.readCache(cityId).fromJsonArray<PriceReference>() ?: mutableListOf()
         if (cachedReferences.isEmpty()) {
             val service = web.getAPI<APIs.PriceReferenceAPI>()
@@ -105,12 +105,12 @@ class CityLinesInfoModal : BottomSheetDialogFragment() {
             }) { netError() }
         } else handleReferenceData(cachedReferences)
     }
-    
-    private fun handleReferenceData(list : List<PriceReference>) {
+
+    private fun handleReferenceData(list: List<PriceReference>) {
         for (item in list) addTextLineByLine(item.data, binding.cityLinesReference)
     }
-    
-    private fun addTextLineByLine(text : String, textView : TextView, addLinks : Boolean = true) {
+
+    private fun addTextLineByLine(text: String, textView: TextView, addLinks: Boolean = true) {
         val oldText = textView.text
         textView.text = getString(R.string.line_feed_data, oldText, text).trim()
         if (addLinks) LinkifyCompat.addLinks(textView, Linkify.ALL)

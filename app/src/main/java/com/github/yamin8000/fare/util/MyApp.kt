@@ -46,27 +46,28 @@ import com.orhanobut.logger.Logger
 import com.orhanobut.logger.PrettyFormatStrategy
 
 class MyApp : Application() {
-    
+
     override fun onCreate() {
         super.onCreate()
         try {
             prepareLogger()
             prepareSharedPrefsNames()
             handleDayNightTheme()
-        } catch (exception : Exception) {
+        } catch (exception: Exception) {
             Log.d(LOG_TAG, "Application Failed!")
         }
     }
-    
+
     private fun handleDayNightTheme() {
         applicationContext?.let {
             val sharedPrefs = SharedPrefs(it, GENERAL_PREFS)
             val isNightTheme = sharedPrefs.readBoolean(IS_NIGHT_THEME)
-            val nightMode = if (isNightTheme) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
+            val nightMode = if (isNightTheme) AppCompatDelegate.MODE_NIGHT_YES
+            else AppCompatDelegate.MODE_NIGHT_NO
             AppCompatDelegate.setDefaultNightMode(nightMode)
         }
     }
-    
+
     private fun prepareSharedPrefsNames() {
         LICENSE_PREFS = "$packageName.$LICENSE"
         FEEDBACK_PREFS = "$packageName.$FEEDBACK"
@@ -76,9 +77,13 @@ class MyApp : Application() {
         CITY_EXTRA_PREFS = "$packageName.$CITY_EXTRA"
         PRICE_REFERENCE_PREFS = "$packageName.$PRICE_REFERENCE"
     }
-    
+
     private fun prepareLogger() {
-        Logger.addLogAdapter(AndroidLogAdapter(PrettyFormatStrategy.newBuilder().tag(LOG_TAG).build()))
+        Logger.addLogAdapter(
+            AndroidLogAdapter(
+                PrettyFormatStrategy.newBuilder().tag(LOG_TAG).build()
+            )
+        )
         Logger.d("Application is Started!")
     }
 }

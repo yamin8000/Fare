@@ -43,23 +43,23 @@ import com.google.android.material.snackbar.Snackbar
 import java.time.LocalDateTime
 
 class FeedbackFragment : BaseFragment<FragmentFeedbackBinding>({ FragmentFeedbackBinding.inflate(it) }) {
-    
-    private var noticeSnackbar : Snackbar? = null
-    
-    private var sharedPrefs : SharedPrefs? = null
-    
-    override fun onViewCreated(view : View, savedInstanceState : Bundle?) {
+
+    private var noticeSnackbar: Snackbar? = null
+
+    private var sharedPrefs: SharedPrefs? = null
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        
+
         try {
             sharedPrefs = context?.let { SharedPrefs(it, FEEDBACK_PREFS) }
             handleAutomatedReportFromCityLineFragment()
             binding.sendFeedback.setOnClickListener { createNewFeedback() }
-        } catch (exception : Exception) {
+        } catch (exception: Exception) {
             handleCrash(exception)
         }
     }
-    
+
     /**
      * Handle automated report from city line fragment
      *
@@ -78,7 +78,7 @@ class FeedbackFragment : BaseFragment<FragmentFeedbackBinding>({ FragmentFeedbac
             noticeSnackbar = snack(getString(R.string.feedback_notice), Snackbar.LENGTH_INDEFINITE)
         }
     }
-    
+
     /**
      * Create new feedback
      *
@@ -100,14 +100,14 @@ class FeedbackFragment : BaseFragment<FragmentFeedbackBinding>({ FragmentFeedbac
             else -> snack(getString(R.string.no_feedback_text_entered))
         }
     }
-    
+
     /**
      * Send actual feedback web request
      *
      * @param feedbackText content of feedback
      * @param feedbackUser user contact info | nullable
      */
-    private fun sendFeedback(feedbackText : CharSequence, feedbackUser : Editable?) {
+    private fun sendFeedback(feedbackText: CharSequence, feedbackUser: Editable?) {
         val feedback = Feedback("$feedbackText", "$feedbackUser")
         val service = WEB(SUPA_BASE_URL).getAPI<APIs.FeedbackAPI>()
         service.createFeedback(feedback).asyncResponse(this, {
@@ -131,7 +131,7 @@ class FeedbackFragment : BaseFragment<FragmentFeedbackBinding>({ FragmentFeedbac
             noticeSnackbar?.dismiss()
         }
     }
-    
+
     /**
      * Reset form to initial state of emptiness
      *
@@ -142,20 +142,20 @@ class FeedbackFragment : BaseFragment<FragmentFeedbackBinding>({ FragmentFeedbac
         binding.feedbackEdit.requestFocus()
         binding.sendFeedback.isEnabled = true
     }
-    
+
     /**
      * check if user is spamming / sending dummy data using feedback fragment
      *
      * @return true if user is spamming / if trying to send more that one feedback in under 2 minutes
      */
-    private fun isSpamming() : Boolean {
+    private fun isSpamming(): Boolean {
         val now = LocalDateTime.now()
         val lastDateString = sharedPrefs?.readString(DATE) ?: ""
         if (lastDateString.isBlank()) return false
         val lastFeedbackDate = LocalDateTime.parse(lastDateString)
         return now.minusMinutes(2).isBefore(lastFeedbackDate)
     }
-    
+
     override fun onDestroy() {
         super.onDestroy()
         noticeSnackbar?.dismiss()

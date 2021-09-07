@@ -31,33 +31,34 @@ import com.github.yamin8000.fare.util.SharedPrefs
 import com.github.yamin8000.fare.util.Utility.handleCrash
 
 class SettingsFragment : BaseFragment<FragmentSettingsBinding>({ FragmentSettingsBinding.inflate(it) }) {
-    
-    override fun onViewCreated(view : View, savedInstanceState : Bundle?) {
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        
+
         try {
             toggleSwitchBasedOnCurrentTheme()
             switchChangeListener()
-        } catch (exception : Exception) {
+        } catch (exception: Exception) {
             handleCrash(exception)
         }
     }
-    
+
     private fun switchChangeListener() {
         binding.dayNightSwitch.setOnCheckedChangeListener { _, isChecked ->
-            val nightMode = if (isChecked) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
+            val nightMode = if (isChecked) AppCompatDelegate.MODE_NIGHT_YES
+            else AppCompatDelegate.MODE_NIGHT_NO
             AppCompatDelegate.setDefaultNightMode(nightMode)
             saveNightModePreference(isChecked)
         }
     }
-    
-    private fun saveNightModePreference(isChecked : Boolean) {
+
+    private fun saveNightModePreference(isChecked: Boolean) {
         context?.let {
             val sharedPrefs = SharedPrefs(it, GENERAL_PREFS)
             sharedPrefs.write(IS_NIGHT_THEME, isChecked)
         }
     }
-    
+
     private fun toggleSwitchBasedOnCurrentTheme() {
         when (AppCompatDelegate.getDefaultNightMode()) {
             AppCompatDelegate.MODE_NIGHT_YES -> binding.dayNightSwitch.isChecked = true

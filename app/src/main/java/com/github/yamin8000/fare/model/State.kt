@@ -23,8 +23,8 @@ package com.github.yamin8000.fare.model
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-data class State(val id : Int, val name : String) {
-    
+data class State(val id: Int, val name: String) {
+
     //this method is overridden for using this class in auto complete view
     override fun toString() = this.name
 }

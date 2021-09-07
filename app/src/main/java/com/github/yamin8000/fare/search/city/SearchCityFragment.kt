@@ -68,37 +68,37 @@ private const val NOT_SELECTED = -1
 
 class SearchCityFragment :
     BaseFragment<FragmentSearchCityBinding>({ FragmentSearchCityBinding.inflate(it) }) {
-    
+
     private val web = WEB()
-    
-    private val cityAPI : APIs.CityAPI by lazy(LazyThreadSafetyMode.NONE) { web.getAPI() }
-    
-    private val loadingAdapter : LoadingAdapter by lazy(LazyThreadSafetyMode.NONE) { LoadingAdapter() }
-    
-    private val emptyAdapter : EmptyAdapter by lazy(LazyThreadSafetyMode.NONE) { EmptyAdapter() }
-    
+
+    private val cityAPI: APIs.CityAPI by lazy(LazyThreadSafetyMode.NONE) { web.getAPI() }
+
+    private val loadingAdapter: LoadingAdapter by lazy(LazyThreadSafetyMode.NONE) { LoadingAdapter() }
+
+    private val emptyAdapter: EmptyAdapter by lazy(LazyThreadSafetyMode.NONE) { EmptyAdapter() }
+
     private val searchCityAdapter = SearchCityAdapter(this::onCitySelected)
-    
+
     private var selectedStateId = NOT_SELECTED
-    
-    private var didYouMeanThisSnack : Snackbar? = null
-    
+
+    private var didYouMeanThisSnack: Snackbar? = null
+
     private var backScope = CoroutineScope(Dispatchers.Default)
-    
+
     private var ioScope = CoroutineScope(Dispatchers.IO)
-    
-    override fun onViewCreated(view : View, savedInstanceState : Bundle?) {
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        
+
         try {
             lifecycleScope.launch { stateSelectorHandler() }
             lifecycleScope.launch { citySearchHandler() }
             lifecycleScope.launch { handleCachedCities() }
-        } catch (exception : Exception) {
+        } catch (exception: Exception) {
             handleCrash(exception)
         }
     }
-    
+
     /**
      * Load cached cities
      *
@@ -115,7 +115,7 @@ class SearchCityFragment :
             else populateCityList(cachedList.take(35))
         }
     }
-    
+
     /**
      * Fetch top/popular cities from server
      *
@@ -133,7 +133,7 @@ class SearchCityFragment :
             binding.cityList.adapter = emptyAdapter
         }
     }
-    
+
     /**
      * State selector handler
      *
@@ -150,13 +150,13 @@ class SearchCityFragment :
             else populateStates(cachedList)
         }
     }
-    
+
     /**
      * Fetch states from server and cache them
      *
      * @param cache states cache
      */
-    private fun fetchStates(cache : Cache) {
+    private fun fetchStates(cache: Cache) {
         val stateService = web.getAPI<APIs.StateAPI>()
         stateService.getAll().async(this, { stateList ->
             if (stateList.isNotEmpty()) {
@@ -165,7 +165,7 @@ class SearchCityFragment :
             }
         }) { netErrorCache() }
     }
-    
+
     private fun stateAutoClearIconHandler() {
         if (binding.searchStateEdit.text.toString().isNotEmpty()) {
             selectedStateId = NOT_SELECTED
@@ -174,14 +174,14 @@ class SearchCityFragment :
             lifecycleScope.launch { handleCachedCities() }
         }
     }
-    
+
     /**
      * Populate states,
      * fill states auto complete view/dropdown
      *
      * @param stateList list of states
      */
-    private fun populateStates(stateList : List<State>) {
+    private fun populateStates(stateList: List<State>) {
         context?.let {
             binding.searchStateInput.isEnabled = true
             val adapter = ArrayAdapter(it, R.layout.dropdown_item, stateList)
@@ -193,13 +193,13 @@ class SearchCityFragment :
             }
         }
     }
-    
+
     /**
      * Search city by state and name
      *
      * @param stateId state id of cities that user wants to search
      */
-    private fun searchCityByStateAndName(stateId : Int) {
+    private fun searchCityByStateAndName(stateId: Int) {
         hideKeyboard()
         didYouMeanThisSnack?.dismiss()
         binding.cityList.adapter = loadingAdapter
@@ -215,22 +215,22 @@ class SearchCityFragment :
                 lifecycleScope.launch { loadCachedCities(cityGrams = cityName.windowed(3)) }
             }
     }
-    
+
     private fun citySearchHandler() {
         binding.searchCityInput.setStartIconOnClickListener { searchStateHandler() }
-        
+
         binding.searchCityEdit.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH) searchStateHandler()
             true
         }
     }
-    
+
     private fun searchStateHandler() {
         if (selectedStateId != NOT_SELECTED) {
             searchCityByStateAndName(selectedStateId)
         } else searchCityByName()
     }
-    
+
     /**
      * Search city by name
      *
@@ -240,7 +240,7 @@ class SearchCityFragment :
         didYouMeanThisSnack?.dismiss()
         binding.cityList.adapter = loadingAdapter
         val cityName = binding.searchCityEdit.text.toString().trim()
-        
+
         val query = cityName.likeQuery()
         cityAPI.searchCity(cityName = query).async(this, { cityList ->
             if (cityList.isNotEmpty()) {
@@ -254,22 +254,22 @@ class SearchCityFragment :
             lifecycleScope.launch { loadCachedCities(cityGrams = cityName.windowed(FUZZY_SEARCH_WINDOW)) }
         }
     }
-    
+
     /**
      * Add list of cities to cached cities
      *
      * @param cityList a list of cities data
      */
-    private fun addToCachedCities(cityList : List<CityJoined>) = ioScope.launch {
+    private fun addToCachedCities(cityList: List<CityJoined>) = ioScope.launch {
         context?.let { safeContext ->
             val cache = Cache(safeContext, CITY_PREFS)
             val setOfCachedCities = (cache.readCache().fromJsonArray<CityJoined>()
-                                     ?: mutableListOf()).toMutableSet()
+                ?: mutableListOf()).toMutableSet()
             setOfCachedCities.addAll(cityList)
             cache.writeCache(cache = setOfCachedCities.toList().toJsonArray())
         }
     }
-    
+
     /**
      * Load cached cities
      *
@@ -280,8 +280,10 @@ class SearchCityFragment :
      * @param stateId search in cache by state id
      * @param cityGrams is list of search term n-grams where n = 3 like گرگ - رگا - گان where search term is گرگان
      */
-    private suspend fun loadCachedCities(cityName : String? = null, stateId : Int? = null,
-                                         cityGrams : List<String> = mutableListOf()) = backScope.launch {
+    private suspend fun loadCachedCities(
+        cityName: String? = null, stateId: Int? = null,
+        cityGrams: List<String> = mutableListOf()
+    ) = backScope.launch {
         context?.let { safeContext ->
             val cache = Cache(safeContext, CITY_PREFS)
             val cachedList = withContext(ioScope.coroutineContext) {
@@ -310,7 +312,7 @@ class SearchCityFragment :
             } else binding.cityList.adapter = emptyAdapter
         }
     }
-    
+
     /**
      * Sort fuzzy search candidates
      *
@@ -318,8 +320,10 @@ class SearchCityFragment :
      * @param terms is list of search term n-grams where n = 3 like گرگ - رگا - گان where search term is گرگان
      * @return sorted list of candidates based on their intersection by search term
      */
-    private fun sortCandidates(list : MutableList<CityJoined>,
-                               terms : List<String>) : MutableSet<CityJoined> {
+    private fun sortCandidates(
+        list: MutableList<CityJoined>,
+        terms: List<String>
+    ): MutableSet<CityJoined> {
         val ranks = mutableListOf<Pair<Int, CityJoined>>()
         for (cityJoined in list) {
             val rank = cityJoined.name.windowed(FUZZY_SEARCH_WINDOW).intersect(terms).size
@@ -327,7 +331,7 @@ class SearchCityFragment :
         }
         return ranks.sortedByDescending { it.first }.map { it.second }.toMutableSet()
     }
-    
+
     /**
      * Show did you mean this message
      * for fuzzy searching
@@ -338,49 +342,51 @@ class SearchCityFragment :
      * based on a rudimentary fuzzy search method
      * @param first first result of fuzzy search, item with best rank
      */
-    private fun showDidYouMeanThisMessage(first : String) {
+    private fun showDidYouMeanThisMessage(first: String) {
         val message = "${getString(R.string.did_you_mean_this)}: $first"
         didYouMeanThisSnack = snack(message, Snackbar.LENGTH_INDEFINITE)
     }
-    
+
     /**
      * Populate city list
      * fill recycler-view with given list
      *
      * @param cityList list of city data
      */
-    private fun populateCityList(cityList : List<CityJoined>) {
+    private fun populateCityList(cityList: List<CityJoined>) {
         searchCityAdapter.submitList(cityList)
         binding.cityList.adapter = searchCityAdapter
-        
+
         if (context != null) {
             val layoutManager = if (cityList.size <= 4) LinearLayoutManager(context)
             else GridLayoutManager(context, 3)
             binding.cityList.layoutManager = layoutManager
         }
     }
-    
+
     /**
      * On city selected callback method
      * for recycler-view item click
      *
      * @param cityId id of the city that user clicked
      */
-    private fun onCitySelected(cityId : String, cityName : String) {
+    private fun onCitySelected(cityId: String, cityName: String) {
         val isChoosingDefaultCity = handleDefaultCityChoosing(cityId, cityName)
-        
-        val bundle = bundleOf(CITY_ID to cityId, CHOOSING_DEFAULT_CITY to isChoosingDefaultCity,
-                              CITY_NAME to cityName)
+
+        val bundle = bundleOf(
+            CITY_ID to cityId, CHOOSING_DEFAULT_CITY to isChoosingDefaultCity,
+            CITY_NAME to cityName
+        )
         findNavController().navigate(R.id.action_searchCityFragment_to_searchLineFragment, bundle)
     }
-    
+
     /**
      * Handle default city choosing
      *
      * @param cityId id of city user wants to be default city
      * @return true if user is choosing default city and return false if this is a normal search
      */
-    private fun handleDefaultCityChoosing(cityId : String, cityName : String) : Boolean {
+    private fun handleDefaultCityChoosing(cityId: String, cityName: String): Boolean {
         arguments?.let {
             val isChoosingDefaultCity = it.getBoolean(CHOOSING_DEFAULT_CITY)
             if (isChoosingDefaultCity) {

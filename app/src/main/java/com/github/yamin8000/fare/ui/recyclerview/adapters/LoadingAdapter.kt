@@ -33,20 +33,20 @@ import com.github.yamin8000.fare.databinding.ShimmerBinding
  * @property viewId id of view like [R.layout.data_place_holder_shimmer]
  * @property items number of dummy items to load
  */
-class LoadingAdapter(private val items : Int = 10) :
+class LoadingAdapter(private val items: Int = 10) :
     RecyclerView.Adapter<LoadingAdapter.LoadingViewHolder>() {
-    
-    override fun onCreateViewHolder(parent : ViewGroup, viewType : Int) : LoadingViewHolder {
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LoadingViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = ShimmerBinding.inflate(inflater, parent, false)
         return LoadingViewHolder(binding.root)
     }
-    
-    override fun onBindViewHolder(holder : LoadingViewHolder, position : Int) {
+
+    override fun onBindViewHolder(holder: LoadingViewHolder, position: Int) {
         /* no-op */
     }
-    
+
     override fun getItemCount() = items
-    
-    class LoadingViewHolder(view : View) : RecyclerView.ViewHolder(view)
+
+    class LoadingViewHolder(view: View) : RecyclerView.ViewHolder(view)
 }

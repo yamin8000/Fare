@@ -30,35 +30,35 @@ import com.github.yamin8000.fare.model.Price
 import com.github.yamin8000.fare.util.Utility.numFormat
 
 class SearchLineViewHolder(
-    private val binding : SearchLineItemBinding, private val list : List<Line>,
-    private val context : Context,
-                          ) : RecyclerView.ViewHolder(binding.root) {
-    
-    fun setCode(code : String, position : Int) {
+    private val binding: SearchLineItemBinding, private val list: List<Line>,
+    private val context: Context,
+) : RecyclerView.ViewHolder(binding.root) {
+
+    fun setCode(code: String, position: Int) {
         if (code.isNotBlank()) {
             val text = if (list[position].hasCustomProperty) code
             else getString(R.string.line_code_template, code)
             binding.lineCode.text = text
         } else binding.lineCode.visibility = View.GONE
     }
-    
-    fun setOrigin(origin : String, position : Int) {
+
+    fun setOrigin(origin: String, position: Int) {
         if (origin.isNotBlank()) {
             val text = if (list[position].hasCustomProperty) origin
             else getString(R.string.line_origin_template, origin)
             binding.lineOrigin.text = text
         } else binding.lineOrigin.visibility = View.GONE
     }
-    
-    fun setDestination(destination : String, position : Int) {
+
+    fun setDestination(destination: String, position: Int) {
         if (destination.isNotBlank()) {
             val text = if (list[position].hasCustomProperty) destination
             else getString(R.string.line_destination_template, destination)
             binding.lineDestination.text = text
         } else binding.lineDestination.visibility = View.GONE
     }
-    
-    fun setPrice(prices : List<Price>) {
+
+    fun setPrice(prices: List<Price>) {
         val priceStringBuilder = StringBuilder()
         for (price in prices) {
             val priceName = price.name ?: ""
@@ -72,6 +72,6 @@ class SearchLineViewHolder(
         }
         binding.linesPrices.text = getString(R.string.line_price_template, "$priceStringBuilder".trim())
     }
-    
-    private fun getString(resId : Int, vararg formatArgs : Any) = context.getString(resId, *formatArgs)
+
+    private fun getString(resId: Int, vararg formatArgs: Any) = context.getString(resId, *formatArgs)
 }

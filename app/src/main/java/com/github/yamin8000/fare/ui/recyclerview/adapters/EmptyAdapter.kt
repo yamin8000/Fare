@@ -27,19 +27,19 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.github.yamin8000.fare.R
 
-class EmptyAdapter(private val message : String = "") : RecyclerView.Adapter<EmptyAdapter.EmptyViewHolder>() {
-    
-    class EmptyViewHolder(view : View) : RecyclerView.ViewHolder(view)
-    
-    override fun onCreateViewHolder(parent : ViewGroup, viewType : Int) : EmptyViewHolder {
+class EmptyAdapter(private val message: String = "") : RecyclerView.Adapter<EmptyAdapter.EmptyViewHolder>() {
+
+    class EmptyViewHolder(view: View) : RecyclerView.ViewHolder(view)
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EmptyViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.empty_adapter, parent, false)
         if (message.isNotEmpty()) view.findViewById<TextView>(R.id.empty_adapter_text).text = message
         return EmptyViewHolder(view)
     }
-    
-    override fun onBindViewHolder(holder : EmptyViewHolder, position : Int) {
+
+    override fun onBindViewHolder(holder: EmptyViewHolder, position: Int) {
         /* no-op */
     }
-    
+
     override fun getItemCount() = 1
 }

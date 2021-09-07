@@ -25,4 +25,4 @@ import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-data class CityExtra(val id : String, @Json(name = CITY_ID) val cityId : Int, val info : String)
+data class CityExtra(val id: String, @Json(name = CITY_ID) val cityId: Int, val info: String)

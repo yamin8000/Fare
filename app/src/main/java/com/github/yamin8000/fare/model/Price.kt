@@ -24,5 +24,7 @@ import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-data class Price(val id : String?, val name : String?, @Json(name = "line_id") val lineId : String?,
-                 @Json(name = "date_added") val dateAdded : String?, @Json(name = "price") val value : String)
+data class Price(
+    val id: String?, val name: String?, @Json(name = "line_id") val lineId: String?,
+    @Json(name = "date_added") val dateAdded: String?, @Json(name = "price") val value: String
+)

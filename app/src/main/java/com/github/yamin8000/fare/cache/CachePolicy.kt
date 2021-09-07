@@ -27,8 +27,8 @@ import java.time.LocalDateTime
 typealias Policy = (LocalDateTime, LocalDateTime) -> Boolean
 
 object CachePolicy {
-    
-    val DailyCache : Policy = { current, last -> current.minusDays(1).isAfter(last) }
-    val WeeklyCache : Policy = { current, last -> current.minusDays(7).isAfter(last) }
-    val MonthlyCache : Policy = { current, last -> current.minusMonths(1).isAfter(last) }
+
+    val DailyCache: Policy = { current, last -> current.minusDays(1).isAfter(last) }
+    val WeeklyCache: Policy = { current, last -> current.minusDays(7).isAfter(last) }
+    val MonthlyCache: Policy = { current, last -> current.minusMonths(1).isAfter(last) }
 }

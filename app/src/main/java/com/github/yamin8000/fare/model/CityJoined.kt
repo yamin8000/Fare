@@ -23,4 +23,4 @@ package com.github.yamin8000.fare.model
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-data class CityJoined(val id : Int, val name : String, val county : County, val state : State)
+data class CityJoined(val id: Int, val name: String, val county: County, val state: State)

@@ -31,13 +31,13 @@ import com.orhanobut.logger.Logger
 import java.math.BigInteger
 
 object Utility {
-    
+
     /**
      * Hide keyboard inside fragment
      *
      * since this is not my code and looks shady
      *
-     * I don't about any errors that can happen
+     * I don't know about any errors that can happen
      *
      * so it's wrapped inside try/catch
      *
@@ -46,23 +46,23 @@ object Utility {
         try {
             val activity = this.activity
             if (activity != null) {
-                val imm = activity.getSystemService(
-                        AppCompatActivity.INPUT_METHOD_SERVICE) as InputMethodManager
+                val imm =
+                    activity.getSystemService(AppCompatActivity.INPUT_METHOD_SERVICE) as InputMethodManager
                 var view = activity.currentFocus
                 if (view == null) view = View(activity)
                 imm.hideSoftInputFromWindow(view.windowToken, 0)
             }
-        } catch (exception : Exception) {
+        } catch (exception: Exception) {
             handleCrash(exception)
         }
     }
-    
+
     /**
      * Handle soft crashes, that are suppressed using try-catch
      *
      * @param exception exception that caught
      */
-    fun Fragment.handleCrash(exception : Exception) {
+    fun Fragment.handleCrash(exception: Exception) {
         //navigate user to a special crash screen
         this.findNavController().navigate(R.id.crashFragment)
         //record and send exception data to firebase
@@ -70,19 +70,19 @@ object Utility {
         //log it logcat
         Logger.d(exception.stackTraceToString())
     }
-    
-    
+
+
     /**
      * Format string number
      *
      * @return number in form of 1,000,000
      */
-    fun String?.numFormat() : String {
+    fun String?.numFormat(): String {
         if (this == null) return "0"
         return try {
             val number = BigInteger(this)
             String.format("%,d", number)
-        } catch (e : Exception) {
+        } catch (e: Exception) {
             this
         }
     }

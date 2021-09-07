@@ -26,10 +26,10 @@ import com.github.yamin8000.fare.databinding.SearchCityItemBinding
 import com.github.yamin8000.fare.model.CityJoined
 
 class SearchCityViewHolder(
-    private val binding : SearchCityItemBinding,
-    clickListener : (String, String) -> Unit, asyncListDiffer : AsyncListDiffer<CityJoined>,
-                          ) : RecyclerView.ViewHolder(binding.root) {
-    
+    private val binding: SearchCityItemBinding,
+    clickListener: (String, String) -> Unit, asyncListDiffer: AsyncListDiffer<CityJoined>,
+) : RecyclerView.ViewHolder(binding.root) {
+
     init {
         binding.root.setOnClickListener {
             if (adapterPosition != RecyclerView.NO_POSITION) {
@@ -39,17 +39,17 @@ class SearchCityViewHolder(
             }
         }
     }
-    
-    
-    fun setCity(cityName : String) {
+
+
+    fun setCity(cityName: String) {
         binding.cityName.text = cityName
     }
-    
-    fun setState(stateName : String) {
+
+    fun setState(stateName: String) {
         binding.stateName.text = stateName
     }
-    
-    fun setCounty(countyName : String) {
+
+    fun setCounty(countyName: String) {
         binding.countyName.text = countyName
     }
 }

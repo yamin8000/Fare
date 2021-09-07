@@ -26,5 +26,7 @@ import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-data class City(val id : Int, val name : String, @Json(name = STATE_ID) val stateId : String,
-                @Json(name = COUNTY_ID) val countyId : String)
+data class City(
+    val id: Int, val name: String, @Json(name = STATE_ID) val stateId: String,
+    @Json(name = COUNTY_ID) val countyId: String
+)

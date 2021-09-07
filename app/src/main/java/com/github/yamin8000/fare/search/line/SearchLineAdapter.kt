@@ -30,40 +30,40 @@ import com.github.yamin8000.fare.model.Line
 
 class SearchLineAdapter :
     RecyclerView.Adapter<SearchLineViewHolder>() {
-    
-    private val asyncDiffer : AsyncListDiffer<Line> = AsyncListDiffer(this, DiffCallback)
-    
+
+    private val asyncDiffer: AsyncListDiffer<Line> = AsyncListDiffer(this, DiffCallback)
+
     private object DiffCallback : DiffUtil.ItemCallback<Line>() {
-        
-        override fun areItemsTheSame(oldItem : Line, newItem : Line) = oldItem.id == newItem.id
-        
-        override fun areContentsTheSame(oldItem : Line, newItem : Line) = oldItem == newItem
+
+        override fun areItemsTheSame(oldItem: Line, newItem: Line) = oldItem.id == newItem.id
+
+        override fun areContentsTheSame(oldItem: Line, newItem: Line) = oldItem == newItem
     }
-    
-    override fun onCreateViewHolder(parent : ViewGroup, viewType : Int) : SearchLineViewHolder {
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SearchLineViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = SearchLineItemBinding.inflate(inflater, parent, false)
         return SearchLineViewHolder(binding, asyncDiffer.currentList, parent.context)
     }
-    
-    override fun onBindViewHolder(holder : SearchLineViewHolder, position : Int) {
+
+    override fun onBindViewHolder(holder: SearchLineViewHolder, position: Int) {
         val model = asyncDiffer.currentList[position]
         holder.setCode(model.code ?: "", position)
         holder.setOrigin(model.origin ?: "", position)
         holder.setDestination(model.destination ?: "", position)
-        
+
         val priceList = model.price ?: mutableListOf()
         if (priceList.isNotEmpty()) holder.setPrice(priceList)
     }
-    
-    
+
+
     override fun getItemCount() = asyncDiffer.currentList.size
-    
-    override fun getItemId(position : Int) = position.toLong()
-    
-    override fun getItemViewType(position : Int) = position
-    
-    fun submitList(newList : List<Line>) {
+
+    override fun getItemId(position: Int) = position.toLong()
+
+    override fun getItemViewType(position: Int) = position
+
+    fun submitList(newList: List<Line>) {
         asyncDiffer.submitList(newList)
     }
 }

@@ -32,16 +32,16 @@ import com.github.yamin8000.fare.ui.fragment.BaseFragment
 import com.orhanobut.logger.Logger
 
 class SplashFragment : BaseFragment<FragmentSplashBinding>({ FragmentSplashBinding.inflate(it) }) {
-    
-    override fun onViewCreated(view : View, savedInstanceState : Bundle?) {
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        
+
         try {
             val handler = Handler(Looper.getMainLooper())
             handler.postDelayed(1500) {
                 findNavController().navigate(R.id.action_splashFragment_to_homeFragment)
             }
-        } catch (exception : Exception) {
+        } catch (exception: Exception) {
             Logger.d(exception.stackTraceToString())
         }
     }

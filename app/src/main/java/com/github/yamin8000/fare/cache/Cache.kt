@@ -36,32 +36,32 @@ import java.time.LocalDateTime
  * @param sharedPrefsName name of shared preferences file
  */
 class Cache(
-    context : Context, sharedPrefsName : String,
-    private val cacheDatePolicy : Policy = CachePolicy.WeeklyCache,
-           ) {
-    
+    context: Context, sharedPrefsName: String,
+    private val cacheDatePolicy: Policy = CachePolicy.WeeklyCache,
+) {
+
     val sharedPrefs = SharedPrefs(context, sharedPrefsName)
-    
+
     /**
      * check if cache data is fresh
      *
      * @return true if cache is new according to class cache policy
      */
-    fun isDataFresh() : Boolean {
+    fun isDataFresh(): Boolean {
         val currentDate = LocalDateTime.now()
         val lastDate = sharedPrefs.readDate()
         var isDataExpired = false
         if (lastDate.isNotBlank()) isDataExpired = cacheDatePolicy(currentDate, LocalDateTime.parse(lastDate))
         return lastDate.isNotBlank() && !isDataExpired
     }
-    
+
     /**
      * Read cache from shared preferences
      *
      * @param key key of shared preference, by default it's "cache" but it can be different
      */
-    fun readCache(key : String = CACHE) = sharedPrefs.readString(key)
-    
+    fun readCache(key: String = CACHE) = sharedPrefs.readString(key)
+
     /**
      * Write cache to shared preferences
      *
@@ -69,7 +69,7 @@ class Cache(
      * @param key key of shared preference, by default it's "cache" but it can be different
      * @param cache data/cache content
      */
-    fun <T> writeCache(key : String = CACHE, cache : T) {
+    fun <T> writeCache(key: String = CACHE, cache: T) {
         sharedPrefs.writeDate()
         sharedPrefs.write(key, cache)
     }

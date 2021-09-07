@@ -25,12 +25,12 @@ import androidx.appcompat.app.AppCompatActivity
 import com.github.yamin8000.fare.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
-    
-    private val binding : ActivityMainBinding by lazy(LazyThreadSafetyMode.NONE) {
+
+    private val binding: ActivityMainBinding by lazy(LazyThreadSafetyMode.NONE) {
         ActivityMainBinding.inflate(layoutInflater)
     }
-    
-    override fun onCreate(savedInstanceState : Bundle?) {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
     }

@@ -38,23 +38,23 @@ import retrofit2.converter.moshi.MoshiConverterFactory
  * @param converterFactory converter factory for converting response data which is defaulted to moshi
  */
 class WEB(
-    baseUrl : String = SUPA_BASE_URL,
-    converterFactory : Converter.Factory = MoshiConverterFactory.create(),
-         ) {
-    
-    var retrofit : Retrofit = Retrofit.Builder().baseUrl(baseUrl).addConverterFactory(converterFactory)
+    baseUrl: String = SUPA_BASE_URL,
+    converterFactory: Converter.Factory = MoshiConverterFactory.create(),
+) {
+
+    var retrofit: Retrofit = Retrofit.Builder().baseUrl(baseUrl).addConverterFactory(converterFactory)
         .build()
-    
+
     /**
      * get service of given api/interface
      *
      * @param T type/class/interface of api
      * @return service for that api
      */
-    inline fun <reified T> getAPI() : T = retrofit.create(T::class.java)
-    
+    inline fun <reified T> getAPI(): T = retrofit.create(T::class.java)
+
     companion object {
-        
+
         /**
          * async callback
          *
@@ -66,18 +66,18 @@ class WEB(
          * @param onFail callback when request is failed
          */
         inline fun <reified T> Call<T>.async(
-            lifeCycleOwner : LifecycleOwner, crossinline onSuccess : (T) -> Unit,
-            crossinline onFail : (Throwable) -> Unit,
-                                            ) {
+            lifeCycleOwner: LifecycleOwner, crossinline onSuccess: (T) -> Unit,
+            crossinline onFail: (Throwable) -> Unit,
+        ) {
             lifeCycleOwner.lifecycle.addObserver(object : LifecycleObserver {
                 @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
                 fun cancelCall() {
                     this@async.cancel()
                 }
             })
-            
+
             this.enqueue(object : Callback<T> {
-                override fun onResponse(call : Call<T>, response : Response<T>) {
+                override fun onResponse(call: Call<T>, response: Response<T>) {
                     val body = response.body()
                     if (body != null) onSuccess(body)
                     else {
@@ -94,14 +94,14 @@ class WEB(
                         onFail(IllegalStateException("Body is not a list!"))
                     }
                 }
-                
-                override fun onFailure(call : Call<T>, t : Throwable) {
+
+                override fun onFailure(call: Call<T>, t: Throwable) {
                     if (!isCanceled) onFail(t)
                     else Logger.d("${call.request().url()} is canceled")
                 }
             })
         }
-        
+
         /**
          * async callback which pass Response class instead of only data
          *
@@ -115,46 +115,46 @@ class WEB(
          * @param onFail callback when request is failed
          */
         fun <T> Call<T>.asyncResponse(
-            lifeCycleOwner : LifecycleOwner, onSuccess : (Response<T>) -> Unit,
-            onFail : (Throwable) -> Unit,
-                                     ) {
+            lifeCycleOwner: LifecycleOwner, onSuccess: (Response<T>) -> Unit,
+            onFail: (Throwable) -> Unit,
+        ) {
             lifeCycleOwner.lifecycle.addObserver(object : LifecycleObserver {
                 @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
                 fun cancelCall() {
                     this@asyncResponse.cancel()
                 }
             })
-            
+
             this.enqueue(object : Callback<T> {
-                override fun onResponse(call : Call<T>, response : Response<T>) = onSuccess(response)
-                
-                override fun onFailure(call : Call<T>, t : Throwable) {
+                override fun onResponse(call: Call<T>, response: Response<T>) = onSuccess(response)
+
+                override fun onFailure(call: Call<T>, t: Throwable) {
                     if (!isCanceled) onFail(t)
                     else Logger.d("${call.request().url()} is canceled")
                 }
             })
         }
-        
+
         /**
          * generic method for converting List of type T json array String
          *
          * @param T type of data
          * @return json array string
          */
-        inline fun <reified T> List<T>.toJsonArray() : String {
+        inline fun <reified T> List<T>.toJsonArray(): String {
             val moshi = Moshi.Builder().build()
             val type = Types.newParameterizedType(List::class.java, T::class.java)
             val jsonAdapter = moshi.adapter<List<T>>(type)
             return jsonAdapter.toJson(this)
         }
-        
+
         /**
          * generic method for converting json array string to List of objects
          *
          * @param T type of data
          * @return List of type T
          */
-        inline fun <reified T> String.fromJsonArray() : List<T>? {
+        inline fun <reified T> String.fromJsonArray(): List<T>? {
             return if (this.isNotBlank()) {
                 val moshi = Moshi.Builder().build()
                 val type = Types.newParameterizedType(List::class.java, T::class.java)
@@ -162,14 +162,14 @@ class WEB(
                 jsonAdapter.fromJson(this)
             } else null
         }
-        
+
         /**
          * Like query is used for supabase/postgrest requests
          * that are added to query parameter
          *
          */
         fun String.likeQuery() = "like.*$this*"
-        
+
         /**
          * Eq query is used for supabase/postgrest requests
          * that are added to query parameter

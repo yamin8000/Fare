@@ -29,27 +29,27 @@ import com.github.yamin8000.fare.ui.fragment.BaseFragment
 import com.github.yamin8000.fare.util.Utility.handleCrash
 
 class AboutFragment : BaseFragment<FragmentAboutBinding>({ FragmentAboutBinding.inflate(it) }) {
-    
-    override fun onViewCreated(view : View, savedInstanceState : Bundle?) {
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        
+
         try {
             binding.aboutDeveloperButton.setOnClickListener {
                 findNavController().navigate(R.id.action_aboutFragment_to_aboutDeveloperFragment)
             }
-            
+
             binding.licenseButton.setOnClickListener {
                 findNavController().navigate(R.id.action_aboutFragment_to_licenseFragment)
             }
-            
+
             binding.sendFeedbackButton.setOnClickListener {
                 findNavController().navigate(R.id.action_aboutFragment_to_feedbackFragment)
             }
-            
+
             binding.appHelpButton.setOnClickListener {
                 findNavController().navigate(R.id.action_aboutFragment_to_appHelpFragment)
             }
-        } catch (exception : Exception) {
+        } catch (exception: Exception) {
             handleCrash(exception)
         }
     }

@@ -40,19 +40,20 @@ import com.github.yamin8000.fare.web.WEB.Companion.async
 import com.github.yamin8000.fare.web.WEB.Companion.fromJsonArray
 import com.github.yamin8000.fare.web.WEB.Companion.toJsonArray
 
-class LicenseFragment : BaseFragment<FragmentLicenseBinding>({ FragmentLicenseBinding.inflate(it) }) {
-    
-    override fun onViewCreated(view : View, savedInstanceState : Bundle?) {
+class LicenseFragment :
+    BaseFragment<FragmentLicenseBinding>({ FragmentLicenseBinding.inflate(it) }) {
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        
+
         try {
             LinkifyCompat.addLinks(binding.licenseHeader, Linkify.ALL)
             loadLicensesText()
-        } catch (exception : Exception) {
+        } catch (exception: Exception) {
             handleCrash(exception)
         }
     }
-    
+
     /**
      * Load licenses text from web or cache
      *
@@ -65,13 +66,13 @@ class LicenseFragment : BaseFragment<FragmentLicenseBinding>({ FragmentLicenseBi
             else getLicenseFromServer(licenseCache)
         }
     }
-    
+
     /**
      * Get license from server
      *
      * @param licenseCache cache is used for writing new data to cache
      */
-    private fun getLicenseFromServer(licenseCache : Cache) {
+    private fun getLicenseFromServer(licenseCache: Cache) {
         WEB(SUPA_BASE_URL).getAPI<APIs.LicenseAPI>().getAll().async(this, { list ->
             if (list.isNotEmpty()) {
                 binding.licenseText.text = createLinedText(list)
@@ -79,8 +80,8 @@ class LicenseFragment : BaseFragment<FragmentLicenseBinding>({ FragmentLicenseBi
             } else snack(getString(R.string.data_empty))
         }) { netError() }
     }
-    
-    private fun createLinedText(list : List<License>) : String {
+
+    private fun createLinedText(list: List<License>): String {
         val stringBuilder = StringBuilder()
         list.forEach { licenseItem ->
             stringBuilder.append(licenseItem.text).append("\n")

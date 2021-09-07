@@ -31,15 +31,15 @@ import java.time.LocalDateTime
  * @param context context
  * @param name shared prefs name
  */
-class SharedPrefs(context : Context, name : String) {
-    
+class SharedPrefs(context: Context, name: String) {
+
     private val sharedPrefs = context.getSharedPreferences(name, Context.MODE_PRIVATE)
-    
+
     fun readDate() = readString(DATE)
-    
+
     fun writeDate() = write(DATE, LocalDateTime.now().toString())
-    
-    fun <T> write(key : String, value : T) {
+
+    fun <T> write(key: String, value: T) {
         when (value) {
             is String -> writeString(key, value)
             is Boolean -> writeBoolean(key, value)
@@ -47,18 +47,18 @@ class SharedPrefs(context : Context, name : String) {
             else -> writeString(key, value.toString())
         }
     }
-    
+
     @JvmOverloads
-    fun readString(key : String, defaultValue : String = "") = sharedPrefs.getString(key, defaultValue) ?: ""
-    
-    private fun writeString(key : String, value : String) = sharedPrefs.edit { putString(key, value) }
-    
+    fun readString(key: String, defaultValue: String = "") = sharedPrefs.getString(key, defaultValue) ?: ""
+
+    private fun writeString(key: String, value: String) = sharedPrefs.edit { putString(key, value) }
+
     @JvmOverloads
-    fun readBoolean(key : String, defaultValue : Boolean = false) = sharedPrefs.getBoolean(key, defaultValue)
-    
-    private fun writeBoolean(key : String, value : Boolean) = sharedPrefs.edit { putBoolean(key, value) }
-    
-    private fun writeLong(key : String, value : Long) = sharedPrefs.edit { putLong(key, value) }
-    
+    fun readBoolean(key: String, defaultValue: Boolean = false) = sharedPrefs.getBoolean(key, defaultValue)
+
+    private fun writeBoolean(key: String, value: Boolean) = sharedPrefs.edit { putBoolean(key, value) }
+
+    private fun writeLong(key: String, value: Long) = sharedPrefs.edit { putLong(key, value) }
+
     fun clearData() = sharedPrefs.edit().clear().apply()
 }

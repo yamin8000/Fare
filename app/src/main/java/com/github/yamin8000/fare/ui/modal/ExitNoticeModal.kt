@@ -28,18 +28,18 @@ import com.github.yamin8000.fare.databinding.ExitNoticeModalBinding
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 class ExitNoticeModal : BottomSheetDialogFragment() {
-    
-    private val binding : ExitNoticeModalBinding by lazy(LazyThreadSafetyMode.NONE) {
+
+    private val binding: ExitNoticeModalBinding by lazy(LazyThreadSafetyMode.NONE) {
         ExitNoticeModalBinding.inflate(layoutInflater)
     }
-    
-    override fun onCreateView(inflater : LayoutInflater, container : ViewGroup?, bundle : Bundle?) : View {
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, bundle: Bundle?): View {
         return binding.root
     }
-    
-    override fun onViewCreated(view : View, savedInstanceState : Bundle?) {
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        
+
         binding.exitNoticeButton.setOnClickListener { activity?.finish() }
     }
 }

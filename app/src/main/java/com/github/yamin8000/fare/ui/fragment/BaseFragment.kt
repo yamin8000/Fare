@@ -37,11 +37,11 @@ typealias Inflater<VB> = (LayoutInflater) -> VB
  * @param fragmentClass class type used for fragment instance delegate
  * @param inflater layout inflater lambda
  */
-abstract class BaseFragment<VB : ViewBinding>(inflater : Inflater<VB>) : Fragment() {
-    
-    protected val binding : VB by lazy(LazyThreadSafetyMode.NONE) { inflater(layoutInflater) }
-    
-    override fun onCreateView(inflater : LayoutInflater, container : ViewGroup?, bundle : Bundle?) : View {
+abstract class BaseFragment<VB : ViewBinding>(inflater: Inflater<VB>) : Fragment() {
+
+    protected val binding: VB by lazy(LazyThreadSafetyMode.NONE) { inflater(layoutInflater) }
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, bundle: Bundle?): View {
         return binding.root
     }
 }

@@ -26,10 +26,10 @@ import com.github.yamin8000.fare.databinding.FragmentCrashBinding
 import com.github.yamin8000.fare.ui.fragment.BaseFragment
 
 class CrashFragment : BaseFragment<FragmentCrashBinding>({ FragmentCrashBinding.inflate(it) }) {
-    
-    override fun onViewCreated(view : View, savedInstanceState : Bundle?) {
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        
+
         binding.emptyAdapterText.setOnClickListener { activity?.finish() }
         binding.crashImage.setOnClickListener { activity?.finish() }
         binding.root.setOnClickListener { activity?.finish() }

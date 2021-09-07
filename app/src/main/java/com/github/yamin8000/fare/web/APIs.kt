@@ -35,7 +35,7 @@ import retrofit2.Call
 import retrofit2.http.*
 
 object APIs {
-    
+
     //table
     private const val FEEDBACK = "Feedback"
     private const val LICENSE = "License"
@@ -44,87 +44,97 @@ object APIs {
     private const val CITY_EXTRA = "CityExtra"
     private const val LINE = "Line"
     private const val PRICE_REFERENCE = "PriceReference"
+
     //query
     private const val SELECT = "select"
     private const val ID = "id"
     private const val NAME = "name"
+
     //advanced queries
     private const val CITY_JOIN = "id,name,county:County(*),state:State(*)"
-    private const val LINE_PRICE_JOIN = "id,code,origin,destination,has_custom_property_name,price:Price(name,price)"
-    const val TOP_CITIES_ID = "in.(61,71,88,114,124,173,187,231,283,297,323,366,399,606,679,719,738,761,826,836,922,923,930,1050,1060,1081,1109,1122,1137,1142,1218,1356,1378,1528,1543,1547)"
+    private const val LINE_PRICE_JOIN =
+        "id,code,origin,destination,has_custom_property_name,price:Price(name,price)"
+    const val TOP_CITIES_ID =
+        "in.(61,71,88,114,124,173,187,231,283,297,323,366,399,606,679,719,738,761,826,836,922,923,930,1050,1060,1081,1109,1122,1137,1142,1218,1356,1378,1528,1543,1547)"
     private const val COMPACT_LINE_QUERY = "code,origin,destination"
-    
+
     interface FeedbackAPI {
-        
+
         @Headers("$APIKEY: $SUPA_BASE_KEY", "$AUTHORIZATION: $BEARER $SUPA_BASE_KEY")
         @POST(FEEDBACK)
-        fun createFeedback(@Body feedback : Feedback) : Call<Unit>
+        fun createFeedback(@Body feedback: Feedback): Call<Unit>
     }
-    
+
     interface LicenseAPI {
-        
+
         @Headers("$APIKEY: $SUPA_BASE_KEY", "$AUTHORIZATION: $BEARER $SUPA_BASE_KEY")
         @GET(LICENSE)
-        fun getAll() : Call<List<License>>
+        fun getAll(): Call<List<License>>
     }
-    
+
     interface StateAPI {
-        
+
         @Headers("$APIKEY: $SUPA_BASE_KEY", "$AUTHORIZATION: $BEARER $SUPA_BASE_KEY")
         @GET(STATE)
-        fun getAll(@Query(value = SELECT) query : String? = null) : Call<List<State>>
-        
+        fun getAll(@Query(value = SELECT) query: String? = null): Call<List<State>>
+
         @Headers("$APIKEY: $SUPA_BASE_KEY", "$AUTHORIZATION: $BEARER $SUPA_BASE_KEY")
         @HEAD(STATE)
-        fun getCount() : Call<Void>
+        fun getCount(): Call<Void>
     }
-    
+
     interface CityAPI {
-        
+
         @Headers("$APIKEY: $SUPA_BASE_KEY", "$AUTHORIZATION: $BEARER $SUPA_BASE_KEY")
         @GET(CITY)
-        fun getAll(@Query(SELECT) query : String? = null) : Call<List<City>>
-        
+        fun getAll(@Query(SELECT) query: String? = null): Call<List<City>>
+
         @Headers("$APIKEY: $SUPA_BASE_KEY", "$AUTHORIZATION: $BEARER $SUPA_BASE_KEY")
         @GET(CITY)
-        fun searchCity(@Query(NAME) cityName : String? = null, @Query(ID) cityId : String? = null,
-                       @Query(STATE_ID) stateId : String? = null,
-                       @Query(SELECT) select : String = CITY_JOIN) : Call<List<CityJoined>>
+        fun searchCity(
+            @Query(NAME) cityName: String? = null, @Query(ID) cityId: String? = null,
+            @Query(STATE_ID) stateId: String? = null,
+            @Query(SELECT) select: String = CITY_JOIN
+        ): Call<List<CityJoined>>
     }
-    
+
     interface LineAPI {
-        
+
         @Headers("$APIKEY: $SUPA_BASE_KEY", "$AUTHORIZATION: $BEARER $SUPA_BASE_KEY")
         @GET(LINE)
-        fun getAll(@Query(SELECT) query : String? = null) : Call<List<Line>>
-        
+        fun getAll(@Query(SELECT) query: String? = null): Call<List<Line>>
+
         @Headers("$APIKEY: $SUPA_BASE_KEY", "$AUTHORIZATION: $BEARER $SUPA_BASE_KEY")
         @GET(LINE)
-        fun getCityLines(@Query(CITY_ID) cityId : String? = null, @Query(ORIGIN) origin : String? = null,
-                         @Query(DESTINATION) destination : String? = null,
-                         @Query(LINE_CODE) lineCode : String? = null, @Query(LIMIT) limit : String? = null,
-                         @Query(SELECT) select : String = LINE_PRICE_JOIN) : Call<List<Line>>
+        fun getCityLines(
+            @Query(CITY_ID) cityId: String? = null, @Query(ORIGIN) origin: String? = null,
+            @Query(DESTINATION) destination: String? = null,
+            @Query(LINE_CODE) lineCode: String? = null, @Query(LIMIT) limit: String? = null,
+            @Query(SELECT) select: String = LINE_PRICE_JOIN
+        ): Call<List<Line>>
     }
-    
+
     interface PriceReferenceAPI {
-        
+
         @Headers("$APIKEY: $SUPA_BASE_KEY", "$AUTHORIZATION: $BEARER $SUPA_BASE_KEY")
         @GET(PRICE_REFERENCE)
-        fun getCityReference(@Query(CITY_ID) cityId : String) : Call<List<PriceReference>>
+        fun getCityReference(@Query(CITY_ID) cityId: String): Call<List<PriceReference>>
     }
-    
+
     interface CityExtraAPI {
-        
+
         @Headers("$APIKEY: $SUPA_BASE_KEY", "$AUTHORIZATION: $BEARER $SUPA_BASE_KEY")
         @GET(CITY_EXTRA)
-        fun getCityExtra(@Query(CITY_ID) cityId : String) : Call<List<CityExtra>>
+        fun getCityExtra(@Query(CITY_ID) cityId: String): Call<List<CityExtra>>
     }
-    
+
     interface CompactLineApi {
-        
+
         @Headers("$APIKEY: $SUPA_BASE_KEY", "$AUTHORIZATION: $BEARER $SUPA_BASE_KEY")
         @GET(LINE)
-        fun getCityLines(@Query(CITY_ID) cityId : String,
-                         @Query(SELECT) select : String = COMPACT_LINE_QUERY) : Call<List<CompactLine>>
+        fun getCityLines(
+            @Query(CITY_ID) cityId: String,
+            @Query(SELECT) select: String = COMPACT_LINE_QUERY
+        ): Call<List<CompactLine>>
     }
 }

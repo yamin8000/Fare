@@ -49,35 +49,35 @@ import com.github.yamin8000.fare.web.WEB.Companion.asyncResponse
 import com.google.android.material.snackbar.Snackbar
 
 class HomeFragment : BaseFragment<FragmentHomeBinding>({ FragmentHomeBinding.inflate(it) }) {
-    
-    override fun onViewCreated(view : View, savedInstanceState : Bundle?) {
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        
+
         try {
             handleButtonClickListeners()
             backPressHandler()
             handleFreshnessOfCache()
-        } catch (exception : Exception) {
+        } catch (exception: Exception) {
             handleCrash(exception)
         }
     }
-    
+
     private fun handleButtonClickListeners() {
         binding.aboutButton.setOnClickListener {
             findNavController().navigate(R.id.action_homeFragment_to_aboutFragment)
         }
-        
+
         binding.searchCityButton.setOnClickListener {
             findNavController().navigate(R.id.action_homeFragment_to_searchCityFragment)
         }
-        
+
         binding.myCityButton.setOnClickListener { handleMyCityButton() }
-        
+
         binding.settingsButton.setOnClickListener {
             findNavController().navigate(R.id.action_homeFragment_to_settingsFragment)
         }
     }
-    
+
     private fun handleFreshnessOfCache() {
         //checking if server is responsive
         val service = WEB().getAPI<APIs.StateAPI>()
@@ -86,7 +86,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>({ FragmentHomeBinding.inf
             if (it.code() == 200) clearOldCache()
         }) { netErrorCache() }
     }
-    
+
     /**
      * Clear old cache if data is not fresh
      *
@@ -102,7 +102,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>({ FragmentHomeBinding.inf
             list.forEach { cache -> if (!cache.isDataFresh()) cache.sharedPrefs.clearData() }
         }
     }
-    
+
     private fun handleMyCityButton() {
         context?.let {
             val sharedPrefs = SharedPrefs(it, GENERAL_PREFS)
@@ -118,7 +118,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>({ FragmentHomeBinding.inf
             }
         }
     }
-    
+
     private fun backPressHandler() {
         val callback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
