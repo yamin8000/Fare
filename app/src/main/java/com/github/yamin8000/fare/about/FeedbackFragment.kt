@@ -52,31 +52,40 @@ class FeedbackFragment : BaseFragment<FragmentFeedbackBinding>({ FragmentFeedbac
         super.onViewCreated(view, savedInstanceState)
 
         try {
-            sharedPrefs = context?.let { SharedPrefs(it, FEEDBACK_PREFS) }
-            handleAutomatedReportFromCityLineFragment()
-            binding.sendFeedback.setOnClickListener { createNewFeedback() }
+            sharedPrefs = getSharedPrefs()
+
+            val feedbackParam = getFeedbackArgument()
+            if (feedbackParam.isNotBlank())
+                handleAutomatedReportFromCityLineFragment(feedbackParam)
+
+            binding.sendFeedback.setOnClickListener {
+                hideKeyboard()
+                createNewFeedback()
+            }
         } catch (exception: Exception) {
             handleCrash(exception)
         }
     }
+
+    private fun getFeedbackArgument() = arguments?.getString(FEEDBACK) ?: ""
+
+    private fun getSharedPrefs() = context?.let { SharedPrefs(it, FEEDBACK_PREFS) }
 
     /**
      * Handle automated report from city line fragment
      *
      * there are two entry to this fragment
      * first => AboutFragment -> FeedbackFragment
+     *
      * second => SearchLineFragment -> Toolbar menu button -> FeedbackFragment
      *
      * this method handle the second entry
      *
      */
-    private fun handleAutomatedReportFromCityLineFragment() {
-        val feedbackParam = arguments?.getString(FEEDBACK) ?: ""
-        if (feedbackParam.isNotEmpty()) {
-            binding.feedbackEdit.setText(feedbackParam)
-            binding.feedbackEdit.requestFocus()
-            noticeSnackbar = snack(getString(R.string.feedback_notice), Snackbar.LENGTH_INDEFINITE)
-        }
+    private fun handleAutomatedReportFromCityLineFragment(feedbackParam: String) {
+        binding.feedbackEdit.setText(feedbackParam)
+        binding.feedbackEdit.requestFocus()
+        noticeSnackbar = snack(getString(R.string.feedback_notice), Snackbar.LENGTH_INDEFINITE)
     }
 
     /**
@@ -86,14 +95,13 @@ class FeedbackFragment : BaseFragment<FragmentFeedbackBinding>({ FragmentFeedbac
      *
      */
     private fun createNewFeedback() {
-        hideKeyboard()
         //feedback text, text that describe content of user feedback
         val feedbackText = binding.feedbackEdit.text ?: ""
         //user name, user contact info, can be nullable
         val feedbackUser = binding.feedbackContactEdit.text
         when {
             isSpamming() -> snack(getString(R.string.feedback_spam_notice))
-            "$feedbackText".isNotEmpty() -> {
+            "$feedbackText".isNotBlank() -> {
                 binding.sendFeedback.isEnabled = false
                 sendFeedback(feedbackText, feedbackUser)
             }
@@ -110,26 +118,31 @@ class FeedbackFragment : BaseFragment<FragmentFeedbackBinding>({ FragmentFeedbac
     private fun sendFeedback(feedbackText: CharSequence, feedbackUser: Editable?) {
         val feedback = Feedback("$feedbackText", "$feedbackUser")
         val service = WEB(SUPA_BASE_URL).getAPI<APIs.FeedbackAPI>()
-        service.createFeedback(feedback).asyncResponse(this, {
+        service.createFeedback(feedback).asyncResponse(this, { response ->
             /**
-             * The HTTP 201 Created success status response code indicates that the request has succeeded and has led to the creation of a resource.
-             * The new resource is effectively created before this response is sent back and the new resource is returned in the body of the message,
+             * The HTTP 201 Created success status response code indicates that the request has succeeded
+             * and has led to the creation of a resource.
+             * The new resource is effectively created before this response is sent back
+             * and the new resource is returned in the body of the message,
              * its location being either the URL of the request, or the content of the Location header.
              */
-            if (it.code() == 201) {
-                snack(getString(R.string.feedback_created_success))
-                resetForm()
-                /**
-                 * write date of last time user created a feedback,
-                 * this is useful for spam detection
-                 */
-                sharedPrefs?.writeDate()
-            } else netError()
+            if (response.code() == 201) handleSuccessfulFeedbackCreationRequest()
+            else netError()
             noticeSnackbar?.dismiss()
         }) {
             netError()
             noticeSnackbar?.dismiss()
         }
+    }
+
+    private fun handleSuccessfulFeedbackCreationRequest() {
+        snack(getString(R.string.feedback_created_success))
+        resetForm()
+        /**
+         * write date of last time user created a feedback,
+         * this is useful for spam detection
+         */
+        sharedPrefs?.writeDate()
     }
 
     /**

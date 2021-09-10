@@ -20,6 +20,7 @@
 
 package com.github.yamin8000.fare.about
 
+import android.content.Context
 import android.os.Bundle
 import android.text.util.Linkify
 import android.view.View
@@ -47,24 +48,26 @@ class LicenseFragment :
         super.onViewCreated(view, savedInstanceState)
 
         try {
-            LinkifyCompat.addLinks(binding.licenseHeader, Linkify.ALL)
-            loadLicensesText()
+            enableLinksInLicensesTextView()
+            context?.let { loadLicensesText(it) }
         } catch (exception: Exception) {
             handleCrash(exception)
         }
+    }
+
+    private fun enableLinksInLicensesTextView() {
+        LinkifyCompat.addLinks(binding.licenseHeader, Linkify.ALL)
     }
 
     /**
      * Load licenses text from web or cache
      *
      */
-    private fun loadLicensesText() {
-        context?.let {
-            val licenseCache = Cache(it, LICENSE_PREFS)
-            val listOfLicenses = licenseCache.readCache().fromJsonArray<License>() ?: mutableListOf()
-            if (listOfLicenses.isNotEmpty()) binding.licenseText.text = createLinedText(listOfLicenses)
-            else getLicenseFromServer(licenseCache)
-        }
+    private fun loadLicensesText(context: Context) {
+        val licenseCache = Cache(context, LICENSE_PREFS)
+        val listOfLicenses = licenseCache.readCache().fromJsonArray<License>() ?: mutableListOf()
+        if (listOfLicenses.isNotEmpty()) binding.licenseText.text = createLinedText(listOfLicenses)
+        else getLicenseFromServer(licenseCache)
     }
 
     /**
@@ -83,9 +86,7 @@ class LicenseFragment :
 
     private fun createLinedText(list: List<License>): String {
         val stringBuilder = StringBuilder()
-        list.forEach { licenseItem ->
-            stringBuilder.append(licenseItem.text).append("\n")
-        }
+        list.forEach { licenseItem -> stringBuilder.append(licenseItem.text).append("\n") }
         return "$stringBuilder".trim()
     }
 }

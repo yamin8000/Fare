@@ -123,6 +123,7 @@ class SearchLineFragment :
 
                 lifecycleScope.launch { getCityCompactLines(cityId) }
                 lifecycleScope.launch { getCityLinesFullInfo() }
+                lifecycleScope.launch { getCityInfo(cityId) }
                 lifecycleScope.launch { handleMenu(cityId, cityName) }
             } else netError()
         } catch (exception: Exception) {
@@ -497,5 +498,15 @@ class SearchLineFragment :
         binding.lineSearchFilterClear.isEnabled = true
         searchParams[paramConstant] = searchParam
         getCityLinesFullInfo()
+    }
+
+    /**
+     * Get city's basic info
+     */
+    private fun getCityInfo(cityId: String) {
+        val service = web.getAPI<APIs.CityAPI>()
+        service.searchCity(cityId = cityId.eqQuery()).async(this, { list ->
+            if (list.isNotEmpty()) this.cityModel = list.first()
+        }) { netError() }
     }
 }

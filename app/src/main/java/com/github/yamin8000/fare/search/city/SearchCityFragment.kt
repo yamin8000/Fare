@@ -66,6 +66,8 @@ import kotlinx.coroutines.withContext
 
 private const val NOT_SELECTED = -1
 
+private const val OPTIMIZED_COUNT_OF_TOP_CITIES = 35
+
 class SearchCityFragment :
     BaseFragment<FragmentSearchCityBinding>({ FragmentSearchCityBinding.inflate(it) }) {
 
@@ -112,7 +114,7 @@ class SearchCityFragment :
                 cache.readCache().fromJsonArray<CityJoined>() ?: mutableListOf()
             }
             if (cachedList.isEmpty()) fetchTopCities()
-            else populateCityList(cachedList.take(35))
+            else populateCityList(cachedList.take(OPTIMIZED_COUNT_OF_TOP_CITIES))
         }
     }
 
@@ -140,7 +142,7 @@ class SearchCityFragment :
      * handling if data is already cached or needs to be requested from web
      */
     private suspend fun stateSelectorHandler() {
-        binding.searchStateInput.setStartIconOnClickListener { stateAutoClearIconHandler() }
+        stateInputClearButtonClickListener()
         context?.let {
             val cache = Cache(it, STATE_PREFS)
             val cachedList = withContext(ioScope.coroutineContext) {
@@ -148,6 +150,13 @@ class SearchCityFragment :
             }
             if (cachedList.isEmpty()) fetchStates(cache)
             else populateStates(cachedList)
+        }
+    }
+
+    private fun stateInputClearButtonClickListener() {
+        binding.searchStateInput.setStartIconOnClickListener {
+            if (binding.searchStateEdit.text.toString().isNotEmpty())
+                stateAutoClearIconHandler()
         }
     }
 
@@ -167,12 +176,10 @@ class SearchCityFragment :
     }
 
     private fun stateAutoClearIconHandler() {
-        if (binding.searchStateEdit.text.toString().isNotEmpty()) {
-            selectedStateId = NOT_SELECTED
-            binding.searchStateEdit.text.clear()
-            binding.cityList.adapter = null
-            lifecycleScope.launch { handleCachedCities() }
-        }
+        selectedStateId = NOT_SELECTED
+        binding.searchStateEdit.text.clear()
+        binding.cityList.adapter = null
+        lifecycleScope.launch { handleCachedCities() }
     }
 
     /**
@@ -387,8 +394,9 @@ class SearchCityFragment :
      * @return true if user is choosing default city and return false if this is a normal search
      */
     private fun handleDefaultCityChoosing(cityId: String, cityName: String): Boolean {
-        arguments?.let {
-            val isChoosingDefaultCity = it.getBoolean(CHOOSING_DEFAULT_CITY)
+        val args = arguments
+        return if (args != null) {
+            val isChoosingDefaultCity = args.getBoolean(CHOOSING_DEFAULT_CITY)
             if (isChoosingDefaultCity) {
                 context?.let { safeContext ->
                     val sharedPrefs = SharedPrefs(safeContext, GENERAL_PREFS)
@@ -396,8 +404,7 @@ class SearchCityFragment :
                     sharedPrefs.write(CITY_NAME, cityName)
                 }
             }
-            return isChoosingDefaultCity
-        }
-        return false
+            isChoosingDefaultCity
+        } else false
     }
 }
