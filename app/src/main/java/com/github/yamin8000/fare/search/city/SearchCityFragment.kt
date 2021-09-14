@@ -20,6 +20,7 @@
 
 package com.github.yamin8000.fare.search.city
 
+import android.content.Context
 import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.EditorInfo
@@ -29,6 +30,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.github.yamin8000.fare.R
 import com.github.yamin8000.fare.cache.Cache
 import com.github.yamin8000.fare.databinding.FragmentSearchCityBinding
@@ -68,6 +70,10 @@ private const val NOT_SELECTED = -1
 
 private const val OPTIMIZED_COUNT_OF_TOP_CITIES = 35
 
+private const val CITY_LIST_GRID_SPAN_COUNT = 3
+
+private const val MINIMUM_COUNT_OF_CITIES_FOR_LIST_LAYOUT = 4
+
 class SearchCityFragment :
     BaseFragment<FragmentSearchCityBinding>({ FragmentSearchCityBinding.inflate(it) }) {
 
@@ -102,9 +108,10 @@ class SearchCityFragment :
     }
 
     /**
-     * Load cached cities
+     * Handle cached cities
      *
-     * this method load cached cities
+     * load cached cities if there is any or else load some predefined top cities
+     *
      */
     private suspend fun handleCachedCities() {
         binding.cityList.adapter = loadingAdapter
@@ -175,6 +182,12 @@ class SearchCityFragment :
         }) { netErrorCache() }
     }
 
+    /**
+     * State auto clear icon handler
+     *
+     * clear state input
+     *
+     */
     private fun stateAutoClearIconHandler() {
         selectedStateId = NOT_SELECTED
         binding.searchStateEdit.text.clear()
@@ -223,6 +236,12 @@ class SearchCityFragment :
             }
     }
 
+    /**
+     * City search handler
+     *
+     * search icon click listener and ime search button handler
+     *
+     */
     private fun citySearchHandler() {
         binding.searchCityInput.setStartIconOnClickListener { searchStateHandler() }
 
@@ -238,10 +257,6 @@ class SearchCityFragment :
         } else searchCityByName()
     }
 
-    /**
-     * Search city by name
-     *
-     */
     private fun searchCityByName() {
         hideKeyboard()
         didYouMeanThisSnack?.dismiss()
@@ -292,10 +307,7 @@ class SearchCityFragment :
         cityGrams: List<String> = mutableListOf()
     ) = backScope.launch {
         context?.let { safeContext ->
-            val cache = Cache(safeContext, CITY_PREFS)
-            val cachedList = withContext(ioScope.coroutineContext) {
-                cache.readCache().fromJsonArray<CityJoined>() ?: mutableListOf()
-            }
+            val cachedList = readAllCachedCities(safeContext)
             var searchCandidates = mutableSetOf<CityJoined>()
             if (cachedList.isNotEmpty()) {
                 if (cityName != null) {
@@ -310,14 +322,32 @@ class SearchCityFragment :
                 }
                 if (searchCandidates.isNotEmpty()) {
                     searchCandidates = sortCandidates(searchCandidates.toMutableList(), cityGrams)
-                    val first = searchCandidates.firstOrNull()
-                    first?.let { showDidYouMeanThisMessage(it.name) }
+                    handleDidYouMeanThisMessage(searchCandidates)
                 }
             } else binding.cityList.adapter = emptyAdapter
             if (searchCandidates.isNotEmpty()) {
                 lifecycleScope.launch { populateCityList(searchCandidates.toList()) }
             } else binding.cityList.adapter = emptyAdapter
         }
+    }
+
+    private fun handleDidYouMeanThisMessage(searchCandidates: MutableSet<CityJoined>) {
+        val first = searchCandidates.firstOrNull()
+        first?.let { showDidYouMeanThisMessage(it.name) }
+    }
+
+    /**
+     * Read all cached cities from shared preferences
+     *
+     * @param safeContext non-nullable and safe context
+     * @return list of all cached cities in shared preferences
+     */
+    private suspend fun readAllCachedCities(safeContext: Context): List<CityJoined> {
+        val cache = Cache(safeContext, CITY_PREFS)
+        val cachedList = withContext(ioScope.coroutineContext) {
+            cache.readCache().fromJsonArray<CityJoined>() ?: mutableListOf()
+        }
+        return cachedList
     }
 
     /**
@@ -363,12 +393,24 @@ class SearchCityFragment :
     private fun populateCityList(cityList: List<CityJoined>) {
         searchCityAdapter.submitList(cityList)
         binding.cityList.adapter = searchCityAdapter
+        context?.let { changeListLayoutManagerBasedOnListSize(cityList.size, it) }
+    }
 
-        if (context != null) {
-            val layoutManager = if (cityList.size <= 4) LinearLayoutManager(context)
-            else GridLayoutManager(context, 3)
-            binding.cityList.layoutManager = layoutManager
-        }
+    /**
+     * Change recycler view layout manager based on list size
+     *
+     * for list with items lesser and equal than 4 linear layout manager is used
+     *
+     * for anything else grid layout manager is used
+     *
+     * @param cityListSize
+     * @param safeContext
+     */
+    private fun changeListLayoutManagerBasedOnListSize(cityListSize: Int, safeContext: Context) {
+        var layoutManager: RecyclerView.LayoutManager = GridLayoutManager(context, CITY_LIST_GRID_SPAN_COUNT)
+        if (cityListSize <= MINIMUM_COUNT_OF_CITIES_FOR_LIST_LAYOUT)
+            layoutManager = LinearLayoutManager(safeContext)
+        binding.cityList.layoutManager = layoutManager
     }
 
     /**
@@ -381,8 +423,9 @@ class SearchCityFragment :
         val isChoosingDefaultCity = handleDefaultCityChoosing(cityId, cityName)
 
         val bundle = bundleOf(
-            CITY_ID to cityId, CHOOSING_DEFAULT_CITY to isChoosingDefaultCity,
-            CITY_NAME to cityName
+            CITY_ID to cityId,
+            CITY_NAME to cityName,
+            CHOOSING_DEFAULT_CITY to isChoosingDefaultCity
         )
         findNavController().navigate(R.id.action_searchCityFragment_to_searchLineFragment, bundle)
     }
@@ -394,17 +437,25 @@ class SearchCityFragment :
      * @return true if user is choosing default city and return false if this is a normal search
      */
     private fun handleDefaultCityChoosing(cityId: String, cityName: String): Boolean {
-        val args = arguments
-        return if (args != null) {
-            val isChoosingDefaultCity = args.getBoolean(CHOOSING_DEFAULT_CITY)
+        arguments?.let {
+            val isChoosingDefaultCity = it.getBoolean(CHOOSING_DEFAULT_CITY)
             if (isChoosingDefaultCity) {
                 context?.let { safeContext ->
-                    val sharedPrefs = SharedPrefs(safeContext, GENERAL_PREFS)
-                    sharedPrefs.write(CITY_ID, cityId)
-                    sharedPrefs.write(CITY_NAME, cityName)
+                    writeDefaultCityDataToSharedPrefs(safeContext, cityId, cityName)
                 }
             }
-            isChoosingDefaultCity
-        } else false
+            return isChoosingDefaultCity
+        }
+        return false
+    }
+
+    private fun writeDefaultCityDataToSharedPrefs(
+        safeContext: Context,
+        cityId: String,
+        cityName: String
+    ) {
+        val sharedPrefs = SharedPrefs(safeContext, GENERAL_PREFS)
+        sharedPrefs.write(CITY_ID, cityId)
+        sharedPrefs.write(CITY_NAME, cityName)
     }
 }
