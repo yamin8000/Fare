@@ -20,6 +20,7 @@
 
 package com.github.yamin8000.fare.search.line
 
+import android.content.Context
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.Parcelable
@@ -64,7 +65,6 @@ import com.github.yamin8000.fare.web.WEB.Companion.async
 import com.github.yamin8000.fare.web.WEB.Companion.eqQuery
 import com.github.yamin8000.fare.web.WEB.Companion.likeQuery
 import com.google.android.material.snackbar.Snackbar
-import com.orhanobut.logger.Logger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -113,7 +113,7 @@ class SearchLineFragment :
             handleDefaultCityChoosing()
 
             val cityName = arguments?.getString(CITY_NAME) ?: ""
-            binding.cityLinesToolbarTitle.text = getString(R.string.line_city_name_template, cityName)
+            setCityNameToToolbarTitle(cityName)
 
             val cityId = arguments?.getString(CITY_ID) ?: ""
             if (cityId.isNotEmpty()) {
@@ -131,6 +131,10 @@ class SearchLineFragment :
         }
     }
 
+    private fun setCityNameToToolbarTitle(cityName: String) {
+        binding.cityLinesToolbarTitle.text = getString(R.string.line_city_name_template, cityName)
+    }
+
     /**
      * Get city compact lines,
      * get only code,origin,destination of line
@@ -140,17 +144,18 @@ class SearchLineFragment :
     private fun getCityCompactLines(cityId: String) {
         web.getAPI<APIs.CompactLineApi>().getCityLines(cityId.eqQuery()).async(this, {
             if (it.isNotEmpty()) {
-                binding.lineCodeInput.isEnabled = true
-                binding.lineDestinationInput.isEnabled = true
-                binding.lineOriginInput.isEnabled = true
+                enableTextInputs()
                 searchFilterClearButtonListener()
                 searchFilterHandler()
                 lifecycleScope.launch { handleAutoCompletes(it) }
             }
-        }) {
-            Logger.d(it)
-            netError()
-        }
+        }) { netError() }
+    }
+
+    private fun enableTextInputs() {
+        binding.lineCodeInput.isEnabled = true
+        binding.lineDestinationInput.isEnabled = true
+        binding.lineOriginInput.isEnabled = true
     }
 
     /**
@@ -176,10 +181,8 @@ class SearchLineFragment :
         binding.cityLineList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
-                val isScrollingToEnd = !recyclerView.canScrollVertically(1)
-                val isScrollEnded = newState == RecyclerView.SCROLL_STATE_IDLE
-                val isAllDataFetched = lastRowSize >= rowLimit
-                if (isScrollingToEnd && isScrollEnded && isAllDataFetched) {
+                val isGettingMoreDataAllowed = inquireFetchingMoreDataAllowance(recyclerView, newState)
+                if (isGettingMoreDataAllowed) {
                     rowLimit += ROW_LIMIT
                     searchParams[LIMIT] = "$rowLimit"
                     recyclerViewBeforeScrollState = recyclerView.layoutManager?.onSaveInstanceState()
@@ -187,6 +190,26 @@ class SearchLineFragment :
                 }
             }
         })
+    }
+
+    /**
+     * Inquire fetching more data allowance
+     *
+     * check whether fetching new data from server allowed,
+     * based on list state, current list size and size of the all the data in the server
+     *
+     * @param recyclerView
+     * @param newState recycler view scroll state
+     * @return data fetching allowance flag
+     */
+    private fun inquireFetchingMoreDataAllowance(
+        recyclerView: RecyclerView,
+        newState: Int
+    ): Boolean {
+        val isScrollingToEnd = !recyclerView.canScrollVertically(1)
+        val isScrollEnded = newState == RecyclerView.SCROLL_STATE_IDLE
+        val isAllDataFetched = lastRowSize >= rowLimit
+        return isScrollingToEnd && isScrollEnded && isAllDataFetched
     }
 
     /**
@@ -250,12 +273,18 @@ class SearchLineFragment :
     }
 
     private fun setCityAsMyCity(cityId: String, cityName: String) = ioScope.launch {
-        context?.let {
-            val sharedPrefs = SharedPrefs(it, GENERAL_PREFS)
-            sharedPrefs.write(CITY_ID, cityId)
-            sharedPrefs.write(CITY_NAME, cityName)
-        }
+        context?.let { setMyCityDataToSharedPreferences(it, cityId, cityName) }
         snack(getString(R.string.city_set_as_current_city), Snackbar.LENGTH_LONG)
+    }
+
+    private fun setMyCityDataToSharedPreferences(
+        it: Context,
+        cityId: String,
+        cityName: String
+    ) {
+        val sharedPrefs = SharedPrefs(it, GENERAL_PREFS)
+        sharedPrefs.write(CITY_ID, cityId)
+        sharedPrefs.write(CITY_NAME, cityName)
     }
 
     /**
