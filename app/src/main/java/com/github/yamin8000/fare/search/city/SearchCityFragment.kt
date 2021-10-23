@@ -322,12 +322,12 @@ class SearchCityFragment :
                 }
                 if (searchCandidates.isNotEmpty()) {
                     searchCandidates = sortCandidates(searchCandidates.toMutableList(), cityGrams)
-                    handleDidYouMeanThisMessage(searchCandidates)
+                    lifecycleScope.launch { handleDidYouMeanThisMessage(searchCandidates) }
                 }
-            } else binding.cityList.adapter = emptyAdapter
+            } else lifecycleScope.launch { binding.cityList.adapter = emptyAdapter }
             if (searchCandidates.isNotEmpty()) {
                 lifecycleScope.launch { populateCityList(searchCandidates.toList()) }
-            } else binding.cityList.adapter = emptyAdapter
+            } else lifecycleScope.launch { binding.cityList.adapter = emptyAdapter }
         }
     }
 
