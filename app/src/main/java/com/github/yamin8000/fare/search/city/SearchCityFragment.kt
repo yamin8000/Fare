@@ -61,10 +61,7 @@ import com.github.yamin8000.fare.web.WEB.Companion.fromJsonArray
 import com.github.yamin8000.fare.web.WEB.Companion.likeQuery
 import com.github.yamin8000.fare.web.WEB.Companion.toJsonArray
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 
 private const val NOT_SELECTED = -1
 
@@ -98,13 +95,11 @@ class SearchCityFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        try {
-            lifecycleScope.launch { stateSelectorHandler() }
-            lifecycleScope.launch { citySearchHandler() }
-            lifecycleScope.launch { handleCachedCities() }
-        } catch (exception: Exception) {
-            handleCrash(exception)
-        }
+        val exceptionHandler = CoroutineExceptionHandler { _, throwable -> handleCrash(throwable as Exception) }
+
+        lifecycleScope.launch(exceptionHandler) { stateSelectorHandler() }
+        lifecycleScope.launch(exceptionHandler) { citySearchHandler() }
+        lifecycleScope.launch(exceptionHandler) { handleCachedCities() }
     }
 
     /**

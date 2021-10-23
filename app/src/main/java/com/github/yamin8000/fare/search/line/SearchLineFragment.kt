@@ -65,6 +65,7 @@ import com.github.yamin8000.fare.web.WEB.Companion.async
 import com.github.yamin8000.fare.web.WEB.Companion.eqQuery
 import com.github.yamin8000.fare.web.WEB.Companion.likeQuery
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -109,6 +110,9 @@ class SearchLineFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val exceptionHandler =
+            CoroutineExceptionHandler { _, throwable -> handleCrash(throwable as Exception) }
+
         try {
             handleDefaultCityChoosing()
 
@@ -121,10 +125,10 @@ class SearchLineFragment :
                 searchParams[CITY_ID] = cityId
                 searchParams[LIMIT] = "$rowLimit"
 
-                lifecycleScope.launch { getCityCompactLines(cityId) }
-                lifecycleScope.launch { getCityLinesFullInfo() }
-                lifecycleScope.launch { getCityInfo(cityId) }
-                lifecycleScope.launch { handleMenu(cityId, cityName) }
+                lifecycleScope.launch(exceptionHandler) { getCityCompactLines(cityId) }
+                lifecycleScope.launch(exceptionHandler) { getCityLinesFullInfo() }
+                lifecycleScope.launch(exceptionHandler) { getCityInfo(cityId) }
+                lifecycleScope.launch(exceptionHandler) { handleMenu(cityId, cityName) }
             } else netError()
         } catch (exception: Exception) {
             handleCrash(exception)
