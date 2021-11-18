@@ -23,9 +23,11 @@ package com.github.yamin8000.fare.util
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.github.yamin8000.fare.R
+import com.github.yamin8000.fare.util.CONSTANTS.STACKTRACE
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.orhanobut.logger.Logger
 import java.math.BigInteger
@@ -63,12 +65,14 @@ object Utility {
      * @param exception exception that caught
      */
     fun Fragment.handleCrash(exception: Exception) {
+        val stackTraceToString = exception.stackTraceToString()
         //navigate user to a special crash screen
-        this.findNavController().navigate(R.id.crashFragment)
+        val bundle = bundleOf(STACKTRACE to stackTraceToString)
+        this.findNavController().navigate(R.id.crashFragment, bundle)
         //record and send exception data to firebase
         FirebaseCrashlytics.getInstance().recordException(exception)
-        //log it logcat
-        Logger.d(exception.stackTraceToString())
+        //log it to logcat
+        Logger.d(stackTraceToString)
     }
 
 

@@ -56,4 +56,5 @@ object CONSTANTS {
     const val LIMIT = "limit"
     const val CHOOSING_DEFAULT_CITY = "is_choosing_default_city"
     const val CITY_NAME = "city_name"
+    const val STACKTRACE = "stacktrace"
 }

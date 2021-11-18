@@ -21,7 +21,7 @@
 package com.github.yamin8000.fare.web
 
 import androidx.lifecycle.*
-import com.github.yamin8000.fare.util.SUPABASE
+import com.github.yamin8000.fare.util.ProxyServer
 import com.orhanobut.logger.Logger
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
@@ -34,7 +34,7 @@ object WEB {
 
     private fun createRetrofit(): Retrofit {
         return Retrofit.Builder()
-            .baseUrl(SUPABASE.SUPA_BASE_URL)
+            .baseUrl(ProxyServer.BASE)
             .addConverterFactory(MoshiConverterFactory.create())
             .build()
     }

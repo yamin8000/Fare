@@ -23,7 +23,13 @@ package com.github.yamin8000.fare.ui
 import android.os.Bundle
 import android.view.View
 import com.github.yamin8000.fare.databinding.FragmentCrashBinding
+import com.github.yamin8000.fare.model.LogModel
 import com.github.yamin8000.fare.ui.fragment.BaseFragment
+import com.github.yamin8000.fare.util.CONSTANTS.STACKTRACE
+import com.github.yamin8000.fare.web.APIs
+import com.github.yamin8000.fare.web.WEB
+import com.github.yamin8000.fare.web.WEB.asyncResponse
+import com.orhanobut.logger.Logger
 
 class CrashFragment : BaseFragment<FragmentCrashBinding>({ FragmentCrashBinding.inflate(it) }) {
 
@@ -33,5 +39,23 @@ class CrashFragment : BaseFragment<FragmentCrashBinding>({ FragmentCrashBinding.
         binding.emptyAdapterText.setOnClickListener { activity?.finish() }
         binding.crashImage.setOnClickListener { activity?.finish() }
         binding.root.setOnClickListener { activity?.finish() }
+
+        arguments?.let {
+            val stacktrace = it.getString(STACKTRACE) ?: ""
+            if (stacktrace.isNotBlank()) {
+                sendStacktraceToServer(stacktrace)
+            }
+        }
+    }
+
+    private fun sendStacktraceToServer(stacktrace: String) {
+        //send it to db
+        WEB.getAPI<APIs.LogApi>().createLog(LogModel(stacktrace)).asyncResponse(this,
+            {
+                Logger.d(it.code())
+            },
+            {
+                Logger.d(it.message)
+            })
     }
 }

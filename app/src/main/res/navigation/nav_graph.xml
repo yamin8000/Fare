@@ -120,7 +120,9 @@
         android:id="@+id/crashFragment"
         android:name="com.github.yamin8000.fare.ui.CrashFragment"
         android:label="CrashFragment"
-        tools:layout="@layout/fragment_crash" />
+        tools:layout="@layout/fragment_crash" >
+        <argument android:name="stacktrace" />
+    </fragment>
     <fragment
         android:id="@+id/searchLineFragment"
         android:name="com.github.yamin8000.fare.search.line.SearchLineFragment"

@@ -27,10 +27,6 @@ import com.github.yamin8000.fare.util.CONSTANTS.LIMIT
 import com.github.yamin8000.fare.util.CONSTANTS.LINE_CODE
 import com.github.yamin8000.fare.util.CONSTANTS.ORIGIN
 import com.github.yamin8000.fare.util.CONSTANTS.STATE_ID
-import com.github.yamin8000.fare.util.SUPABASE.APIKEY
-import com.github.yamin8000.fare.util.SUPABASE.AUTHORIZATION
-import com.github.yamin8000.fare.util.SUPABASE.BEARER
-import com.github.yamin8000.fare.util.SUPABASE.SUPA_BASE_KEY
 import retrofit2.Call
 import retrofit2.http.*
 
@@ -44,6 +40,7 @@ object APIs {
     private const val CITY_EXTRA = "CityExtra"
     private const val LINE = "Line"
     private const val PRICE_REFERENCE = "PriceReference"
+    private const val LOG = "Log"
 
     //query
     private const val SELECT = "select"
@@ -60,36 +57,30 @@ object APIs {
 
     interface FeedbackAPI {
 
-        @Headers("$APIKEY: $SUPA_BASE_KEY", "$AUTHORIZATION: $BEARER $SUPA_BASE_KEY")
         @POST(FEEDBACK)
         fun createFeedback(@Body feedback: Feedback): Call<Unit>
     }
 
     interface LicenseAPI {
 
-        @Headers("$APIKEY: $SUPA_BASE_KEY", "$AUTHORIZATION: $BEARER $SUPA_BASE_KEY")
         @GET(LICENSE)
         fun getAll(): Call<List<License>>
     }
 
     interface StateAPI {
 
-        @Headers("$APIKEY: $SUPA_BASE_KEY", "$AUTHORIZATION: $BEARER $SUPA_BASE_KEY")
         @GET(STATE)
         fun getAll(@Query(value = SELECT) query: String? = null): Call<List<State>>
 
-        @Headers("$APIKEY: $SUPA_BASE_KEY", "$AUTHORIZATION: $BEARER $SUPA_BASE_KEY")
         @HEAD(STATE)
         fun getCount(): Call<Void>
     }
 
     interface CityAPI {
 
-        @Headers("$APIKEY: $SUPA_BASE_KEY", "$AUTHORIZATION: $BEARER $SUPA_BASE_KEY")
         @GET(CITY)
         fun getAll(@Query(SELECT) query: String? = null): Call<List<City>>
 
-        @Headers("$APIKEY: $SUPA_BASE_KEY", "$AUTHORIZATION: $BEARER $SUPA_BASE_KEY")
         @GET(CITY)
         fun searchCity(
             @Query(NAME) cityName: String? = null, @Query(ID) cityId: String? = null,
@@ -100,11 +91,9 @@ object APIs {
 
     interface LineAPI {
 
-        @Headers("$APIKEY: $SUPA_BASE_KEY", "$AUTHORIZATION: $BEARER $SUPA_BASE_KEY")
         @GET(LINE)
         fun getAll(@Query(SELECT) query: String? = null): Call<List<Line>>
 
-        @Headers("$APIKEY: $SUPA_BASE_KEY", "$AUTHORIZATION: $BEARER $SUPA_BASE_KEY")
         @GET(LINE)
         fun getCityLines(
             @Query(CITY_ID) cityId: String? = null, @Query(ORIGIN) origin: String? = null,
@@ -116,25 +105,28 @@ object APIs {
 
     interface PriceReferenceAPI {
 
-        @Headers("$APIKEY: $SUPA_BASE_KEY", "$AUTHORIZATION: $BEARER $SUPA_BASE_KEY")
         @GET(PRICE_REFERENCE)
         fun getCityReference(@Query(CITY_ID) cityId: String): Call<List<PriceReference>>
     }
 
     interface CityExtraAPI {
 
-        @Headers("$APIKEY: $SUPA_BASE_KEY", "$AUTHORIZATION: $BEARER $SUPA_BASE_KEY")
         @GET(CITY_EXTRA)
         fun getCityExtra(@Query(CITY_ID) cityId: String): Call<List<CityExtra>>
     }
 
     interface CompactLineApi {
 
-        @Headers("$APIKEY: $SUPA_BASE_KEY", "$AUTHORIZATION: $BEARER $SUPA_BASE_KEY")
         @GET(LINE)
         fun getCityLines(
             @Query(CITY_ID) cityId: String,
             @Query(SELECT) select: String = COMPACT_LINE_QUERY
         ): Call<List<CompactLine>>
+    }
+
+    interface LogApi {
+
+        @POST(LOG)
+        fun createLog(@Body log : LogModel): Call<Unit>
     }
 }
