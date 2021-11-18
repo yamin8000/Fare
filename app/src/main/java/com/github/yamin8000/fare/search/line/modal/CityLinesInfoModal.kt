@@ -39,10 +39,10 @@ import com.github.yamin8000.fare.util.Utility.handleCrash
 import com.github.yamin8000.fare.util.helpers.ErrorHelper.netError
 import com.github.yamin8000.fare.web.APIs
 import com.github.yamin8000.fare.web.WEB
-import com.github.yamin8000.fare.web.WEB.Companion.async
-import com.github.yamin8000.fare.web.WEB.Companion.eqQuery
-import com.github.yamin8000.fare.web.WEB.Companion.fromJsonArray
-import com.github.yamin8000.fare.web.WEB.Companion.toJsonArray
+import com.github.yamin8000.fare.web.WEB.async
+import com.github.yamin8000.fare.web.WEB.eqQuery
+import com.github.yamin8000.fare.web.WEB.fromJsonArray
+import com.github.yamin8000.fare.web.WEB.toJsonArray
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 class CityLinesInfoModal : BottomSheetDialogFragment() {
@@ -50,8 +50,6 @@ class CityLinesInfoModal : BottomSheetDialogFragment() {
     private val binding: CityLinesInfoModalBinding by lazy(LazyThreadSafetyMode.NONE) {
         CityLinesInfoModalBinding.inflate(layoutInflater)
     }
-
-    private val web: WEB by lazy(LazyThreadSafetyMode.NONE) { WEB() }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, bundle: Bundle?): View {
         return binding.root
@@ -79,13 +77,13 @@ class CityLinesInfoModal : BottomSheetDialogFragment() {
     private fun getCityExtras(cityId: String, cache: Cache) {
         val cachedCityExtras = cache.readCache(cityId).fromJsonArray<CityExtra>() ?: mutableListOf()
         if (cachedCityExtras.isEmpty()) {
-            val service = web.getAPI<APIs.CityExtraAPI>()
+            val service = WEB.getAPI<APIs.CityExtraAPI>()
             service.getCityExtra(cityId.eqQuery()).async(this, { list ->
                 if (list.isNotEmpty()) {
                     handleExtrasData(list)
                     cache.writeCache(cityId, list.toJsonArray())
                 } else addTextLineByLine(getString(R.string.data_empty), binding.cityLinesMoreInfo)
-            }) { netError() }
+            }) { netError(it) }
         } else handleExtrasData(cachedCityExtras)
     }
 
@@ -96,13 +94,13 @@ class CityLinesInfoModal : BottomSheetDialogFragment() {
     private fun getReferences(cityId: String, cache: Cache) {
         val cachedReferences = cache.readCache(cityId).fromJsonArray<PriceReference>() ?: mutableListOf()
         if (cachedReferences.isEmpty()) {
-            val service = web.getAPI<APIs.PriceReferenceAPI>()
+            val service = WEB.getAPI<APIs.PriceReferenceAPI>()
             service.getCityReference(cityId.eqQuery()).async(this, { list ->
                 if (list.isNotEmpty()) {
                     handleReferenceData(list)
                     cache.writeCache(cityId, list.toJsonArray())
                 } else addTextLineByLine(getString(R.string.data_empty), binding.cityLinesReference)
-            }) { netError() }
+            }) { netError(it) }
         } else handleReferenceData(cachedReferences)
     }
 

@@ -29,6 +29,7 @@ import com.github.yamin8000.fare.R
 import com.github.yamin8000.fare.cache.Cache
 import com.github.yamin8000.fare.cache.CachePolicy
 import com.github.yamin8000.fare.databinding.FragmentHomeBinding
+import com.github.yamin8000.fare.model.State
 import com.github.yamin8000.fare.ui.fragment.BaseFragment
 import com.github.yamin8000.fare.util.CONSTANTS.CHOOSING_DEFAULT_CITY
 import com.github.yamin8000.fare.util.CONSTANTS.CITY_EXTRA_PREFS
@@ -45,8 +46,12 @@ import com.github.yamin8000.fare.util.helpers.ErrorHelper.netErrorCache
 import com.github.yamin8000.fare.util.helpers.ErrorHelper.snack
 import com.github.yamin8000.fare.web.APIs
 import com.github.yamin8000.fare.web.WEB
-import com.github.yamin8000.fare.web.WEB.Companion.asyncResponse
+import com.github.yamin8000.fare.web.WEB.asyncResponse
 import com.google.android.material.snackbar.Snackbar
+import com.orhanobut.logger.Logger
+import retrofit2.Call
+import retrofit2.Response
+
 
 class HomeFragment : BaseFragment<FragmentHomeBinding>({ FragmentHomeBinding.inflate(it) }) {
 
@@ -54,6 +59,18 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>({ FragmentHomeBinding.inf
         super.onViewCreated(view, savedInstanceState)
 
         try {
+            //todo remove
+            val test = WEB.getAPI<APIs.StateAPI>().getAll().enqueue(object : retrofit2.Callback<List<State>> {
+                override fun onResponse(call: Call<List<State>>, response: Response<List<State>>) {
+                    Logger.d(response.body())
+                }
+
+                override fun onFailure(call: Call<List<State>>, t: Throwable) {
+                    Logger.d(t.stackTraceToString())
+                }
+
+            })
+
             handleButtonClickListeners()
             backPressHandler()
             handleFreshnessOfCache()
@@ -80,7 +97,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>({ FragmentHomeBinding.inf
 
     private fun handleFreshnessOfCache() {
         //checking if server is responsive
-        val service = WEB().getAPI<APIs.StateAPI>()
+        val service = WEB.getAPI<APIs.StateAPI>()
         service.getCount().asyncResponse(this, {
             //remove data if user has access to server
             if (it.code() == 200) clearOldCache()

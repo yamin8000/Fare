@@ -31,15 +31,14 @@ import com.github.yamin8000.fare.databinding.FragmentLicenseBinding
 import com.github.yamin8000.fare.model.License
 import com.github.yamin8000.fare.ui.fragment.BaseFragment
 import com.github.yamin8000.fare.util.CONSTANTS.LICENSE_PREFS
-import com.github.yamin8000.fare.util.SUPABASE.SUPA_BASE_URL
 import com.github.yamin8000.fare.util.Utility.handleCrash
 import com.github.yamin8000.fare.util.helpers.ErrorHelper.netError
 import com.github.yamin8000.fare.util.helpers.ErrorHelper.snack
 import com.github.yamin8000.fare.web.APIs
 import com.github.yamin8000.fare.web.WEB
-import com.github.yamin8000.fare.web.WEB.Companion.async
-import com.github.yamin8000.fare.web.WEB.Companion.fromJsonArray
-import com.github.yamin8000.fare.web.WEB.Companion.toJsonArray
+import com.github.yamin8000.fare.web.WEB.async
+import com.github.yamin8000.fare.web.WEB.fromJsonArray
+import com.github.yamin8000.fare.web.WEB.toJsonArray
 
 class LicenseFragment :
     BaseFragment<FragmentLicenseBinding>({ FragmentLicenseBinding.inflate(it) }) {
@@ -76,12 +75,12 @@ class LicenseFragment :
      * @param licenseCache cache is used for writing new data to cache
      */
     private fun getLicenseFromServer(licenseCache: Cache) {
-        WEB(SUPA_BASE_URL).getAPI<APIs.LicenseAPI>().getAll().async(this, { list ->
+        WEB.getAPI<APIs.LicenseAPI>().getAll().async(this, { list ->
             if (list.isNotEmpty()) {
                 binding.licenseText.text = createLinedText(list)
                 licenseCache.writeCache(cache = list.toJsonArray())
             } else snack(getString(R.string.data_empty))
-        }) { netError() }
+        }) { netError(it) }
     }
 
     private fun createLinedText(list: List<License>): String {

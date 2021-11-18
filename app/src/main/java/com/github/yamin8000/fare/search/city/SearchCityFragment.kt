@@ -55,11 +55,11 @@ import com.github.yamin8000.fare.util.helpers.ErrorHelper.snack
 import com.github.yamin8000.fare.web.APIs
 import com.github.yamin8000.fare.web.APIs.TOP_CITIES_ID
 import com.github.yamin8000.fare.web.WEB
-import com.github.yamin8000.fare.web.WEB.Companion.async
-import com.github.yamin8000.fare.web.WEB.Companion.eqQuery
-import com.github.yamin8000.fare.web.WEB.Companion.fromJsonArray
-import com.github.yamin8000.fare.web.WEB.Companion.likeQuery
-import com.github.yamin8000.fare.web.WEB.Companion.toJsonArray
+import com.github.yamin8000.fare.web.WEB.async
+import com.github.yamin8000.fare.web.WEB.eqQuery
+import com.github.yamin8000.fare.web.WEB.fromJsonArray
+import com.github.yamin8000.fare.web.WEB.likeQuery
+import com.github.yamin8000.fare.web.WEB.toJsonArray
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.*
 
@@ -74,9 +74,7 @@ private const val MINIMUM_COUNT_OF_CITIES_FOR_LIST_LAYOUT = 4
 class SearchCityFragment :
     BaseFragment<FragmentSearchCityBinding>({ FragmentSearchCityBinding.inflate(it) }) {
 
-    private val web = WEB()
-
-    private val cityAPI: APIs.CityAPI by lazy(LazyThreadSafetyMode.NONE) { web.getAPI() }
+    private val cityAPI: APIs.CityAPI by lazy(LazyThreadSafetyMode.NONE) { WEB.getAPI() }
 
     private val loadingAdapter: LoadingAdapter by lazy(LazyThreadSafetyMode.NONE) { LoadingAdapter() }
 
@@ -95,7 +93,8 @@ class SearchCityFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val exceptionHandler = CoroutineExceptionHandler { _, throwable -> handleCrash(throwable as Exception) }
+        val exceptionHandler =
+            CoroutineExceptionHandler { _, throwable -> handleCrash(throwable as Exception) }
 
         lifecycleScope.launch(exceptionHandler) { stateSelectorHandler() }
         lifecycleScope.launch(exceptionHandler) { citySearchHandler() }
@@ -126,14 +125,14 @@ class SearchCityFragment :
      * very first run of app after install cache popular cities
      */
     private fun fetchTopCities() {
-        val topCitiesAPI = web.getAPI<APIs.CityAPI>()
+        val topCitiesAPI = WEB.getAPI<APIs.CityAPI>()
         topCitiesAPI.searchCity(cityId = TOP_CITIES_ID).async(this, { cities ->
             if (cities.isNotEmpty()) {
                 populateCityList(cities)
                 addToCachedCities(cities)
             } else binding.cityList.adapter = emptyAdapter
         }) {
-            netError()
+            netError(it)
             binding.cityList.adapter = emptyAdapter
         }
     }
@@ -168,7 +167,7 @@ class SearchCityFragment :
      * @param cache states cache
      */
     private fun fetchStates(cache: Cache) {
-        val stateService = web.getAPI<APIs.StateAPI>()
+        val stateService = WEB.getAPI<APIs.StateAPI>()
         stateService.getAll().async(this, { stateList ->
             if (stateList.isNotEmpty()) {
                 populateStates(stateList)

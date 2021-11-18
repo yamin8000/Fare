@@ -30,7 +30,6 @@ import com.github.yamin8000.fare.ui.fragment.BaseFragment
 import com.github.yamin8000.fare.util.CONSTANTS.DATE
 import com.github.yamin8000.fare.util.CONSTANTS.FEEDBACK
 import com.github.yamin8000.fare.util.CONSTANTS.FEEDBACK_PREFS
-import com.github.yamin8000.fare.util.SUPABASE.SUPA_BASE_URL
 import com.github.yamin8000.fare.util.SharedPrefs
 import com.github.yamin8000.fare.util.Utility.handleCrash
 import com.github.yamin8000.fare.util.Utility.hideKeyboard
@@ -38,7 +37,7 @@ import com.github.yamin8000.fare.util.helpers.ErrorHelper.netError
 import com.github.yamin8000.fare.util.helpers.ErrorHelper.snack
 import com.github.yamin8000.fare.web.APIs
 import com.github.yamin8000.fare.web.WEB
-import com.github.yamin8000.fare.web.WEB.Companion.asyncResponse
+import com.github.yamin8000.fare.web.WEB.asyncResponse
 import com.google.android.material.snackbar.Snackbar
 import java.time.LocalDateTime
 
@@ -117,7 +116,7 @@ class FeedbackFragment : BaseFragment<FragmentFeedbackBinding>({ FragmentFeedbac
      */
     private fun sendFeedback(feedbackText: CharSequence, feedbackUser: Editable?) {
         val feedback = Feedback("$feedbackText", "$feedbackUser")
-        val service = WEB(SUPA_BASE_URL).getAPI<APIs.FeedbackAPI>()
+        val service = WEB.getAPI<APIs.FeedbackAPI>()
         service.createFeedback(feedback).asyncResponse(this, { response ->
             /**
              * The HTTP 201 Created success status response code indicates that the request has succeeded
@@ -130,7 +129,7 @@ class FeedbackFragment : BaseFragment<FragmentFeedbackBinding>({ FragmentFeedbac
             else netError()
             noticeSnackbar?.dismiss()
         }) {
-            netError()
+            netError(it)
             noticeSnackbar?.dismiss()
         }
     }

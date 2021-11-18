@@ -61,9 +61,9 @@ import com.github.yamin8000.fare.util.helpers.ErrorHelper.netError
 import com.github.yamin8000.fare.util.helpers.ErrorHelper.snack
 import com.github.yamin8000.fare.web.APIs
 import com.github.yamin8000.fare.web.WEB
-import com.github.yamin8000.fare.web.WEB.Companion.async
-import com.github.yamin8000.fare.web.WEB.Companion.eqQuery
-import com.github.yamin8000.fare.web.WEB.Companion.likeQuery
+import com.github.yamin8000.fare.web.WEB.async
+import com.github.yamin8000.fare.web.WEB.eqQuery
+import com.github.yamin8000.fare.web.WEB.likeQuery
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
@@ -74,8 +74,6 @@ class SearchLineFragment :
     BaseFragment<FragmentSearchLineBinding>({ FragmentSearchLineBinding.inflate(it) }) {
 
     private var isFirstTime = true
-
-    private val web: WEB by lazy(LazyThreadSafetyMode.NONE) { WEB() }
 
     private val loadingAdapter: LoadingAdapter by lazy(LazyThreadSafetyMode.NONE) { LoadingAdapter(8) }
 
@@ -146,14 +144,14 @@ class SearchLineFragment :
      * @param cityId
      */
     private fun getCityCompactLines(cityId: String) {
-        web.getAPI<APIs.CompactLineApi>().getCityLines(cityId.eqQuery()).async(this, {
+        WEB.getAPI<APIs.CompactLineApi>().getCityLines(cityId.eqQuery()).async(this, {
             if (it.isNotEmpty()) {
                 enableTextInputs()
                 searchFilterClearButtonListener()
                 searchFilterHandler()
                 lifecycleScope.launch { handleAutoCompletes(it) }
             }
-        }) { netError() }
+        }) { netError(it) }
     }
 
     private fun enableTextInputs() {
@@ -348,7 +346,7 @@ class SearchLineFragment :
         val destQuery = searchParams[DESTINATION]?.likeQuery()
         val limitQuery = searchParams[LIMIT]
 
-        val service = web.getAPI<APIs.LineAPI>()
+        val service = WEB.getAPI<APIs.LineAPI>()
         service.getCityLines(
             cityId = cityIdQuery, lineCode = lineCodeQuery, origin = originQuery,
             destination = destQuery, limit = limitQuery
@@ -363,7 +361,7 @@ class SearchLineFragment :
             pleaseWaitSnackbar?.dismiss()
         }) {
             pleaseWaitSnackbar?.dismiss()
-            netError()
+            netError(it)
         }
     }
 
@@ -537,9 +535,9 @@ class SearchLineFragment :
      * Get city's basic info
      */
     private fun getCityInfo(cityId: String) {
-        val service = web.getAPI<APIs.CityAPI>()
+        val service = WEB.getAPI<APIs.CityAPI>()
         service.searchCity(cityId = cityId.eqQuery()).async(this, { list ->
             if (list.isNotEmpty()) this.cityModel = list.first()
-        }) { netError() }
+        }) { netError(it) }
     }
 }

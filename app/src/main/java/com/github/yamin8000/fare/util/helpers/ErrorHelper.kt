@@ -25,6 +25,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.github.yamin8000.fare.R
 import com.google.android.material.snackbar.Snackbar
+import com.orhanobut.logger.Logger
 
 object ErrorHelper {
 
@@ -32,8 +33,9 @@ object ErrorHelper {
         snack(getString(R.string.net_error_cache_data), Snackbar.LENGTH_INDEFINITE)
     }
 
-    fun Fragment.netError() {
+    fun Fragment.netError(error: Throwable? = null) {
         snack(getString(R.string.net_error), Snackbar.LENGTH_INDEFINITE)
+        if (error != null) Logger.d(error.stackTrace)
     }
 
     fun Fragment.snack(message: String, length: Int = Snackbar.LENGTH_SHORT): Snackbar? {
