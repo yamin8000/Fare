@@ -19,3 +19,4 @@ app/libs/
 app/release/
 release/
 /app/src/main/java/com/github/yamin8000/fare/util/SUPABASE.kt
+/app/src/main/java/com/github/yamin8000/fare/util/HASURA.kt

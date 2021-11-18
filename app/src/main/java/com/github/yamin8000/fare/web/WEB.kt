@@ -20,34 +20,21 @@
 
 package com.github.yamin8000.fare.web
 
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.OnLifecycleEvent
-import com.github.yamin8000.fare.util.SUPABASE.SUPA_BASE_URL
+import androidx.lifecycle.*
+import com.github.yamin8000.fare.util.SUPABASE
 import com.orhanobut.logger.Logger
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
-import okhttp3.OkHttpClient
 import retrofit2.*
 import retrofit2.converter.moshi.MoshiConverterFactory
-import java.util.concurrent.TimeUnit
 
 object WEB {
 
-    //todo remove
-    private val okHttpClient = OkHttpClient.Builder()
-        .callTimeout(5, TimeUnit.SECONDS)
-        .connectTimeout(5, TimeUnit.SECONDS)
-        .readTimeout(5, TimeUnit.SECONDS)
-        .writeTimeout(5, TimeUnit.SECONDS)
-        .build()
+    val retrofit: Retrofit by lazy(LazyThreadSafetyMode.NONE) { createRetrofit() }
 
-    //todo fix
-    val retrofit: Retrofit by lazy(LazyThreadSafetyMode.NONE) {
-        Retrofit.Builder()
-            .client(okHttpClient)
-            .baseUrl(SUPA_BASE_URL)
+    private fun createRetrofit(): Retrofit {
+        return Retrofit.Builder()
+            .baseUrl(SUPABASE.SUPA_BASE_URL)
             .addConverterFactory(MoshiConverterFactory.create())
             .build()
     }
@@ -75,10 +62,11 @@ object WEB {
         lifeCycleOwner: LifecycleOwner, crossinline onSuccess: (T) -> Unit,
         crossinline onFail: (Throwable) -> Unit,
     ) {
-        lifeCycleOwner.lifecycle.addObserver(object : LifecycleObserver {
-            @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-            fun cancelCall() {
-                this@async.cancel()
+        lifeCycleOwner.lifecycle.addObserver(object : LifecycleEventObserver {
+            override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
+                if (event == Lifecycle.Event.ON_DESTROY) {
+                    this@async.cancel()
+                }
             }
         })
 
@@ -124,10 +112,11 @@ object WEB {
         lifeCycleOwner: LifecycleOwner, onSuccess: (Response<T>) -> Unit,
         onFail: (Throwable) -> Unit,
     ) {
-        lifeCycleOwner.lifecycle.addObserver(object : LifecycleObserver {
-            @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-            fun cancelCall() {
-                this@asyncResponse.cancel()
+        lifeCycleOwner.lifecycle.addObserver(object : LifecycleEventObserver {
+            override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
+                if (event == Lifecycle.Event.ON_DESTROY) {
+                    this@asyncResponse.cancel()
+                }
             }
         })
 
