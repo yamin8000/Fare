@@ -75,7 +75,6 @@ object Utility {
         Logger.d(stackTraceToString)
     }
 
-
     /**
      * Format string number
      *

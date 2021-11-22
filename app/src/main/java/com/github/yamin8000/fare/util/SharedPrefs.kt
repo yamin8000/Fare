@@ -48,12 +48,10 @@ class SharedPrefs(context: Context, name: String) {
         }
     }
 
-    @JvmOverloads
     fun readString(key: String, defaultValue: String = "") = sharedPrefs.getString(key, defaultValue) ?: ""
 
     private fun writeString(key: String, value: String) = sharedPrefs.edit { putString(key, value) }
 
-    @JvmOverloads
     fun readBoolean(key: String, defaultValue: Boolean = false) = sharedPrefs.getBoolean(key, defaultValue)
 
     private fun writeBoolean(key: String, value: Boolean) = sharedPrefs.edit { putBoolean(key, value) }
