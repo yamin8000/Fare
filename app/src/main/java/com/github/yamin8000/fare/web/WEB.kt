@@ -21,7 +21,6 @@
 package com.github.yamin8000.fare.web
 
 import androidx.lifecycle.*
-import com.github.yamin8000.fare.util.ProxyServer
 import com.github.yamin8000.fare.util.SUPABASE
 import com.orhanobut.logger.Logger
 import com.squareup.moshi.Moshi
@@ -38,13 +37,13 @@ object WEB {
         val okhttpClient = OkHttpClient.Builder().addInterceptor {
             return@addInterceptor it.proceed(
                 it.request().newBuilder()
-                    .addHeader(SUPABASE.AUTHORIZATION, "${SUPABASE.BEARER} ${SUPABASE.SUPA_BASE_KEY}").build()
+                    .addHeader(SUPABASE.APIKEY, SUPABASE.SUPA_BASE_KEY).build()
             )
         }.build()
 
         return Retrofit.Builder()
             .client(okhttpClient)
-            .baseUrl(ProxyServer.BASE)
+            .baseUrl(SUPABASE.SUPA_BASE_URL)
             .addConverterFactory(MoshiConverterFactory.create())
             .build()
     }

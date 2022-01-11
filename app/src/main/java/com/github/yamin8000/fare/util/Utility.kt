@@ -28,7 +28,6 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.github.yamin8000.fare.R
 import com.github.yamin8000.fare.util.CONSTANTS.STACKTRACE
-import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.orhanobut.logger.Logger
 import java.math.BigInteger
 
@@ -69,8 +68,6 @@ object Utility {
         //navigate user to a special crash screen
         val bundle = bundleOf(STACKTRACE to stackTraceToString)
         this.findNavController().navigate(R.id.crashFragment, bundle)
-        //record and send exception data to firebase
-        FirebaseCrashlytics.getInstance().recordException(exception)
         //log it to logcat
         Logger.d(stackTraceToString)
     }
