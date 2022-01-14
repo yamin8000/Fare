@@ -22,11 +22,11 @@ package com.github.yamin8000.fare.model
 
 import com.github.yamin8000.fare.util.CONSTANTS.COUNTY_ID
 import com.github.yamin8000.fare.util.CONSTANTS.STATE_ID
-import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
+import com.google.gson.annotations.SerializedName
 
-@JsonClass(generateAdapter = true)
 data class City(
-    val id: Int, val name: String, @Json(name = STATE_ID) val stateId: String,
-    @Json(name = COUNTY_ID) val countyId: String
+    val id: Int,
+    val name: String,
+    @SerializedName(STATE_ID) val stateId: String,
+    @SerializedName(COUNTY_ID) val countyId: String
 )

@@ -83,7 +83,8 @@ object APIs {
 
         @GET(CITY)
         fun searchCity(
-            @Query(NAME) cityName: String? = null, @Query(ID) cityId: String? = null,
+            @Query(NAME) cityName: String? = null,
+            @Query(ID) cityId: String? = null,
             @Query(STATE_ID) stateId: String? = null,
             @Query(SELECT) select: String = CITY_JOIN
         ): Call<List<CityJoined>>
@@ -96,9 +97,11 @@ object APIs {
 
         @GET(LINE)
         fun getCityLines(
-            @Query(CITY_ID) cityId: String? = null, @Query(ORIGIN) origin: String? = null,
+            @Query(CITY_ID) cityId: String? = null,
+            @Query(ORIGIN) origin: String? = null,
             @Query(DESTINATION) destination: String? = null,
-            @Query(LINE_CODE) lineCode: String? = null, @Query(LIMIT) limit: String? = null,
+            @Query(LINE_CODE) lineCode: String? = null,
+            @Query(LIMIT) limit: String? = null,
             @Query(SELECT) select: String = LINE_PRICE_JOIN
         ): Call<List<Line>>
     }
@@ -127,6 +130,6 @@ object APIs {
     interface LogApi {
 
         @POST(LOG)
-        fun createLog(@Body log : LogModel): Call<Unit>
+        fun createLog(@Body log: LogModel): Call<Unit>
     }
 }

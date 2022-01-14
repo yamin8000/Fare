@@ -54,12 +54,12 @@ import com.github.yamin8000.fare.util.helpers.ErrorHelper.netErrorCache
 import com.github.yamin8000.fare.util.helpers.ErrorHelper.snack
 import com.github.yamin8000.fare.web.APIs
 import com.github.yamin8000.fare.web.APIs.TOP_CITIES_ID
-import com.github.yamin8000.fare.web.WEB
-import com.github.yamin8000.fare.web.WEB.async
-import com.github.yamin8000.fare.web.WEB.eqQuery
-import com.github.yamin8000.fare.web.WEB.fromJsonArray
-import com.github.yamin8000.fare.web.WEB.likeQuery
-import com.github.yamin8000.fare.web.WEB.toJsonArray
+import com.github.yamin8000.fare.web.Web
+import com.github.yamin8000.fare.web.Web.async
+import com.github.yamin8000.fare.web.Web.eqQuery
+import com.github.yamin8000.fare.web.Web.fromJsonArray
+import com.github.yamin8000.fare.web.Web.likeQuery
+import com.github.yamin8000.fare.web.Web.toJsonArray
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.*
 
@@ -74,7 +74,7 @@ private const val MINIMUM_COUNT_OF_CITIES_FOR_LIST_LAYOUT = 4
 class SearchCityFragment :
     BaseFragment<FragmentSearchCityBinding>({ FragmentSearchCityBinding.inflate(it) }) {
 
-    private val cityAPI: APIs.CityAPI by lazy(LazyThreadSafetyMode.NONE) { WEB.getAPI() }
+    private val cityAPI: APIs.CityAPI by lazy(LazyThreadSafetyMode.NONE) { Web.getAPI() }
 
     private val loadingAdapter: LoadingAdapter by lazy(LazyThreadSafetyMode.NONE) { LoadingAdapter() }
 
@@ -125,7 +125,7 @@ class SearchCityFragment :
      * very first run of app after install cache popular cities
      */
     private fun fetchTopCities() {
-        val topCitiesAPI = WEB.getAPI<APIs.CityAPI>()
+        val topCitiesAPI = Web.getAPI<APIs.CityAPI>()
         topCitiesAPI.searchCity(cityId = TOP_CITIES_ID).async(this, { cities ->
             if (cities.isNotEmpty()) {
                 populateCityList(cities)
@@ -167,7 +167,7 @@ class SearchCityFragment :
      * @param cache states cache
      */
     private fun fetchStates(cache: Cache) {
-        val stateService = WEB.getAPI<APIs.StateAPI>()
+        val stateService = Web.getAPI<APIs.StateAPI>()
         stateService.getAll().async(this, { stateList ->
             if (stateList.isNotEmpty()) {
                 populateStates(stateList)

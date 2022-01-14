@@ -35,10 +35,10 @@ import com.github.yamin8000.fare.util.Utility.handleCrash
 import com.github.yamin8000.fare.util.helpers.ErrorHelper.netError
 import com.github.yamin8000.fare.util.helpers.ErrorHelper.snack
 import com.github.yamin8000.fare.web.APIs
-import com.github.yamin8000.fare.web.WEB
-import com.github.yamin8000.fare.web.WEB.async
-import com.github.yamin8000.fare.web.WEB.fromJsonArray
-import com.github.yamin8000.fare.web.WEB.toJsonArray
+import com.github.yamin8000.fare.web.Web
+import com.github.yamin8000.fare.web.Web.async
+import com.github.yamin8000.fare.web.Web.fromJsonArray
+import com.github.yamin8000.fare.web.Web.toJsonArray
 
 class LicenseFragment :
     BaseFragment<FragmentLicenseBinding>({ FragmentLicenseBinding.inflate(it) }) {
@@ -75,7 +75,7 @@ class LicenseFragment :
      * @param licenseCache cache is used for writing new data to cache
      */
     private fun getLicenseFromServer(licenseCache: Cache) {
-        WEB.getAPI<APIs.LicenseAPI>().getAll().async(this, { list ->
+        Web.getAPI<APIs.LicenseAPI>().getAll().async(this, { list ->
             if (list.isNotEmpty()) {
                 binding.licenseText.text = createLinedText(list)
                 licenseCache.writeCache(cache = list.toJsonArray())

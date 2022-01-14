@@ -60,10 +60,10 @@ import com.github.yamin8000.fare.util.Utility.hideKeyboard
 import com.github.yamin8000.fare.util.helpers.ErrorHelper.netError
 import com.github.yamin8000.fare.util.helpers.ErrorHelper.snack
 import com.github.yamin8000.fare.web.APIs
-import com.github.yamin8000.fare.web.WEB
-import com.github.yamin8000.fare.web.WEB.async
-import com.github.yamin8000.fare.web.WEB.eqQuery
-import com.github.yamin8000.fare.web.WEB.likeQuery
+import com.github.yamin8000.fare.web.Web
+import com.github.yamin8000.fare.web.Web.async
+import com.github.yamin8000.fare.web.Web.eqQuery
+import com.github.yamin8000.fare.web.Web.likeQuery
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
@@ -144,7 +144,7 @@ class SearchLineFragment :
      * @param cityId
      */
     private fun getCityCompactLines(cityId: String) {
-        WEB.getAPI<APIs.CompactLineApi>().getCityLines(cityId.eqQuery()).async(this, {
+        Web.getAPI<APIs.CompactLineApi>().getCityLines(cityId.eqQuery()).async(this, {
             if (it.isNotEmpty()) {
                 enableTextInputs()
                 searchFilterClearButtonListener()
@@ -346,7 +346,7 @@ class SearchLineFragment :
         val destQuery = searchParams[DESTINATION]?.likeQuery()
         val limitQuery = searchParams[LIMIT]
 
-        val service = WEB.getAPI<APIs.LineAPI>()
+        val service = Web.getAPI<APIs.LineAPI>()
         service.getCityLines(
             cityId = cityIdQuery, lineCode = lineCodeQuery, origin = originQuery,
             destination = destQuery, limit = limitQuery
@@ -535,7 +535,7 @@ class SearchLineFragment :
      * Get city's basic info
      */
     private fun getCityInfo(cityId: String) {
-        val service = WEB.getAPI<APIs.CityAPI>()
+        val service = Web.getAPI<APIs.CityAPI>()
         service.searchCity(cityId = cityId.eqQuery()).async(this, { list ->
             if (list.isNotEmpty()) this.cityModel = list.first()
         }) { netError(it) }

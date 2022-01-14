@@ -20,7 +20,8 @@
 
 package com.github.yamin8000.fare.model
 
-import com.squareup.moshi.JsonClass
-
-@JsonClass(generateAdapter = true)
-data class CompactLine(val code: String?, val origin: String?, val destination: String?)
+data class CompactLine(
+    val code: String?,
+    val origin: String?,
+    val destination: String
+)

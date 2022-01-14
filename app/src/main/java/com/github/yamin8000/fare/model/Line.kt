@@ -21,12 +21,14 @@
 package com.github.yamin8000.fare.model
 
 import com.github.yamin8000.fare.util.CONSTANTS.CITY_ID
-import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
+import com.google.gson.annotations.SerializedName
 
-@JsonClass(generateAdapter = true)
 data class Line(
-    val id: String, val code: String?, val origin: String?, val destination: String?,
-    @Json(name = "has_custom_property_name") val hasCustomProperty: Boolean,
-    @Json(name = CITY_ID) val cityId: Int?, val price: List<Price>?
+    val id: String,
+    val code: String?,
+    val origin: String?,
+    val destination: String?,
+    @SerializedName("has_custom_property_name") val hasCustomProperty: Boolean,
+    @SerializedName(CITY_ID) val cityId: Int?,
+    val price: List<Price>?
 )

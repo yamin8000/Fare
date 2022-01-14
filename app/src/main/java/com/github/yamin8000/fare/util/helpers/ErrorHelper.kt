@@ -35,7 +35,7 @@ object ErrorHelper {
 
     fun Fragment.netError(error: Throwable? = null) {
         snack(getString(R.string.net_error), Snackbar.LENGTH_INDEFINITE)
-        if (error != null) Logger.d(error.stackTrace)
+        if (error != null) Logger.d(error.stackTraceToString())
     }
 
     fun Fragment.snack(message: String, length: Int = Snackbar.LENGTH_SHORT): Snackbar? {

@@ -20,7 +20,7 @@
 
 package com.github.yamin8000.fare.model
 
-import com.squareup.moshi.JsonClass
-
-@JsonClass(generateAdapter = true)
-data class Feedback(val feedback: String, val user: String)
+data class Feedback(
+    val feedback: String,
+    val user: String
+)

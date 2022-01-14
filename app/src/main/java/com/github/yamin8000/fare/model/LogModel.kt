@@ -20,7 +20,4 @@
 
 package com.github.yamin8000.fare.model
 
-import com.squareup.moshi.JsonClass
-
-@JsonClass(generateAdapter = true)
 data class LogModel(val stacktrace: String)

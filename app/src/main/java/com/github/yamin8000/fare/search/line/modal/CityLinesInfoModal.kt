@@ -38,11 +38,11 @@ import com.github.yamin8000.fare.util.CONSTANTS.PRICE_REFERENCE_PREFS
 import com.github.yamin8000.fare.util.Utility.handleCrash
 import com.github.yamin8000.fare.util.helpers.ErrorHelper.netError
 import com.github.yamin8000.fare.web.APIs
-import com.github.yamin8000.fare.web.WEB
-import com.github.yamin8000.fare.web.WEB.async
-import com.github.yamin8000.fare.web.WEB.eqQuery
-import com.github.yamin8000.fare.web.WEB.fromJsonArray
-import com.github.yamin8000.fare.web.WEB.toJsonArray
+import com.github.yamin8000.fare.web.Web
+import com.github.yamin8000.fare.web.Web.async
+import com.github.yamin8000.fare.web.Web.eqQuery
+import com.github.yamin8000.fare.web.Web.fromJsonArray
+import com.github.yamin8000.fare.web.Web.toJsonArray
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 class CityLinesInfoModal : BottomSheetDialogFragment() {
@@ -77,7 +77,7 @@ class CityLinesInfoModal : BottomSheetDialogFragment() {
     private fun getCityExtras(cityId: String, cache: Cache) {
         val cachedCityExtras = cache.readCache(cityId).fromJsonArray<CityExtra>() ?: mutableListOf()
         if (cachedCityExtras.isEmpty()) {
-            val service = WEB.getAPI<APIs.CityExtraAPI>()
+            val service = Web.getAPI<APIs.CityExtraAPI>()
             service.getCityExtra(cityId.eqQuery()).async(this, { list ->
                 if (list.isNotEmpty()) {
                     handleExtrasData(list)
@@ -94,7 +94,7 @@ class CityLinesInfoModal : BottomSheetDialogFragment() {
     private fun getReferences(cityId: String, cache: Cache) {
         val cachedReferences = cache.readCache(cityId).fromJsonArray<PriceReference>() ?: mutableListOf()
         if (cachedReferences.isEmpty()) {
-            val service = WEB.getAPI<APIs.PriceReferenceAPI>()
+            val service = Web.getAPI<APIs.PriceReferenceAPI>()
             service.getCityReference(cityId.eqQuery()).async(this, { list ->
                 if (list.isNotEmpty()) {
                     handleReferenceData(list)

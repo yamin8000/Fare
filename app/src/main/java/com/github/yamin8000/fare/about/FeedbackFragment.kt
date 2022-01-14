@@ -36,8 +36,8 @@ import com.github.yamin8000.fare.util.Utility.hideKeyboard
 import com.github.yamin8000.fare.util.helpers.ErrorHelper.netError
 import com.github.yamin8000.fare.util.helpers.ErrorHelper.snack
 import com.github.yamin8000.fare.web.APIs
-import com.github.yamin8000.fare.web.WEB
-import com.github.yamin8000.fare.web.WEB.asyncResponse
+import com.github.yamin8000.fare.web.Web
+import com.github.yamin8000.fare.web.Web.asyncResponse
 import com.google.android.material.snackbar.Snackbar
 import java.time.LocalDateTime
 
@@ -116,7 +116,7 @@ class FeedbackFragment : BaseFragment<FragmentFeedbackBinding>({ FragmentFeedbac
      */
     private fun sendFeedback(feedbackText: CharSequence, feedbackUser: Editable?) {
         val feedback = Feedback("$feedbackText", "$feedbackUser")
-        val service = WEB.getAPI<APIs.FeedbackAPI>()
+        val service = Web.getAPI<APIs.FeedbackAPI>()
         service.createFeedback(feedback).asyncResponse(this, { response ->
             /**
              * The HTTP 201 Created success status response code indicates that the request has succeeded

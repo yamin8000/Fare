@@ -65,11 +65,11 @@ object Utility {
      */
     fun Fragment.handleCrash(exception: Exception) {
         val stackTraceToString = exception.stackTraceToString()
+        //log it to logcat
+        Logger.d(stackTraceToString)
         //navigate user to a special crash screen
         val bundle = bundleOf(STACKTRACE to stackTraceToString)
         this.findNavController().navigate(R.id.crashFragment, bundle)
-        //log it to logcat
-        Logger.d(stackTraceToString)
     }
 
     /**

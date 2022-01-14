@@ -1,7 +1,10 @@
 package com.github.yamin8000.fare.model
 
-import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
+import com.google.gson.annotations.SerializedName
 
-@JsonClass(generateAdapter = true)
-data class County(val id: Int, val name: String, @Json(name = "state_id") val stateId: String)
+data class County(
+    val id: Int,
+    val name: String,
+    @SerializedName("state_id")
+    val stateId: String
+)

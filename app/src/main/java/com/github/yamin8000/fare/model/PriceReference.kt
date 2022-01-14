@@ -21,11 +21,11 @@
 package com.github.yamin8000.fare.model
 
 import com.github.yamin8000.fare.util.CONSTANTS.CITY_ID
-import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
+import com.google.gson.annotations.SerializedName
 
-@JsonClass(generateAdapter = true)
 data class PriceReference(
-    val id: String, @Json(name = CITY_ID) val cityId: Int, val data: String,
-    @Json(name = "data_type") val dataType: String
+    val id: String,
+    @SerializedName(CITY_ID) val cityId: Int,
+    val data: String,
+    @SerializedName("data_type") val dataType: String
 )

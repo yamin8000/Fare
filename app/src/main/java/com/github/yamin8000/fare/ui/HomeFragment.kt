@@ -44,8 +44,8 @@ import com.github.yamin8000.fare.util.Utility.handleCrash
 import com.github.yamin8000.fare.util.helpers.ErrorHelper.netErrorCache
 import com.github.yamin8000.fare.util.helpers.ErrorHelper.snack
 import com.github.yamin8000.fare.web.APIs
-import com.github.yamin8000.fare.web.WEB
-import com.github.yamin8000.fare.web.WEB.asyncResponse
+import com.github.yamin8000.fare.web.Web
+import com.github.yamin8000.fare.web.Web.asyncResponse
 import com.google.android.material.snackbar.Snackbar
 
 class HomeFragment : BaseFragment<FragmentHomeBinding>({ FragmentHomeBinding.inflate(it) }) {
@@ -80,7 +80,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>({ FragmentHomeBinding.inf
 
     private fun handleFreshnessOfCache() {
         //checking if server is responsive
-        val service = WEB.getAPI<APIs.StateAPI>()
+        val service = Web.getAPI<APIs.StateAPI>()
         service.getCount().asyncResponse(this, {
             //remove data if user has access to server
             if (it.code() == 200) clearOldCache()
@@ -93,13 +93,13 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>({ FragmentHomeBinding.inf
      */
     private fun clearOldCache() {
         context?.let { safeContext ->
-            val citiesCache = Cache(safeContext, CITY_PREFS)
-            val statesCache = Cache(safeContext, STATE_PREFS, CachePolicy.MonthlyCache)
-            val licensesCache = Cache(safeContext, LICENSE_PREFS, CachePolicy.MonthlyCache)
-            val cityExtraCache = Cache(safeContext, CITY_EXTRA_PREFS)
-            val priceReferenceCache = Cache(safeContext, PRICE_REFERENCE_PREFS)
-            val list = listOf(citiesCache, statesCache, licensesCache, cityExtraCache, priceReferenceCache)
-            list.forEach { cache -> if (!cache.isDataFresh()) cache.sharedPrefs.clearData() }
+            listOf(
+                Cache(safeContext, CITY_PREFS),
+                Cache(safeContext, STATE_PREFS, CachePolicy.MonthlyCache),
+                Cache(safeContext, LICENSE_PREFS, CachePolicy.MonthlyCache),
+                Cache(safeContext, CITY_EXTRA_PREFS),
+                Cache(safeContext, PRICE_REFERENCE_PREFS)
+            ).forEach { cache -> if (!cache.isDataFresh()) cache.sharedPrefs.clearData() }
         }
     }
 

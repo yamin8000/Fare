@@ -20,11 +20,12 @@
 
 package com.github.yamin8000.fare.model
 
-import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
+import com.google.gson.annotations.SerializedName
 
-@JsonClass(generateAdapter = true)
 data class Price(
-    val id: String?, val name: String?, @Json(name = "line_id") val lineId: String?,
-    @Json(name = "date_added") val dateAdded: String?, @Json(name = "price") val value: String
+    val id: String?,
+    val name: String?,
+    @SerializedName("line_id") val lineId: String?,
+    @SerializedName("date_added") val dateAdded: String?,
+    @SerializedName("price") val value: String
 )

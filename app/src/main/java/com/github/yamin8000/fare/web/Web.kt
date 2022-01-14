@@ -22,14 +22,14 @@ package com.github.yamin8000.fare.web
 
 import androidx.lifecycle.*
 import com.github.yamin8000.fare.util.SUPABASE
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.orhanobut.logger.Logger
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.Types
 import okhttp3.OkHttpClient
 import retrofit2.*
-import retrofit2.converter.moshi.MoshiConverterFactory
+import retrofit2.converter.gson.GsonConverterFactory
 
-object WEB {
+object Web {
 
     val retrofit: Retrofit by lazy(LazyThreadSafetyMode.NONE) { createRetrofit() }
 
@@ -44,7 +44,7 @@ object WEB {
         return Retrofit.Builder()
             .client(okhttpClient)
             .baseUrl(SUPABASE.SUPA_BASE_URL)
-            .addConverterFactory(MoshiConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
 
@@ -55,7 +55,6 @@ object WEB {
      * @return service for that api
      */
     inline fun <reified T> getAPI(): T = retrofit.create(T::class.java)
-
 
     /**
      * async callback
@@ -73,9 +72,7 @@ object WEB {
     ) {
         lifeCycleOwner.lifecycle.addObserver(object : LifecycleEventObserver {
             override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
-                if (event == Lifecycle.Event.ON_DESTROY) {
-                    this@async.cancel()
-                }
+                if (event == Lifecycle.Event.ON_DESTROY) this@async.cancel()
             }
         })
 
@@ -99,8 +96,8 @@ object WEB {
             }
 
             override fun onFailure(call: Call<T>, t: Throwable) {
-                if (!isCanceled) onFail(t)
-                else Logger.d("${call.request().url()} is canceled")
+                if (isCanceled) Logger.d("${call.request().url()} is canceled")
+                onFail(t)
             }
         })
     }
@@ -123,9 +120,7 @@ object WEB {
     ) {
         lifeCycleOwner.lifecycle.addObserver(object : LifecycleEventObserver {
             override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
-                if (event == Lifecycle.Event.ON_DESTROY) {
-                    this@asyncResponse.cancel()
-                }
+                if (event == Lifecycle.Event.ON_DESTROY) this@asyncResponse.cancel()
             }
         })
 
@@ -133,8 +128,8 @@ object WEB {
             override fun onResponse(call: Call<T>, response: Response<T>) = onSuccess(response)
 
             override fun onFailure(call: Call<T>, t: Throwable) {
-                if (!isCanceled) onFail(t)
-                else Logger.d("${call.request().url()} is canceled")
+                if (isCanceled) Logger.d("${call.request().url()} is canceled")
+                onFail(t)
             }
         })
     }
@@ -146,10 +141,9 @@ object WEB {
      * @return json array string
      */
     inline fun <reified T> List<T>.toJsonArray(): String {
-        val moshi = Moshi.Builder().build()
-        val type = Types.newParameterizedType(List::class.java, T::class.java)
-        val jsonAdapter = moshi.adapter<List<T>>(type)
-        return jsonAdapter.toJson(this)
+        val gson = Gson()
+        val type = TypeToken.getParameterized(List::class.java, T::class.java).type
+        return gson.toJson(this, type)
     }
 
     /**
@@ -160,10 +154,9 @@ object WEB {
      */
     inline fun <reified T> String.fromJsonArray(): List<T>? {
         return if (this.isNotBlank()) {
-            val moshi = Moshi.Builder().build()
-            val type = Types.newParameterizedType(List::class.java, T::class.java)
-            val jsonAdapter = moshi.adapter<List<T>>(type)
-            jsonAdapter.fromJson(this)
+            val gson = Gson()
+            val type = TypeToken.getParameterized(List::class.java, T::class.java).type
+            gson.fromJson(this, type)
         } else null
     }
 
