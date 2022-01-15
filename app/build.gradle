@@ -28,7 +28,7 @@ android {
     buildToolsVersion "30.0.3"
 
     defaultConfig {
-        applicationId "com.github.yamin8000.fare"
+        applicationId "com.github.yamin8000.fare2"
         minSdkVersion 21
         targetSdkVersion 32
         versionCode 4

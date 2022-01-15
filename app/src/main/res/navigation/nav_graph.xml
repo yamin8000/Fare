@@ -24,7 +24,7 @@
 
     <fragment
         android:id="@+id/splashFragment"
-        android:name="com.github.yamin8000.fare.ui.SplashFragment"
+        android:name="com.github.yamin8000.fare2.ui.SplashFragment"
         android:label="SplashFragment"
         tools:layout="@layout/fragment_splash">
         <action
@@ -39,7 +39,7 @@
     </fragment>
     <fragment
         android:id="@+id/homeFragment"
-        android:name="com.github.yamin8000.fare.ui.HomeFragment"
+        android:name="com.github.yamin8000.fare2.ui.HomeFragment"
         android:label="HomeFragment"
         tools:layout="@layout/fragment_home">
         <action
@@ -61,12 +61,12 @@
     </fragment>
     <fragment
         android:id="@+id/licenseFragment"
-        android:name="com.github.yamin8000.fare.about.LicenseFragment"
+        android:name="com.github.yamin8000.fare2.about.LicenseFragment"
         android:label="LicenseFragment"
         tools:layout="@layout/fragment_license" />
     <fragment
         android:id="@+id/aboutFragment"
-        android:name="com.github.yamin8000.fare.about.AboutFragment"
+        android:name="com.github.yamin8000.fare2.about.AboutFragment"
         android:label="AboutFragment"
         tools:layout="@layout/fragment_about">
         <action
@@ -92,12 +92,12 @@
     </fragment>
     <fragment
         android:id="@+id/aboutDeveloperFragment"
-        android:name="com.github.yamin8000.fare.about.AboutDeveloperFragment"
+        android:name="com.github.yamin8000.fare2.about.AboutDeveloperFragment"
         android:label="AboutDeveloperFragment"
         tools:layout="@layout/fragment_about_developer" />
     <fragment
         android:id="@+id/feedbackFragment"
-        android:name="com.github.yamin8000.fare.about.FeedbackFragment"
+        android:name="com.github.yamin8000.fare2.about.FeedbackFragment"
         android:label="FeedbackFragment"
         tools:layout="@layout/fragment_feedback">
         <argument
@@ -106,7 +106,7 @@
     </fragment>
     <fragment
         android:id="@+id/searchCityFragment"
-        android:name="com.github.yamin8000.fare.search.city.SearchCityFragment"
+        android:name="com.github.yamin8000.fare2.search.city.SearchCityFragment"
         android:label="SearchCityFragment"
         tools:layout="@layout/fragment_search_city">
         <action
@@ -118,14 +118,14 @@
     </fragment>
     <fragment
         android:id="@+id/crashFragment"
-        android:name="com.github.yamin8000.fare.ui.CrashFragment"
+        android:name="com.github.yamin8000.fare2.ui.CrashFragment"
         android:label="CrashFragment"
         tools:layout="@layout/fragment_crash" >
         <argument android:name="stacktrace" />
     </fragment>
     <fragment
         android:id="@+id/searchLineFragment"
-        android:name="com.github.yamin8000.fare.search.line.SearchLineFragment"
+        android:name="com.github.yamin8000.fare2.search.line.SearchLineFragment"
         android:label="SearchLineFragment"
         tools:layout="@layout/fragment_search_line">
         <argument
@@ -146,7 +146,7 @@
     </fragment>
     <dialog
         android:id="@+id/cityLinesInfoModal"
-        android:name="com.github.yamin8000.fare.search.line.modal.CityLinesInfoModal"
+        android:name="com.github.yamin8000.fare2.search.line.modal.CityLinesInfoModal"
         android:label="CityLinesInfoModal"
         tools:layout="@layout/city_lines_info_modal">
         <argument
@@ -155,17 +155,17 @@
     </dialog>
     <dialog
         android:id="@+id/exitNoticeModal"
-        android:name="com.github.yamin8000.fare.ui.modal.ExitNoticeModal"
+        android:name="com.github.yamin8000.fare2.ui.modal.ExitNoticeModal"
         android:label="ExitNoticeModal"
         tools:layout="@layout/exit_notice_modal" />
     <fragment
         android:id="@+id/settingsFragment"
-        android:name="com.github.yamin8000.fare.ui.SettingsFragment"
+        android:name="com.github.yamin8000.fare2.ui.SettingsFragment"
         android:label="SettingsFragment"
         tools:layout="@layout/fragment_settings" />
     <fragment
         android:id="@+id/appHelpFragment"
-        android:name="com.github.yamin8000.fare.about.AppHelpFragment"
+        android:name="com.github.yamin8000.fare2.about.AppHelpFragment"
         android:label="AppHelpFragment"
         tools:layout="@layout/fragment_help" />
 </navigation>
