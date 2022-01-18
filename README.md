@@ -68,9 +68,9 @@
 
 - [Github](https://github.com/yamin8000/Fare/releases)
 
-- [Myket](https://myket.ir/app/com.github.yamin8000.fare)
+- [Myket](https://myket.ir/app/com.github.yamin8000.fare2)
 
-- [Bazaar](https://cafebazaar.ir/app/com.github.yamin8000.fare)
+- [Bazaar](https://cafebazaar.ir/app/com.github.yamin8000.fare2)
 
 ## Features
 
