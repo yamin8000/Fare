@@ -267,7 +267,13 @@ class SearchCityFragment :
             }
         }) {
             netErrorCache()
-            lifecycleScope.launch { loadCachedCities(cityGrams = cityName.windowed(FUZZY_SEARCH_WINDOW)) }
+            lifecycleScope.launch {
+                loadCachedCities(
+                    cityGrams = cityName.windowed(
+                        FUZZY_SEARCH_WINDOW
+                    )
+                )
+            }
         }
     }
 
@@ -357,7 +363,7 @@ class SearchCityFragment :
     ): MutableSet<CityJoined> {
         val ranks = mutableListOf<Pair<Int, CityJoined>>()
         for (cityJoined in list) {
-            val rank = cityJoined.name.windowed(FUZZY_SEARCH_WINDOW).intersect(terms).size
+            val rank = cityJoined.name.windowed(FUZZY_SEARCH_WINDOW).intersect(terms.toSet()).size
             ranks.add(rank to cityJoined)
         }
         return ranks.sortedByDescending { it.first }.map { it.second }.toMutableSet()
@@ -401,7 +407,8 @@ class SearchCityFragment :
      * @param safeContext
      */
     private fun changeListLayoutManagerBasedOnListSize(cityListSize: Int, safeContext: Context) {
-        var layoutManager: RecyclerView.LayoutManager = GridLayoutManager(context, CITY_LIST_GRID_SPAN_COUNT)
+        var layoutManager: RecyclerView.LayoutManager =
+            GridLayoutManager(context, CITY_LIST_GRID_SPAN_COUNT)
         if (cityListSize <= MINIMUM_COUNT_OF_CITIES_FOR_LIST_LAYOUT)
             layoutManager = LinearLayoutManager(safeContext)
         binding.cityList.layoutManager = layoutManager

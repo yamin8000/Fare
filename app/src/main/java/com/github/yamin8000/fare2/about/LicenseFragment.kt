@@ -55,7 +55,7 @@ class LicenseFragment :
     }
 
     private fun enableLinksInLicensesTextView() {
-        LinkifyCompat.addLinks(binding.licenseHeader, Linkify.ALL)
+        LinkifyCompat.addLinks(binding.licenseHeader, Linkify.WEB_URLS)
     }
 
     /**

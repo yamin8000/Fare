@@ -425,7 +425,7 @@ class SearchLineFragment :
     private fun handleAutoCompletes(list: List<CompactLine>) = backScope.launch {
         val codes = list.asSequence().filter { !it.code.isNullOrBlank() }.map { it.code }
         val origins = list.asSequence().filter { !it.origin.isNullOrBlank() }.map { it.origin }
-        val destinations = list.asSequence().filter { !it.destination.isNullOrBlank() }.map { it.destination }
+        val destinations = list.asSequence().filter { it.destination.isNotBlank() }.map { it.destination }
 
         codesSet.addAll(codes)
         originsSet.addAll(origins)

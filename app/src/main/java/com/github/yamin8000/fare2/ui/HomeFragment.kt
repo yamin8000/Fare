@@ -72,10 +72,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>({ FragmentHomeBinding.inf
         }
 
         binding.myCityButton.setOnClickListener { handleMyCityButton() }
-
-        binding.settingsButton.setOnClickListener {
-            findNavController().navigate(R.id.action_homeFragment_to_settingsFragment)
-        }
     }
 
     private fun handleFreshnessOfCache() {

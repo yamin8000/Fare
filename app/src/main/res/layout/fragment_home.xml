@@ -26,7 +26,7 @@
         android:id="@+id/search_city_button"
         style="@style/HomeButton"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:text="@string/search"
         tools:layout_editor_absoluteX="206dp"
         tools:layout_editor_absoluteY="390dp" />
@@ -35,43 +35,32 @@
         android:id="@+id/my_city_button"
         style="@style/HomeButton"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:text="@string/my_city"
         tools:layout_editor_absoluteX="118dp"
         tools:layout_editor_absoluteY="390dp" />
 
     <Button
-        android:id="@+id/settings_button"
-        style="@style/HomeButton"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:backgroundTint="@color/secondaryColor"
-        android:text="@string/settings"
-        tools:layout_editor_absoluteX="118dp"
-        tools:layout_editor_absoluteY="294dp" />
-
-    <Button
         android:id="@+id/about_button"
         style="@style/HomeButton"
         android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:backgroundTint="@color/secondaryColor"
+        android:layout_height="wrap_content"
         android:text="@string/about"
         tools:layout_editor_absoluteX="118dp"
         tools:layout_editor_absoluteY="342dp" />
 
     <androidx.constraintlayout.helper.widget.Flow
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
         android:orientation="horizontal"
-        app:constraint_referenced_ids="search_city_button,my_city_button,settings_button,about_button"
+        app:constraint_referenced_ids="search_city_button,my_city_button,about_button"
         app:flow_horizontalGap="16dp"
         app:flow_horizontalStyle="packed"
-        app:flow_maxElementsWrap="2"
+        app:flow_maxElementsWrap="1"
         app:flow_verticalGap="16dp"
         app:flow_verticalStyle="packed"
         app:flow_wrapMode="aligned"

@@ -55,9 +55,6 @@
         <action
             android:id="@+id/action_homeFragment_to_searchLineFragment"
             app:destination="@id/searchLineFragment" />
-        <action
-            android:id="@+id/action_homeFragment_to_settingsFragment"
-            app:destination="@id/settingsFragment" />
     </fragment>
     <fragment
         android:id="@+id/licenseFragment"
@@ -158,11 +155,6 @@
         android:name="com.github.yamin8000.fare2.ui.modal.ExitNoticeModal"
         android:label="ExitNoticeModal"
         tools:layout="@layout/exit_notice_modal" />
-    <fragment
-        android:id="@+id/settingsFragment"
-        android:name="com.github.yamin8000.fare2.ui.SettingsFragment"
-        android:label="SettingsFragment"
-        tools:layout="@layout/fragment_settings" />
     <fragment
         android:id="@+id/appHelpFragment"
         android:name="com.github.yamin8000.fare2.about.AppHelpFragment"
