@@ -1,3 +1,5 @@
+# Currently this app is stopped from production until further changes to the app's data gathering model 
+
 # Fare
 
 <img src="https://raw.githubusercontent.com/yamin8000/Fare/master/app/src/main/ic_launcher-playstore.png" alt="logo" width="200" height="200"/>
